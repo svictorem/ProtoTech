@@ -369,6 +369,8 @@ const GLOBAL_CSS = `
   .card{background:#0c1526;border:1px solid rgba(140,82,255,0.1);border-radius:12px}
   .card-h{transition:border-color .2s,transform .15s}
   .card-h:hover{border-color:rgba(140,82,255,0.3);transform:translateY(-2px)}
+  .card-neon{transition:transform .3s cubic-bezier(.4,0,.2,1),box-shadow .3s cubic-bezier(.4,0,.2,1),border-color .3s ease}
+  .card-neon:hover{transform:translateY(-4px);border-color:var(--neon-color);box-shadow:0 12px 28px -6px var(--neon-shadow),0 0 14px -3px var(--neon-shadow)}
   
   .btn-p{background:#8c52ff;color:#070914;border:none;padding:8px 16px;border-radius:8px;font-weight:600;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:6px;transition:opacity .15s;white-space:nowrap}
   .btn-p:hover{opacity:.85}
@@ -396,8 +398,8 @@ const GLOBAL_CSS = `
   .b-info{background:rgba(140,82,255,0.12);color:#8c52ff}
   .b-dim{background:rgba(90,112,144,0.2);color:#8a9bb5}
   
-  .tr{border-bottom:1px solid rgba(140,82,255,0.06);transition:background .1s}
-  .tr:hover{background:rgba(140,82,255,0.04)}
+  .tr{border-bottom:1px solid rgba(140,82,255,0.06);transition:all .2s ease}
+  .tr:hover{background:rgba(140,82,255,0.15);border-bottom:1px solid rgba(140,82,255,0.4)}
   
   .inp{background:rgba(255,255,255,0.04);border:1px solid rgba(140,82,255,0.15);border-radius:8px;padding:8px 12px;color:#dde8f5;font-size:14px;width:100%;transition:border-color .15s}
   .inp:focus{outline:none;border-color:#8c52ff}
@@ -405,10 +407,35 @@ const GLOBAL_CSS = `
   
   .tab-btn{padding:10px 16px;background:none;border:none;cursor:pointer;font-size:14px;transition:all .15s;border-bottom:2px solid transparent;margin-bottom:-1px}
   
-  @keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-  .fi{animation:fi .25s ease}
+  @keyframes fi{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+  .fi{animation:fi .45s cubic-bezier(.2,.8,.2,1) forwards}
   @keyframes pl{0%,100%{opacity:1}50%{opacity:.4}}
   .pl{animation:pl 2s infinite}
+  @keyframes gradientMove {
+    0% { background-position: 0% 50% }
+    50% { background-position: 100% 50% }
+    100% { background-position: 0% 50% }
+  }
+  @keyframes shine {
+    0% { left: -100% }
+    20% { left: 100% }
+    100% { left: 100% }
+  }
+  .btn-shine {
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-shine::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
+    transform: skewX(-20deg);
+    animation: shine 4s infinite;
+  }
 `;
 
 // ─── UTILS ────────────────────────────────────────────────────────
@@ -462,50 +489,72 @@ const Avatar = ({ name, size = 36, color = T.cyan }) => (
 const StatCard = ({ icon: Icon, label, value, sub, color = T.cyan }) => {
   const rgb = COLOR_RGB[color] || "0,200,255";
   return (
-    <div className="card card-h fi" style={{ padding: "20px 22px" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
-        }}
-      >
-        <div>
-          <p
-            style={{
-              color: T.muted,
-              fontSize: 11,
-              fontWeight: 600,
-              textTransform: "uppercase",
-              letterSpacing: "0.09em",
-              marginBottom: 8,
-            }}
-          >
-            {label}
-          </p>
-          <p
-            style={{
-              fontSize: 26,
-              fontWeight: 700,
-              lineHeight: 1,
-              color: T.text,
-            }}
-          >
-            {value}
-          </p>
-          {sub && (
-            <p style={{ fontSize: 12, color: T.muted2, marginTop: 6 }}>{sub}</p>
-          )}
-        </div>
-        <div
+    <div
+      className="card card-neon fi"
+      style={{
+        "--neon-color": `rgba(${rgb},0.5)`,
+        "--neon-shadow": `rgba(${rgb},0.25)`,
+        padding: "20px 22px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: "16px",
+        overflow: "hidden",
+      }}
+    >
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <p
           style={{
-            background: `rgba(${rgb},0.1)`,
-            borderRadius: 10,
-            padding: 10,
+            color: T.muted,
+            fontSize: 10,
+            fontWeight: 600,
+            textTransform: "uppercase",
+            letterSpacing: "0.09em",
+            marginBottom: 6,
+            lineHeight: 1.3,
+            wordBreak: "break-word",
           }}
         >
-          <Icon size={20} style={{ color }} />
-        </div>
+          {label}
+        </p>
+        <p
+          style={{
+            fontSize: 24,
+            fontWeight: 700,
+            lineHeight: 1.1,
+            color: T.text,
+            wordBreak: "break-word",
+          }}
+        >
+          {value}
+        </p>
+        {sub && (
+          <p
+            style={{
+              fontSize: 11,
+              color: T.muted2,
+              marginTop: 6,
+              lineHeight: 1.3,
+              wordBreak: "break-word",
+            }}
+          >
+            {sub}
+          </p>
+        )}
+      </div>
+      <div
+        style={{
+          background: `rgba(${rgb},0.1)`,
+          borderRadius: 12,
+          minWidth: 48,
+          height: 48,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexShrink: 0,
+        }}
+      >
+        <Icon size={24} style={{ color }} />
       </div>
     </div>
   );
@@ -1081,8 +1130,8 @@ const Dashboard = () => {
           <ResponsiveContainer width="100%" height={190}>
             <AreaChart data={SALES_MONTHLY}>
               <defs>
-                <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#8c52ff" stopOpacity={0.18} />
+                <linearGradient id="colorVendas" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#8c52ff" stopOpacity={0.8} />
                   <stop offset="95%" stopColor="#8c52ff" stopOpacity={0} />
                 </linearGradient>
               </defs>
@@ -1116,8 +1165,9 @@ const Dashboard = () => {
                 type="monotone"
                 dataKey="vendas"
                 stroke="#8c52ff"
-                strokeWidth={2}
-                fill="url(#g1)"
+                strokeWidth={3}
+                fillOpacity={1}
+                fill="url(#colorVendas)"
               />
             </AreaChart>
           </ResponsiveContainer>
@@ -2601,9 +2651,13 @@ const ClientHome = ({ setPage, addToCart }) => (
     <div
       style={{
         padding: "56px 48px",
-        background: "linear-gradient(135deg, #8c52ff 0%, #00bf63 60%)",
+        background: "linear-gradient(135deg, #8c52ff 0%, #00bf63 50%, #8c52ff 100%)",
+        backgroundSize: "400% 400%",
+        backgroundRepeat: "no-repeat",
+        animation: "gradientMove 12s ease infinite",
         position: "relative",
         overflow: "hidden",
+        transform: "translateZ(0)",
       }}
     >
       <div
@@ -2672,7 +2726,7 @@ const ClientHome = ({ setPage, addToCart }) => (
         </p>
         <div style={{ display: "flex", gap: 12 }}>
           <button
-            className="btn-p"
+            className="btn-p btn-shine"
             style={{ padding: "12px 24px", fontSize: 15 }}
             onClick={() => setPage("catalogo")}
           >
@@ -3094,9 +3148,14 @@ const Carrinho = ({ cart, setCart, setPage }) => {
                     alignItems: "center",
                     justifyContent: "center",
                     flexShrink: 0,
+                    overflow: "hidden",
                   }}
                 >
-                  <Package size={24} style={{ color: `${T.cyan}55` }} />
+                  {item.image ? (
+                    <img src={item.image} alt={item.name} style={{ width: "80%", height: "80%", objectFit: "contain" }} />
+                  ) : (
+                    <Package size={24} style={{ color: `${T.cyan}55` }} />
+                  )}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontWeight: 600, fontSize: 14 }}>
