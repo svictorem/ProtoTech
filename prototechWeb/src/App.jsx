@@ -383,8 +383,9 @@ const GLOBAL_CSS = `
   .btn-g:hover{background:rgba(255,255,255,0.12);border-color:rgba(255,255,255,0.12)}
 
   /* Ilustração do hero (SVG desenhado e animado) */
-  .hero-illustration{display:block;max-width:48vw;width:420px;filter:drop-shadow(0 8px 30px rgba(0,0,0,0.35));opacity:0.98;pointer-events:none;transform-origin:center;animation:float 6s ease-in-out infinite}
-  @keyframes float{0%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-8px) rotate(1deg)}100%{transform:translateY(0) rotate(-1deg)}}
+  .hero-illustration{display:block;max-width:56vw;width:520px;filter:drop-shadow(0 10px 38px rgba(0,0,0,0.35));opacity:0.98;pointer-events:none;transform-origin:center;animation:float 6s ease-in-out infinite}
+  .hero-illustration:hover{filter:drop-shadow(0 16px 65px rgba(0,0,0,0.45));}
+  @keyframes float{0%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-10px) rotate(1deg)}100%{transform:translateY(0) rotate(-1deg)}}
   .btn-d{background:rgba(255,71,87,0.1);color:#ff4757;border:1px solid rgba(255,71,87,0.2);padding:6px 10px;border-radius:6px;cursor:pointer;transition:all .15s;display:flex;align-items:center}
   .btn-d:hover{background:rgba(255,71,87,0.2)}
   
@@ -2508,7 +2509,7 @@ const renderHeroIllustration = () => {
     <div
       style={{
         position: "absolute",
-        right: 28,
+        right: 16,
         top: "50%",
         transform: "translateY(-50%)",
         opacity: 1,
@@ -2517,58 +2518,78 @@ const renderHeroIllustration = () => {
     >
       <svg
         className="hero-illustration"
-        viewBox="0 0 420 240"
+        viewBox="0 0 520 340"
         xmlns="http://www.w3.org/2000/svg"
         aria-hidden="true"
       >
         <defs>
-          <linearGradient id="bgg2" x1="0" x2="1">
-            <stop offset="0%" stopColor="#7c3aed" />
-            <stop offset="100%" stopColor="#00bf63" />
+          <radialGradient id="logoGlow" cx="50%" cy="45%" r="70%">
+            <stop offset="0%" stopColor="#37f2eb" stopOpacity="0.32" />
+            <stop offset="100%" stopColor="#37f2eb" stopOpacity="0" />
+          </radialGradient>
+          <linearGradient id="gearFill" x1="0" x2="1" y1="0" y2="1">
+            <stop offset="0%" stopColor="#26c7cc" />
+            <stop offset="100%" stopColor="#0b1b2c" />
           </linearGradient>
         </defs>
-        <rect
-          x="10"
-          y="30"
-          rx="18"
-          ry="18"
-          width="400"
-          height="180"
-          fill="url(#bgg2)"
-          opacity="0.96"
-        />
-        <g fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="2">
-          <path
-            d="M40 60 L120 60 L120 90 L300 90 L300 130 L380 130"
-            strokeOpacity="0.18"
+        <rect width="520" height="340" fill="transparent" />
+        <circle cx="260" cy="170" r="110" fill="url(#logoGlow)" />
+        <g transform="translate(260 170)">
+          <circle
+            cx="0"
+            cy="0"
+            r="96"
+            fill="none"
+            stroke="#2bf2e3"
+            strokeWidth="4"
+            opacity="0.16"
           />
-          <path d="M60 160 L140 160 L140 130 L320 130" strokeOpacity="0.12" />
-        </g>
-        <g fill="rgba(255,255,255,0.92)">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <rect
-              key={i}
-              x={18 + i * 22}
-              y={208}
-              width={12}
-              height={6}
-              rx={2}
+          <g>
+            <path
+              d="M-90,-14 h18 l8,-24 h24 l8,24 h18 l12,12 v24 l-12,12 h-18 l-8,24 h-24 l-8,-24 h-18 l-12,-12 v-24z"
+              fill="url(#gearFill)"
+              stroke="#18a7b2"
+              strokeWidth="2"
             />
-          ))}
-        </g>
-        <rect
-          x="160"
-          y="84"
-          width="100"
-          height="70"
-          rx="8"
-          fill="#070914"
-          opacity="0.92"
-        />
-        <rect x="170" y="94" width="80" height="50" rx="6" fill="#1b2233" />
-        <g fill="#8c52ff" opacity="0.95">
-          <circle cx="210" cy="119" r="6" />
-          <rect x="230" y="104" width="8" height="30" rx="2" />
+            <circle cx="0" cy="0" r="58" fill="#070914" opacity="0.96" />
+            <circle cx="0" cy="0" r="50" fill="#0f1724" />
+            <rect
+              x="-28"
+              y="-28"
+              width="56"
+              height="56"
+              rx="12"
+              fill="#37f2eb"
+              opacity="0.9"
+            />
+            <text
+              x="0"
+              y="10"
+              textAnchor="middle"
+              fontSize="28"
+              fontWeight="700"
+              fill="#070914"
+              fontFamily="Inter, sans-serif"
+            >
+              PR
+            </text>
+          </g>
+          <g stroke="#37f2eb" strokeWidth="3" fill="none" strokeLinecap="round">
+            <path d="M-58,-40 H-84" />
+            <path d="M58,-40 H84" />
+            <path d="M-58,40 H-84" />
+            <path d="M58,40 H84" />
+            <path d="M-20,-56 V-84" />
+            <path d="M20,-56 V-84" />
+            <path d="M-20,56 V84" />
+            <path d="M20,56 V84" />
+          </g>
+          <g fill="#37f2eb">
+            <circle cx="-84" cy="-40" r="5" />
+            <circle cx="84" cy="-40" r="5" />
+            <circle cx="-84" cy="40" r="5" />
+            <circle cx="84" cy="40" r="5" />
+          </g>
         </g>
       </svg>
     </div>
