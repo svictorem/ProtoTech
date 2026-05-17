@@ -1,4 +1,4 @@
-/* RESET E CONFIGURAÇÕES GERAIS */
+/* RESET E CONFIGURAï¿½ï¿½ES GERAIS */
 * {
   margin: 0;
   padding: 0;
@@ -115,7 +115,7 @@ body {
    2. HERO SECTION & GRADIENT BACKGROUND
    ========================================== */
 .hero-section {
-  position: relative; /* Mantém as bolhas trancadas aqui dentro */
+  position: relative; /* Mantï¿½m as bolhas trancadas aqui dentro */
   width: 100%;
   min-height: 460px;
   /* O gradiente exato da sua foto: Roxo passando para o Verde Floresta */
@@ -129,7 +129,7 @@ body {
 
 .hero-content {
   position: relative;
-  z-index: 2; /* Joga os textos e botões na FRENTE das bolhas */
+  z-index: 2; /* Joga os textos e botï¿½es na FRENTE das bolhas */
   width: 100%;
   max-width: 1200px;
   display: flex;
@@ -138,7 +138,7 @@ body {
   gap: 40px;
 }
 
-/* ESQUERDA: CONTEÚDO */
+/* ESQUERDA: CONTEï¿½DO */
 .hero-left {
   max-width: 580px;
 }
@@ -233,6 +233,7 @@ body {
   justify-content: center;
   box-shadow: 0 0 30px rgba(16, 185, 129, 0.4);
   z-index: 2;
+  animation: pulsarGlowVerde 2.8s infinite ease-in-out;
 }
 
 .chip-core h2 {
@@ -255,8 +256,26 @@ body {
   100% { transform: rotate(360deg); }
 }
 
+/* ==========================================================================
+   ANIMAÃ‡ÃƒO DE PULSAÃ‡ÃƒO NEON (GLOW) PARA O CHIP PR - PROTOTECH
+   ========================================================================== */
+@keyframes pulsarGlowVerde {
+  0% {
+    box-shadow: 0 0 25px rgba(0, 200, 83, 0.5), inset 0 0 12px rgba(0, 200, 83, 0.3);
+    filter: brightness(1);
+  }
+  50% {
+    box-shadow: 0 0 50px rgba(0, 200, 83, 1), 0 0 25px rgba(0, 200, 83, 0.5), inset 0 0 20px rgba(0, 200, 83, 0.5);
+    filter: brightness(1.3);
+  }
+  100% {
+    box-shadow: 0 0 25px rgba(0, 200, 83, 0.5), inset 0 0 12px rgba(0, 200, 83, 0.3);
+    filter: brightness(1);
+  }
+}
+
 /* ==========================================
-   ?? SISTEMA DE PARTÍCULAS FLUTUANTES (O EFEITO)
+   ?? SISTEMA DE PARTï¿½CULAS FLUTUANTES (O EFEITO)
    ========================================== */
 .particulas-background {
   position: absolute;
@@ -264,11 +283,11 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 1; /* Fica no meio: na frente do fundo, atrás das letras */
-  pointer-events: none; /* Deixa os botões clicáveis */
+  z-index: 1; /* Fica no meio: na frente do fundo, atrï¿½s das letras */
+  pointer-events: none; /* Deixa os botï¿½es clicï¿½veis */
 }
 
-/* Configurações básicas de cada bolha */
+/* Configuraï¿½ï¿½es bï¿½sicas de cada bolha */
 .bolha, .bolha-verde {
   position: absolute;
   bottom: -60px;
@@ -276,7 +295,7 @@ body {
   animation: subirParticula infinite linear;
 }
 
-/* Bolhas Brancas Translúcidas */
+/* Bolhas Brancas Translï¿½cidas */
 .bolha {
   background: rgba(255, 255, 255, 0.12);
 }
@@ -287,7 +306,7 @@ body {
   box-shadow: 0 0 8px rgba(52, 211, 153, 0.2);
 }
 
-/* Distribuição aleatória de tamanho, posição horizontal (left) e velocidade */
+/* Distribuiï¿½ï¿½o aleatï¿½ria de tamanho, posiï¿½ï¿½o horizontal (left) e velocidade */
 .particulas-background .bolha:nth-child(1) { width: 30px; height: 30px; left: 15%; animation-duration: 8s; }
 .particulas-background .bolha:nth-child(2) { width: 15px; height: 15px; left: 45%; animation-duration: 6s; animation-delay: 1s; }
 .particulas-background .bolha-verde:nth-child(3) { width: 25px; height: 25px; left: 55%; animation-duration: 9s; animation-delay: 3s; }
@@ -297,7 +316,7 @@ body {
 .particulas-background .bolha-verde:nth-child(7) { width: 18px; height: 18px; left: 60%; animation-duration: 6s; animation-delay: 5s; }
 .particulas-background .bolha:nth-child(8) { width: 22px; height: 22px; left: 94%; animation-duration: 8s; animation-delay: 1.5s; }
 
-/* A ANIMAÇÃO DA MÁGICA */
+/* A ANIMAï¿½ï¿½O DA Mï¿½GICA */
 @keyframes subirParticula {
   0% {
     transform: translateY(0) scale(0.8);
@@ -316,7 +335,7 @@ body {
 }
 
 /* ==========================================
-   3. FEATURES BAR (RODAPÉ DO HERO)
+   3. FEATURES BAR (RODAPï¿½ DO HERO)
    ========================================== */
 .features-bar {
   display: flex;
