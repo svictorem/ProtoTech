@@ -6,8 +6,8 @@
 }
 
 body {
-  background-color: #06080c;
-  color: #ffffff;
+  background-color: var(--color-bg, #06080c);
+  color: var(--color-text, #ffffff);
   font-family:
     "Inter",
     system-ui,
