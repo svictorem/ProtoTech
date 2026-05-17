@@ -389,10 +389,10 @@ const GLOBAL_CSS = `
   .btn-d{background:rgba(255,71,87,0.1);color:#ff4757;border:1px solid rgba(255,71,87,0.2);padding:6px 10px;border-radius:6px;cursor:pointer;transition:all .15s;display:flex;align-items:center}
   .btn-d:hover{background:rgba(255,71,87,0.2)}
   
-  .badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600}
-  .b-ok{background:rgba(0,191,99,0.15);color:#00bf63}
-  .b-warn{background:rgba(255,184,0,0.15);color:#ffb800}
-  .b-err{background:rgba(255,71,87,0.15);color:#ff4757}
+  .badge{display:inline-flex;align-items:center;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:800;letter-spacing:0.4px;box-shadow:0 2px 6px rgba(0,0,0,0.3)}
+  .b-ok{background:rgba(0,191,99,0.5);color:#ffffff;border:1.5px solid #00bf63;text-shadow:0 1px 3px rgba(0,0,0,0.4)}
+  .b-warn{background:rgba(255,184,0,0.4);color:#ffffff;border:1.5px solid #ffb800;text-shadow:0 1px 3px rgba(0,0,0,0.4)}
+  .b-err{background:rgba(255,71,87,0.5);color:#ffffff;border:1.5px solid #ff4757;text-shadow:0 1px 3px rgba(0,0,0,0.4)}
   .b-info{background:rgba(140,82,255,0.12);color:#8c52ff}
   .b-dim{background:rgba(90,112,144,0.2);color:#8a9bb5}
   
@@ -2752,18 +2752,21 @@ const ClientHome = ({ setPage, addToCart }) => (
             <div
               style={{
                 position: "relative",
-                height: 150,
+                height: 180,
                 overflow: "hidden",
-                background: `linear-gradient(135deg, ${T.surface2}, ${T.surface3})`,
+                background: "#f8f9fa",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
               <img
                 src={p.image}
                 alt={p.name}
                 style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
+                  width: "85%",
+                  height: "85%",
+                  objectFit: "contain",
                   display: "block",
                 }}
               />
@@ -2777,7 +2780,17 @@ const ClientHome = ({ setPage, addToCart }) => (
               />
               <span
                 className={`badge ${p.stock > 0 ? "b-ok" : "b-err"}`}
-                style={{ position: "absolute", top: 10, right: 10, zIndex: 2 }}
+                style={{
+                  position: "absolute",
+                  top: 12,
+                  right: 12,
+                  zIndex: 2,
+                  fontSize: "11px",
+                  padding: "4px 10px",
+                  fontWeight: "800",
+                  letterSpacing: "0.4px",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
+                }}
               >
                 {p.stock > 0 ? "Em estoque" : "Esgotado"}
               </span>
@@ -2900,18 +2913,21 @@ const Catalogo = ({ addToCart }) => {
             <div
               style={{
                 position: "relative",
-                height: 130,
+                height: 160,
                 overflow: "hidden",
-                background: `linear-gradient(135deg, ${T.surface2}, ${T.surface3})`,
+                background: "#f8f9fa",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
               <img
                 src={p.image}
                 alt={p.name}
                 style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
+                  width: "85%",
+                  height: "85%",
+                  objectFit: "contain",
                   display: "block",
                 }}
               />
