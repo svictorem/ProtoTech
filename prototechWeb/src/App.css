@@ -8,7 +8,11 @@
 body {
   background-color: #06080c;
   color: #ffffff;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    sans-serif;
 }
 
 .app-container {
@@ -65,7 +69,8 @@ body {
   transition: color 0.2s;
 }
 
-.nav-link:hover, .nav-link.active {
+.nav-link:hover,
+.nav-link.active {
   color: #8b5cf6;
 }
 
@@ -187,7 +192,9 @@ body {
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 .btn-primary:hover {
@@ -253,7 +260,9 @@ body {
 }
 
 @keyframes girarRadar {
-  100% { transform: rotate(360deg); }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* ==========================================================================
@@ -261,15 +270,22 @@ body {
    ========================================================================== */
 @keyframes pulsarGlowVerde {
   0% {
-    box-shadow: 0 0 25px rgba(0, 200, 83, 0.5), inset 0 0 12px rgba(0, 200, 83, 0.3);
+    box-shadow:
+      0 0 25px rgba(0, 200, 83, 0.5),
+      inset 0 0 12px rgba(0, 200, 83, 0.3);
     filter: brightness(1);
   }
   50% {
-    box-shadow: 0 0 50px rgba(0, 200, 83, 1), 0 0 25px rgba(0, 200, 83, 0.5), inset 0 0 20px rgba(0, 200, 83, 0.5);
+    box-shadow:
+      0 0 50px rgba(0, 200, 83, 1),
+      0 0 25px rgba(0, 200, 83, 0.5),
+      inset 0 0 20px rgba(0, 200, 83, 0.5);
     filter: brightness(1.3);
   }
   100% {
-    box-shadow: 0 0 25px rgba(0, 200, 83, 0.5), inset 0 0 12px rgba(0, 200, 83, 0.3);
+    box-shadow:
+      0 0 25px rgba(0, 200, 83, 0.5),
+      inset 0 0 12px rgba(0, 200, 83, 0.3);
     filter: brightness(1);
   }
 }
@@ -288,7 +304,8 @@ body {
 }
 
 /* Configura��es b�sicas de cada bolha */
-.bolha, .bolha-verde {
+.bolha,
+.bolha-verde {
   position: absolute;
   bottom: -60px;
   border-radius: 50%;
@@ -307,14 +324,61 @@ body {
 }
 
 /* Distribui��o aleat�ria de tamanho, posi��o horizontal (left) e velocidade */
-.particulas-background .bolha:nth-child(1) { width: 30px; height: 30px; left: 15%; animation-duration: 8s; }
-.particulas-background .bolha:nth-child(2) { width: 15px; height: 15px; left: 45%; animation-duration: 6s; animation-delay: 1s; }
-.particulas-background .bolha-verde:nth-child(3) { width: 25px; height: 25px; left: 55%; animation-duration: 9s; animation-delay: 3s; }
-.particulas-background .bolha:nth-child(4) { width: 40px; height: 40px; left: 68%; animation-duration: 11s; animation-delay: 0.5s; }
-.particulas-background .bolha-verde:nth-child(5) { width: 20px; height: 20px; left: 78%; animation-duration: 7s; animation-delay: 4s; }
-.particulas-background .bolha:nth-child(6) { width: 35px; height: 35px; left: 88%; animation-duration: 10s; animation-delay: 2s; }
-.particulas-background .bolha-verde:nth-child(7) { width: 18px; height: 18px; left: 60%; animation-duration: 6s; animation-delay: 5s; }
-.particulas-background .bolha:nth-child(8) { width: 22px; height: 22px; left: 94%; animation-duration: 8s; animation-delay: 1.5s; }
+.particulas-background .bolha:nth-child(1) {
+  width: 30px;
+  height: 30px;
+  left: 15%;
+  animation-duration: 8s;
+}
+.particulas-background .bolha:nth-child(2) {
+  width: 15px;
+  height: 15px;
+  left: 45%;
+  animation-duration: 6s;
+  animation-delay: 1s;
+}
+.particulas-background .bolha-verde:nth-child(3) {
+  width: 25px;
+  height: 25px;
+  left: 55%;
+  animation-duration: 9s;
+  animation-delay: 3s;
+}
+.particulas-background .bolha:nth-child(4) {
+  width: 40px;
+  height: 40px;
+  left: 68%;
+  animation-duration: 11s;
+  animation-delay: 0.5s;
+}
+.particulas-background .bolha-verde:nth-child(5) {
+  width: 20px;
+  height: 20px;
+  left: 78%;
+  animation-duration: 7s;
+  animation-delay: 4s;
+}
+.particulas-background .bolha:nth-child(6) {
+  width: 35px;
+  height: 35px;
+  left: 88%;
+  animation-duration: 10s;
+  animation-delay: 2s;
+}
+.particulas-background .bolha-verde:nth-child(7) {
+  width: 18px;
+  height: 18px;
+  left: 60%;
+  animation-duration: 6s;
+  animation-delay: 5s;
+}
+.particulas-background .bolha:nth-child(8) {
+  width: 22px;
+  height: 22px;
+  left: 94%;
+  animation-duration: 8s;
+  animation-delay: 1.5s;
+}
 
 /* A ANIMA��O DA M�GICA */
 @keyframes subirParticula {
