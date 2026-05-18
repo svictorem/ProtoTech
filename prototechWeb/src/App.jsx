@@ -1,14 +1,5 @@
 import { useState, useEffect } from "react";
-import arduinoUnoImage from "./assets/Arduino UNO R3.png";
-import esp32Image from "./assets/ESP32 DevKit V1.png";
-import sensorHcsr04Image from "./assets/Sensor Ultrassônico HC-SR04.png";
-import moduloReleImage from "./assets/Módulo Relé 4 Canais.png";
-import raspberryPiImage from "./assets/Raspberry Pi 4 Model B 4GB.png";
-import servoSg90Image from "./assets/Servo Motor SG90.png";
-import sensorDht22Image from "./assets/Sensor DHT22 TempUmidade.png";
-import oledImage from "./assets/Display OLED 0.96 I2C.png";
-import protoboardImage from "./assets/Protoboard 830 Pontos.png";
-import jumperKitImage from "./assets/Kit Jumpers Macho-Fêmea 40pcs.png";
+
 import {
   AreaChart,
   Area,
@@ -54,7 +45,7 @@ import {
 const PRODUCTS = [
   {
     id: 1,
-    image: arduinoUnoImage,
+    image: null,
     name: "Arduino UNO R3",
     category: "Microcontroladores",
     price: 89.9,
@@ -66,7 +57,7 @@ const PRODUCTS = [
   },
   {
     id: 2,
-    image: esp32Image,
+    image: null,
     name: "ESP32 DevKit V1",
     category: "IoT/WiFi",
     price: 49.9,
@@ -78,7 +69,7 @@ const PRODUCTS = [
   },
   {
     id: 3,
-    image: sensorHcsr04Image,
+    image: null,
     name: "Sensor Ultrassônico HC-SR04",
     category: "Sensores",
     price: 12.9,
@@ -90,7 +81,7 @@ const PRODUCTS = [
   },
   {
     id: 4,
-    image: moduloReleImage,
+    image: null,
     name: "Módulo Relé 4 Canais",
     category: "Automação",
     price: 24.9,
@@ -102,7 +93,7 @@ const PRODUCTS = [
   },
   {
     id: 5,
-    image: raspberryPiImage,
+    image: null,
     name: "Raspberry Pi 4 Model B 4GB",
     category: "SBC",
     price: 459.9,
@@ -114,7 +105,7 @@ const PRODUCTS = [
   },
   {
     id: 6,
-    image: servoSg90Image,
+    image: null,
     name: "Servo Motor SG90",
     category: "Robótica",
     price: 18.9,
@@ -126,7 +117,7 @@ const PRODUCTS = [
   },
   {
     id: 7,
-    image: sensorDht22Image,
+    image: null,
     name: "Sensor DHT22 Temp/Umidade",
     category: "Sensores",
     price: 19.9,
@@ -138,7 +129,7 @@ const PRODUCTS = [
   },
   {
     id: 8,
-    image: oledImage,
+    image: null,
     name: 'Display OLED 0.96" I2C',
     category: "Displays",
     price: 29.9,
@@ -150,7 +141,7 @@ const PRODUCTS = [
   },
   {
     id: 9,
-    image: protoboardImage,
+    image: null,
     name: "Protoboard 830 Pontos",
     category: "Ferramentas",
     price: 22.9,
@@ -162,7 +153,7 @@ const PRODUCTS = [
   },
   {
     id: 10,
-    image: jumperKitImage,
+    image: null,
     name: "Kit Jumpers Macho-Fêmea 40pcs",
     category: "Cabos",
     price: 14.9,
@@ -483,9 +474,30 @@ const GLOBAL_CSS = `
     left: -100%;
     width: 50%;
     height: 100%;
-    background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
     transform: skewX(-20deg);
     animation: shine 4s infinite;
+  }
+  
+  @keyframes chipPulse {
+    0% {
+      filter: drop-shadow(0 0 2px rgba(55, 242, 235, 0.45));
+      opacity: 0.85;
+      transform: scale(0.98);
+    }
+    50% {
+      filter: drop-shadow(0 0 15px rgba(55, 242, 235, 0.95));
+      opacity: 1;
+      transform: scale(1.02);
+    }
+    100% {
+      filter: drop-shadow(0 0 2px rgba(55, 242, 235, 0.45));
+      opacity: 0.85;
+      transform: scale(0.98);
+    }
+  }
+  .chip-core {
+    animation: chipPulse 2.2s ease-in-out infinite;
+    transform-origin: center;
   }
 `;
 
@@ -764,7 +776,7 @@ const Login = ({ onLogin }) => {
     <div
       style={{
         minHeight: "100vh",
-        background: "#070914",
+        background: "linear-gradient(135deg, #cdffd8 0%, #94b9ff 100%)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -791,8 +803,16 @@ const Login = ({ onLogin }) => {
       />
 
       <div
-        className="card fi"
-        style={{ width: 400, padding: "40px 36px", position: "relative" }}
+        className="fi"
+        style={{
+          width: 400,
+          padding: "40px 36px",
+          position: "relative",
+          background: "#f8fafc",
+          border: "1px solid rgba(0, 0, 0, 0.06)",
+          borderRadius: 16,
+          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.22), 0 0 1px 1px rgba(0, 0, 0, 0.05)"
+        }}
       >
         <div style={{ textAlign: "center", marginBottom: 32 }}>
           <div
@@ -806,25 +826,26 @@ const Login = ({ onLogin }) => {
           >
             <div
               style={{
-                background: T.cyanBg,
-                border: `1px solid ${T.border}`,
+                background: "rgba(124, 58, 237, 0.08)",
+                border: "1px solid rgba(124, 58, 237, 0.15)",
                 borderRadius: 10,
                 padding: 8,
               }}
             >
-              <Cpu size={24} style={{ color: T.cyan }} />
+              <Cpu size={24} style={{ color: "#7c3aed" }} />
             </div>
             <span
               style={{
                 fontSize: 26,
                 fontWeight: 700,
                 letterSpacing: "-0.03em",
+                color: "#0f172a",
               }}
             >
-              Proto<span style={{ color: T.cyan }}>Tech</span>
+              Proto<span style={{ color: "#7c3aed" }}>Tech</span>
             </span>
           </div>
-          <p style={{ color: T.muted, fontSize: 13 }}>
+          <p style={{ color: "#64748b", fontSize: 13 }}>
             Sistema de Gestão Empresarial
           </p>
         </div>
@@ -832,7 +853,7 @@ const Login = ({ onLogin }) => {
         <div
           style={{
             display: "flex",
-            background: T.surface2,
+            background: "#e2e8f0",
             borderRadius: 8,
             padding: 3,
             marginBottom: 24,
@@ -850,8 +871,8 @@ const Login = ({ onLogin }) => {
                 padding: "8px",
                 borderRadius: 6,
                 border: "none",
-                background: mode === m ? T.cyan : "transparent",
-                color: mode === m ? "#070914" : T.muted,
+                background: mode === m ? "#7c3aed" : "transparent",
+                color: mode === m ? "#ffffff" : "#475569",
                 fontWeight: 600,
                 fontSize: 13,
                 cursor: "pointer",
@@ -868,7 +889,7 @@ const Login = ({ onLogin }) => {
             <label
               style={{
                 fontSize: 12,
-                color: T.muted2,
+                color: "#475569",
                 marginBottom: 5,
                 display: "block",
                 fontWeight: 500,
@@ -877,7 +898,17 @@ const Login = ({ onLogin }) => {
               E-mail
             </label>
             <input
-              className="inp"
+              style={{
+                background: "#ffffff",
+                border: "1px solid #cbd5e1",
+                borderRadius: 8,
+                padding: "8px 12px",
+                color: "#0f172a",
+                fontSize: 14,
+                width: "100%",
+                transition: "border-color .15s",
+                outline: "none",
+              }}
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
@@ -893,7 +924,7 @@ const Login = ({ onLogin }) => {
             <label
               style={{
                 fontSize: 12,
-                color: T.muted2,
+                color: "#475569",
                 marginBottom: 5,
                 display: "block",
                 fontWeight: 500,
@@ -902,7 +933,17 @@ const Login = ({ onLogin }) => {
               Senha
             </label>
             <input
-              className="inp"
+              style={{
+                background: "#ffffff",
+                border: "1px solid #cbd5e1",
+                borderRadius: 8,
+                padding: "8px 12px",
+                color: "#0f172a",
+                fontSize: 14,
+                width: "100%",
+                transition: "border-color .15s",
+                outline: "none",
+              }}
               value={pass}
               onChange={(e) => {
                 setPass(e.target.value);
@@ -917,7 +958,7 @@ const Login = ({ onLogin }) => {
             <p
               style={{
                 fontSize: 11,
-                color: T.muted,
+                color: "#64748b",
                 textAlign: "center",
                 lineHeight: 1.5,
               }}
@@ -925,7 +966,7 @@ const Login = ({ onLogin }) => {
               Demo:{" "}
               <span
                 style={{
-                  color: T.cyan,
+                  color: "#7c3aed",
                   fontFamily: "JetBrains Mono, monospace",
                 }}
               >
@@ -934,7 +975,7 @@ const Login = ({ onLogin }) => {
               /{" "}
               <span
                 style={{
-                  color: T.cyan,
+                  color: "#7c3aed",
                   fontFamily: "JetBrains Mono, monospace",
                 }}
               >
@@ -943,18 +984,28 @@ const Login = ({ onLogin }) => {
             </p>
           )}
           {err && (
-            <p style={{ fontSize: 12, color: T.danger, textAlign: "center" }}>
+            <p style={{ fontSize: 12, color: "#ef4444", textAlign: "center" }}>
               {err}
             </p>
           )}
           <button
-            className="btn-p"
             onClick={go}
             style={{
               width: "100%",
               justifyContent: "center",
               padding: "11px",
               marginTop: 2,
+              background: "linear-gradient(90deg, #7c3aed, #4f46e5)",
+              color: "#ffffff",
+              border: "none",
+              borderRadius: 8,
+              fontWeight: 600,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 8,
+              boxShadow: "0 4px 12px rgba(124, 58, 237, 0.25)"
             }}
           >
             {mode === "admin" ? <Shield size={14} /> : <User size={14} />}
@@ -963,13 +1014,13 @@ const Login = ({ onLogin }) => {
         </div>
 
         <div style={{ marginTop: 20, textAlign: "center" }}>
-          <span style={{ fontSize: 12, color: T.muted }}>Sem conta? </span>
+          <span style={{ fontSize: 12, color: "#64748b" }}>Sem conta? </span>
           <span
             style={{
               fontSize: 12,
-              color: T.cyan,
+              color: "#7c3aed",
               cursor: "pointer",
-              fontWeight: 500,
+              fontWeight: 600,
             }}
           >
             Cadastre-se grátis
@@ -981,9 +1032,7 @@ const Login = ({ onLogin }) => {
 };
 
 // ─── SIDEBAR ──────────────────────────────────────────────────────
-const ALERTS_COUNT = PRODUCTS.filter((p) => p.stock <= p.minStock).length;
-
-const Sidebar = ({ page, setPage, onLogout, collapsed, toggle }) => {
+const Sidebar = ({ page, setPage, onLogout, collapsed, toggle, alertsCount = 0 }) => {
   const NAV = [
     { id: "dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { id: "produtos", icon: Package, label: "Produtos" },
@@ -991,7 +1040,7 @@ const Sidebar = ({ page, setPage, onLogout, collapsed, toggle }) => {
     { id: "vendas", icon: ShoppingCart, label: "Vendas" },
     { id: "clientes", icon: Users, label: "Clientes" },
     { id: "funcs", icon: UserCog, label: "Funcionários" },
-    { id: "alertas", icon: Bell, label: "Alertas", badge: ALERTS_COUNT },
+    { id: "alertas", icon: Bell, label: "Alertas", badge: alertsCount },
   ];
   return (
     <div
@@ -1137,8 +1186,48 @@ const TopBar = ({ page, theme, toggleTheme }) => (
 );
 
 // ─── DASHBOARD ────────────────────────────────────────────────────
-const Dashboard = () => {
-  const revenue = SALES_MONTHLY.reduce((a, s) => a + s.vendas, 0);
+const Dashboard = ({ products = [], sales = [], topProducts = [] }) => {
+  const alertsCount = products.filter((p) => p.stock <= p.minStock).length;
+
+  const hasSales = sales.length > 0;
+  const revenue = hasSales
+    ? sales.reduce((a, s) => a + parseFloat(s.valor_total || 0), 0)
+    : SALES_MONTHLY.reduce((a, s) => a + s.vendas, 0);
+
+  const totalOrders = hasSales ? sales.length : 213;
+
+  // Gerar dados do gráfico mensal a partir das vendas reais do banco
+  const getMonthlySales = () => {
+    const months = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+    const grouped = {};
+
+    // Inicializar os últimos 6 meses com faturamento 0 para manter o gráfico bonito
+    const now = new Date();
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const mLabel = months[d.getMonth()];
+      grouped[mLabel] = 0;
+    }
+
+    sales.forEach(s => {
+      if (!s.data_emissao) return;
+      const d = new Date(s.data_emissao);
+      const mLabel = months[d.getMonth()];
+      if (grouped[mLabel] !== undefined) {
+        grouped[mLabel] += parseFloat(s.valor_total || 0);
+      }
+    });
+
+    return Object.keys(grouped).map(month => ({
+      month,
+      vendas: grouped[month]
+    }));
+  };
+
+  const salesMonthlyData = hasSales ? getMonthlySales() : SALES_MONTHLY;
+  const topProductsData = topProducts.length > 0 ? topProducts : TOP_PRODUCTS;
+  const recentSalesData = hasSales ? sales.slice(0, 5) : RECENT_SALES;
+
   return (
     <div
       className="fi"
@@ -1162,27 +1251,27 @@ const Dashboard = () => {
           icon={DollarSign}
           label="Faturamento Mensal"
           value={fmt(revenue)}
-          sub="↑ 12% vs mês anterior"
+          sub={hasSales ? "Faturamento real do banco de dados" : "↑ 12% vs mês anterior"}
           color={T.success}
         />
         <StatCard
           icon={ShoppingCart}
           label="Pedidos no Mês"
-          value="213"
-          sub="38 concluídos hoje"
+          value={totalOrders}
+          sub={hasSales ? "Pedidos reais cadastrados" : "38 concluídos hoje"}
           color={T.cyan}
         />
         <StatCard
           icon={Package}
           label="Produtos Ativos"
-          value={PRODUCTS.length}
-          sub={`${PRODUCTS.filter((p) => p.stock > 0).length} com estoque`}
+          value={products.length}
+          sub={`${products.filter((p) => p.stock > 0).length} com estoque`}
           color={T.cyan}
         />
         <StatCard
           icon={AlertTriangle}
           label="Alertas Críticos"
-          value={ALERTS_COUNT}
+          value={alertsCount}
           sub="Estoque abaixo do mínimo"
           color={T.danger}
         />
@@ -1201,10 +1290,10 @@ const Dashboard = () => {
             Faturamento Mensal
           </p>
           <p style={{ fontSize: 12, color: T.muted, marginBottom: 16 }}>
-            Jan – Jun 2025
+            Jan – Dez {new Date().getFullYear()}
           </p>
           <ResponsiveContainer width="100%" height={190}>
-            <AreaChart data={SALES_MONTHLY}>
+            <AreaChart data={salesMonthlyData}>
               <defs>
                 <linearGradient id="colorVendas" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#8c52ff" stopOpacity={0.8} />
@@ -1257,7 +1346,7 @@ const Dashboard = () => {
             Por quantidade
           </p>
           <ResponsiveContainer width="100%" height={190}>
-            <BarChart data={TOP_PRODUCTS} layout="vertical">
+            <BarChart data={topProductsData} layout="vertical">
               <XAxis
                 type="number"
                 tick={{ fill: T.muted, fontSize: 10 }}
@@ -1307,8 +1396,8 @@ const Dashboard = () => {
             </tr>
           </thead>
           <tbody>
-            {RECENT_SALES.map((s) => (
-              <tr key={s.id} className="tr">
+            {recentSalesData.map((s) => (
+              <tr key={s.id_venda || s.id} className="tr">
                 <TD
                   style={{
                     fontSize: 12,
@@ -1316,11 +1405,11 @@ const Dashboard = () => {
                     color: T.muted2,
                   }}
                 >
-                  {s.id}
+                  {s.id_venda ? `VD-${s.id_venda}` : s.id}
                 </TD>
-                <TD style={{ fontSize: 14, fontWeight: 500 }}>{s.client}</TD>
+                <TD style={{ fontSize: 14, fontWeight: 500 }}>{s.nome_cliente || s.client}</TD>
                 <TD style={{ fontSize: 13, color: T.muted2 }}>
-                  {s.items} itens
+                  {s.total_itens !== undefined ? `${s.total_itens} itens` : `${s.items} itens`}
                 </TD>
                 <TD
                   style={{
@@ -1329,11 +1418,13 @@ const Dashboard = () => {
                     fontWeight: 600,
                   }}
                 >
-                  {fmt(s.total)}
+                  {fmt(parseFloat(s.valor_total || s.total))}
                 </TD>
-                <TD style={{ fontSize: 13, color: T.muted2 }}>{s.date}</TD>
+                <TD style={{ fontSize: 13, color: T.muted2 }}>
+                  {s.data_emissao ? new Date(s.data_emissao).toLocaleDateString("pt-BR") : s.date}
+                </TD>
                 <TD>
-                  <Badge status={s.status} />
+                  <Badge status={s.status_venda ? (s.status_venda === "CONCLUIDA" ? "Concluído" : s.status_venda) : s.status} />
                 </TD>
               </tr>
             ))}
@@ -1345,17 +1436,90 @@ const Dashboard = () => {
 };
 
 // ─── PRODUTOS ─────────────────────────────────────────────────────
-const Produtos = () => {
+const API_URL = "http://localhost:3000/api";
+
+const Produtos = ({ products = [], loadProducts }) => {
   const [search, setSearch] = useState("");
   const [modal, setModal] = useState(false);
   const [edit, setEdit] = useState(null);
-  const [list, setList] = useState(PRODUCTS);
+  const [suppliers, setSuppliers] = useState([]);
 
-  const filtered = list.filter(
+  useEffect(() => {
+    // Carrega fornecedores reais do banco para popular o select do formulário
+    fetch(`${API_URL}/fornecedores`)
+      .then((res) => res.json())
+      .then((data) => setSuppliers(data))
+      .catch((err) => console.error("Erro ao carregar fornecedores:", err));
+  }, []);
+
+  const filtered = products.filter(
     (p) =>
-      p.name.toLowerCase().includes(search.toLowerCase()) ||
-      p.category.toLowerCase().includes(search.toLowerCase()),
+      p.name?.toLowerCase().includes(search.toLowerCase()) ||
+      p.category?.toLowerCase().includes(search.toLowerCase()) ||
+      p.sku?.toLowerCase().includes(search.toLowerCase()),
   );
+
+  const handleSave = () => {
+    const name = document.getElementById("inp-name")?.value || "";
+    const cost = parseFloat(document.getElementById("inp-cost")?.value) || 0;
+    const price = parseFloat(document.getElementById("inp-price")?.value) || 0;
+
+    if (!name.trim()) {
+      alert("⚠️ O nome do produto é obrigatório.");
+      return;
+    }
+    if (cost <= 0 || price <= 0) {
+      alert("⚠️ Os preços de custo e venda devem ser maiores que zero.");
+      return;
+    }
+
+    const payload = {
+      name,
+      sku: document.getElementById("inp-sku")?.value || "",
+      category: document.getElementById("inp-category")?.value || "Geral",
+      description: document.getElementById("inp-description")?.value || "",
+      cost,
+      price,
+      minStock: parseInt(document.getElementById("inp-minStock")?.value) || 5,
+      stock: parseInt(document.getElementById("inp-stock")?.value) || 0,
+      location: document.getElementById("inp-location")?.value || "",
+      id_fornecedor: parseInt(document.getElementById("inp-id_fornecedor")?.value) || null,
+    };
+
+    const url = edit ? `${API_URL}/produtos/${edit.id}` : `${API_URL}/produtos`;
+    const method = edit ? "PUT" : "POST";
+
+    fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Erro de processamento no servidor");
+        return res.json();
+      })
+      .then(() => {
+        loadProducts();
+        setModal(false);
+        alert(`✅ Produto ${edit ? "atualizado" : "cadastrado"} com sucesso!`);
+      })
+      .catch((err) => alert("❌ Erro ao salvar produto: " + err.message));
+  };
+
+  const handleDelete = (id) => {
+    if (confirm("⚠️ Tem certeza absoluta que deseja excluir este produto?")) {
+      fetch(`${API_URL}/produtos/${id}`, { method: "DELETE" })
+        .then((res) => {
+          if (!res.ok) throw new Error("Não foi possível excluir o produto");
+          return res.json();
+        })
+        .then(() => {
+          loadProducts();
+          alert("✅ Produto excluído com sucesso!");
+        })
+        .catch((err) => alert("❌ Erro ao excluir produto: " + err.message));
+    }
+  };
 
   return (
     <div className="fi" style={{ padding: 22, overflowY: "auto", flex: 1 }}>
@@ -1363,7 +1527,7 @@ const Produtos = () => {
         <SearchBar
           value={search}
           onChange={setSearch}
-          placeholder="Buscar por nome ou categoria..."
+          placeholder="Buscar por nome, categoria ou SKU..."
         />
         <button
           className="btn-p"
@@ -1399,75 +1563,81 @@ const Produtos = () => {
             </tr>
           </thead>
           <tbody>
-            {filtered.map((p) => (
-              <tr key={p.id} className="tr">
-                <TD
-                  style={{
-                    fontSize: 11,
-                    fontFamily: "JetBrains Mono, monospace",
-                    color: T.muted2,
-                  }}
-                >
-                  {p.sku}
-                </TD>
-                <TD style={{ fontSize: 14, fontWeight: 500 }}>{p.name}</TD>
-                <TD>
-                  <span className="badge b-info">{p.category}</span>
-                </TD>
-                <TD
-                  style={{
-                    fontFamily: "JetBrains Mono, monospace",
-                    color: T.cyan,
-                    fontWeight: 600,
-                  }}
-                >
-                  {fmt(p.price)}
-                </TD>
-                <TD>
-                  <span
+            {filtered.length === 0 ? (
+              <tr>
+                <td colSpan="7" style={{ textAlign: "center", padding: "40px", color: T.muted2 }}>
+                  Nenhum produto cadastrado no banco de dados.
+                </td>
+              </tr>
+            ) : (
+              filtered.map((p) => (
+                <tr key={p.id} className="tr">
+                  <TD
                     style={{
-                      fontWeight: 700,
-                      color:
-                        p.stock === 0
-                          ? T.danger
-                          : p.stock <= p.minStock
-                            ? T.warning
-                            : T.success,
+                      fontSize: 11,
                       fontFamily: "JetBrains Mono, monospace",
+                      color: T.muted2,
                     }}
                   >
-                    {p.stock}
-                  </span>
-                  <span style={{ color: T.muted, fontSize: 11 }}>
-                    {" "}
-                    min:{p.minStock}
-                  </span>
-                </TD>
-                <TD style={{ fontSize: 13, color: T.muted2 }}>{p.supplier}</TD>
-                <TD>
-                  <div style={{ display: "flex", gap: 6 }}>
-                    <button
-                      className="btn-g"
-                      style={{ padding: "5px 9px" }}
-                      onClick={() => {
-                        setEdit(p);
-                        setModal(true);
+                    {p.sku}
+                  </TD>
+                  <TD style={{ fontSize: 14, fontWeight: 500 }}>{p.name}</TD>
+                  <TD>
+                    <span className="badge b-info">{p.category}</span>
+                  </TD>
+                  <TD
+                    style={{
+                      fontFamily: "JetBrains Mono, monospace",
+                      color: T.cyan,
+                      fontWeight: 600,
+                    }}
+                  >
+                    {fmt(p.price)}
+                  </TD>
+                  <TD>
+                    <span
+                      style={{
+                        fontWeight: 700,
+                        color:
+                          p.stock === 0
+                            ? T.danger
+                            : p.stock <= p.minStock
+                              ? T.warning
+                              : T.success,
+                        fontFamily: "JetBrains Mono, monospace",
                       }}
                     >
-                      <Edit2 size={13} />
-                    </button>
-                    <button
-                      className="btn-d"
-                      onClick={() =>
-                        setList((l) => l.filter((x) => x.id !== p.id))
-                      }
-                    >
-                      <Trash2 size={13} />
-                    </button>
-                  </div>
-                </TD>
-              </tr>
-            ))}
+                      {p.stock}
+                    </span>
+                    <span style={{ color: T.muted, fontSize: 11 }}>
+                      {" "}
+                      min:{p.minStock}
+                    </span>
+                  </TD>
+                  <TD style={{ fontSize: 13, color: T.muted2 }}>{p.supplier}</TD>
+                  <TD>
+                    <div style={{ display: "flex", gap: 6 }}>
+                      <button
+                        className="btn-g"
+                        style={{ padding: "5px 9px" }}
+                        onClick={() => {
+                          setEdit(p);
+                          setModal(true);
+                        }}
+                      >
+                        <Edit2 size={13} />
+                      </button>
+                      <button
+                        className="btn-d"
+                        onClick={() => handleDelete(p.id)}
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+                  </TD>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
@@ -1481,14 +1651,15 @@ const Produtos = () => {
             style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}
           >
             {[
-              { label: "Nome do Produto", col: "1/-1", key: "name" },
-              { label: "SKU", col: "", key: "sku" },
-              { label: "Categoria", col: "", key: "category" },
-              { label: "Fornecedor", col: "1/-1", key: "supplier" },
-              { label: "Preço de Custo (R$)", col: "", key: "cost" },
-              { label: "Preço de Venda (R$)", col: "", key: "price" },
-              { label: "Estoque Mínimo", col: "", key: "minStock" },
-              { label: "Estoque Atual", col: "", key: "stock" },
+              { label: "Nome do Produto", col: "1/-1", key: "name", type: "text" },
+              { label: "SKU", col: "", key: "sku", type: "text" },
+              { label: "Categoria", col: "", key: "category", type: "text" },
+              { label: "Descrição Detalhada", col: "1/-1", key: "description", type: "textarea" },
+              { label: "Preço de Custo (R$)", col: "", key: "cost", type: "number", step: "0.01" },
+              { label: "Preço de Venda (R$)", col: "", key: "price", type: "number", step: "0.01" },
+              { label: "Estoque Mínimo", col: "", key: "minStock", type: "number", step: "1" },
+              { label: "Estoque Atual", col: "", key: "stock", type: "number", step: "1" },
+              { label: "Localização (Prateleira)", col: "1/-1", key: "location", type: "text" },
             ].map((f) => (
               <div key={f.key} style={f.col ? { gridColumn: f.col } : {}}>
                 <label
@@ -1502,13 +1673,52 @@ const Produtos = () => {
                 >
                   {f.label}
                 </label>
-                <input
-                  className="inp"
-                  defaultValue={edit ? edit[f.key] : ""}
-                  placeholder={f.label}
-                />
+                {f.type === "textarea" ? (
+                  <textarea
+                    className="inp"
+                    id={`inp-${f.key}`}
+                    defaultValue={edit ? edit[f.key] : ""}
+                    placeholder={f.label}
+                    style={{ minHeight: 60, resize: "vertical", fontFamily: "inherit" }}
+                  />
+                ) : (
+                  <input
+                    className="inp"
+                    id={`inp-${f.key}`}
+                    defaultValue={edit ? edit[f.key] : ""}
+                    placeholder={f.label}
+                    type={f.type}
+                    step={f.step}
+                  />
+                )}
               </div>
             ))}
+
+            <div style={{ gridColumn: "1/-1" }}>
+              <label
+                style={{
+                  fontSize: 12,
+                  color: T.muted2,
+                  marginBottom: 5,
+                  display: "block",
+                  fontWeight: 500,
+                }}
+              >
+                Fornecedor Associado
+              </label>
+              <select
+                className="inp"
+                id="inp-id_fornecedor"
+                defaultValue={edit ? edit.id_fornecedor || "" : ""}
+              >
+                <option value="">— Sem Fornecedor —</option>
+                {suppliers.map((s) => (
+                  <option key={s.id_fornecedor} value={s.id_fornecedor}>
+                    {s.razao_social}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
           <div
             style={{
@@ -1521,7 +1731,7 @@ const Produtos = () => {
             <button className="btn-g" onClick={() => setModal(false)}>
               Cancelar
             </button>
-            <button className="btn-p" onClick={() => setModal(false)}>
+            <button className="btn-p" onClick={handleSave}>
               <CheckCircle size={14} /> Salvar Produto
             </button>
           </div>
@@ -1531,161 +1741,273 @@ const Produtos = () => {
   );
 };
 
-// ─── ESTOQUE ──────────────────────────────────────────────────────
-const Estoque = () => (
-  <div className="fi" style={{ padding: 22, overflowY: "auto", flex: 1 }}>
-    <div
-      style={{
-        background: "rgba(255,71,87,0.07)",
-        border: "1px solid rgba(255,71,87,0.2)",
-        borderRadius: 10,
-        padding: "11px 16px",
-        marginBottom: 18,
-        display: "flex",
-        alignItems: "center",
-        gap: 10,
-      }}
-    >
-      <AlertTriangle size={15} style={{ color: T.danger }} className="pl" />
-      <span style={{ fontSize: 13, color: "#ff8090" }}>
-        <strong>{ALERTS_COUNT} produtos</strong> com estoque crítico ou zerado
-        requerem atenção imediata
-      </span>
-    </div>
 
-    <div className="card" style={{ overflow: "hidden" }}>
-      <table style={{ width: "100%", borderCollapse: "collapse" }}>
-        <thead>
-          <tr
-            style={{
-              borderBottom: `1px solid ${T.border}`,
-              background: T.surface2,
-            }}
-          >
-            {[
-              "Produto",
-              "SKU",
-              "Qtd Atual",
-              "Mínimo",
-              "Localização",
-              "Status",
-              "Ação",
-            ].map((h) => (
-              <TH key={h}>{h}</TH>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {PRODUCTS.map((p) => {
-            const st =
-              p.stock === 0
-                ? "Zerado"
-                : p.stock <= p.minStock
-                  ? "Crítico"
-                  : "Normal";
-            const sc =
-              p.stock === 0
-                ? T.danger
-                : p.stock <= p.minStock
-                  ? T.warning
-                  : T.success;
-            return (
-              <tr
-                key={p.id}
-                className="tr"
-                style={{
-                  background:
-                    p.stock === 0
-                      ? "rgba(255,71,87,0.03)"
-                      : p.stock <= p.minStock
-                        ? "rgba(255,184,0,0.03)"
-                        : "",
-                }}
-              >
-                <TD>
-                  <div
-                    style={{
-                      fontSize: 14,
-                      fontWeight: 500,
-                      borderLeft: `2px solid ${sc}`,
-                      paddingLeft: 10,
-                    }}
-                  >
-                    {p.name}
-                  </div>
-                  <div
-                    style={{ fontSize: 11, color: T.muted, paddingLeft: 10 }}
-                  >
-                    {p.category}
-                  </div>
-                </TD>
-                <TD
-                  style={{
-                    fontSize: 11,
-                    fontFamily: "JetBrains Mono, monospace",
-                    color: T.muted2,
-                  }}
-                >
-                  {p.sku}
-                </TD>
-                <TD>
-                  <span
-                    style={{
-                      fontSize: 20,
-                      fontWeight: 700,
-                      color: sc,
-                      fontFamily: "JetBrains Mono, monospace",
-                    }}
-                  >
-                    {p.stock}
-                  </span>
-                </TD>
-                <TD style={{ fontSize: 13, color: T.muted2 }}>{p.minStock}</TD>
-                <TD
-                  style={{
-                    fontSize: 12,
-                    color: T.muted2,
-                    fontFamily: "JetBrains Mono, monospace",
-                  }}
-                >
-                  A-{(p.id % 5) + 1}/{p.id.toString().padStart(3, "0")}
-                </TD>
-                <TD>
-                  <Badge status={st} />
-                </TD>
-                <TD>
-                  <button
-                    className="btn-g"
-                    style={{ padding: "5px 12px", fontSize: 12 }}
-                  >
-                    Repor
-                  </button>
-                </TD>
+// ─── ESTOQUE ──────────────────────────────────────────────────────
+const Estoque = ({ products = [], loadProducts }) => {
+  const alertsCount = products.filter((p) => p.stock <= p.minStock).length;
+
+  const handleRestock = (p) => {
+    const qtyStr = prompt(`Digite a quantidade a ser adicionada ao estoque de ${p.name}:`, "10");
+    if (qtyStr === null) return;
+    const qty = parseInt(qtyStr);
+    if (isNaN(qty) || qty <= 0) {
+      alert("⚠️ Digite uma quantidade válida maior que zero.");
+      return;
+    }
+
+    const payload = {
+      name: p.name,
+      sku: p.sku,
+      category: p.category,
+      description: p.description,
+      cost: p.cost,
+      price: p.price,
+      minStock: p.minStock,
+      stock: p.stock + qty,
+      location: p.location,
+      id_fornecedor: p.id_fornecedor
+    };
+
+    fetch(`${API_URL}/produtos/${p.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Erro de conexão com o servidor");
+        return res.json();
+      })
+      .then(() => {
+        loadProducts();
+        alert(`✅ Estoque de ${p.name} reabastecido com sucesso!`);
+      })
+      .catch((err) => alert("❌ Erro ao repor estoque: " + err.message));
+  };
+
+  return (
+    <div className="fi" style={{ padding: 22, overflowY: "auto", flex: 1 }}>
+      {alertsCount > 0 && (
+        <div
+          style={{
+            background: "rgba(255,71,87,0.07)",
+            border: "1px solid rgba(255,71,87,0.2)",
+            borderRadius: 10,
+            padding: "11px 16px",
+            marginBottom: 18,
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+          }}
+        >
+          <AlertTriangle size={15} style={{ color: T.danger }} className="pl" />
+          <span style={{ fontSize: 13, color: "#ff8090" }}>
+            <strong>{alertsCount} produtos</strong> com estoque crítico ou zerado
+            requerem atenção imediata
+          </span>
+        </div>
+      )}
+
+      <div className="card" style={{ overflow: "hidden" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <thead>
+            <tr
+              style={{
+                borderBottom: `1px solid ${T.border}`,
+                background: T.surface2,
+              }}
+            >
+              {[
+                "Produto",
+                "SKU",
+                "Qtd Atual",
+                "Mínimo",
+                "Localização",
+                "Status",
+                "Ação",
+              ].map((h) => (
+                <TH key={h}>{h}</TH>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {products.length === 0 ? (
+              <tr>
+                <td colSpan="7" style={{ textAlign: "center", padding: "40px", color: T.muted2 }}>
+                  Nenhum registro de estoque disponível.
+                </td>
               </tr>
-            );
-          })}
-        </tbody>
-      </table>
+            ) : (
+              products.map((p) => {
+                const st =
+                  p.stock === 0
+                    ? "Zerado"
+                    : p.stock <= p.minStock
+                      ? "Crítico"
+                      : "Normal";
+                const sc =
+                  p.stock === 0
+                    ? T.danger
+                    : p.stock <= p.minStock
+                      ? T.warning
+                      : T.success;
+                return (
+                  <tr
+                    key={p.id}
+                    className="tr"
+                    style={{
+                      background:
+                        p.stock === 0
+                          ? "rgba(255,71,87,0.03)"
+                          : p.stock <= p.minStock
+                            ? "rgba(255,184,0,0.03)"
+                            : "",
+                    }}
+                  >
+                    <TD>
+                      <div
+                        style={{
+                          fontSize: 14,
+                          fontWeight: 500,
+                          borderLeft: `2px solid ${sc}`,
+                          paddingLeft: 10,
+                        }}
+                      >
+                        {p.name}
+                      </div>
+                      <div
+                        style={{ fontSize: 11, color: T.muted, paddingLeft: 10 }}
+                      >
+                        {p.category}
+                      </div>
+                    </TD>
+                    <TD
+                      style={{
+                        fontSize: 11,
+                        fontFamily: "JetBrains Mono, monospace",
+                        color: T.muted2,
+                      }}
+                    >
+                      {p.sku}
+                    </TD>
+                    <TD>
+                      <span
+                        style={{
+                          fontSize: 20,
+                          fontWeight: 700,
+                          color: sc,
+                          fontFamily: "JetBrains Mono, monospace",
+                        }}
+                      >
+                        {p.stock}
+                      </span>
+                    </TD>
+                    <TD style={{ fontSize: 13, color: T.muted2 }}>{p.minStock}</TD>
+                    <TD
+                      style={{
+                        fontSize: 12,
+                        color: T.muted2,
+                        fontFamily: "JetBrains Mono, monospace",
+                      }}
+                    >
+                      {p.location || "Sem prateleira"}
+                    </TD>
+                    <TD>
+                      <Badge status={st} />
+                    </TD>
+                    <TD>
+                      <button
+                        className="btn-g"
+                        style={{ padding: "5px 12px", fontSize: 12 }}
+                        onClick={() => handleRestock(p)}
+                      >
+                        Repor
+                      </button>
+                    </TD>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 // ─── VENDAS ───────────────────────────────────────────────────────
-const Vendas = () => {
+const Vendas = ({ products = [], sales = [], loadSales, loadProducts }) => {
   const [tab, setTab] = useState("lista");
   const [cartV, setCartV] = useState([]);
-  const [client, setClient] = useState("");
+  const [clientId, setClientId] = useState("");
+  const [dbClients, setDbClients] = useState([]);
 
-  const addItem = (p) =>
+  useEffect(() => {
+    fetch("http://localhost:3000/api/clientes")
+      .then((res) => res.json())
+      .then((data) => setDbClients(data))
+      .catch((err) => console.error("Erro ao carregar clientes para vendas:", err));
+  }, []);
+
+  const addItem = (p) => {
+    const itemNoCarrinho = cartV.find((i) => i.id === p.id);
+    const qtdAtual = itemNoCarrinho ? itemNoCarrinho.qty : 0;
+    if (qtdAtual >= p.stock) {
+      alert(`⚠️ Estoque insuficiente! Apenas ${p.stock} unidades disponíveis.`);
+      return;
+    }
+
     setCartV((c) => {
       const ex = c.find((i) => i.id === p.id);
       return ex
         ? c.map((i) => (i.id === p.id ? { ...i, qty: i.qty + 1 } : i))
         : [...c, { ...p, qty: 1 }];
     });
+  };
+
+  const handleFinalize = () => {
+    if (!clientId) {
+      alert("⚠️ Por favor, selecione um cliente!");
+      return;
+    }
+    if (cartV.length === 0) {
+      alert("⚠️ O carrinho está vazio!");
+      return;
+    }
+
+    const payload = {
+      id_cliente: parseInt(clientId),
+      items: cartV.map(item => ({
+        id_produto: item.id,
+        quantidade: item.qty,
+        preco_unitario: item.price
+      }))
+    };
+
+    fetch("http://localhost:3000/api/vendas", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Erro de processamento no servidor de banco de dados");
+        return res.json();
+      })
+      .then(() => {
+        alert("✅ Venda registrada com sucesso no banco de dados MySQL!");
+        setCartV([]);
+        setClientId("");
+        setTab("lista");
+        if (loadSales) loadSales();
+        if (loadProducts) loadProducts();
+      })
+      .catch((err) => {
+        console.error("Erro ao processar venda:", err);
+        alert(`❌ Erro ao finalizar venda: ${err.message}`);
+      });
+  };
 
   const total = cartV.reduce((s, i) => s + i.price * i.qty, 0);
-  const activeProducts = PRODUCTS.filter((p) => p.stock > 0);
+  const activeProducts = products.filter((p) => p.stock > 0);
 
   return (
     <div className="fi" style={{ padding: 22, overflowY: "auto", flex: 1 }}>
@@ -1739,8 +2061,8 @@ const Vendas = () => {
               </tr>
             </thead>
             <tbody>
-              {RECENT_SALES.map((s) => (
-                <tr key={s.id} className="tr">
+              {(sales.length > 0 ? sales : RECENT_SALES).map((s) => (
+                <tr key={s.id_venda || s.id} className="tr">
                   <TD
                     style={{
                       fontSize: 12,
@@ -1748,10 +2070,12 @@ const Vendas = () => {
                       color: T.muted2,
                     }}
                   >
-                    {s.id}
+                    {s.id_venda ? `VD-${s.id_venda}` : s.id}
                   </TD>
-                  <TD style={{ fontSize: 14, fontWeight: 500 }}>{s.client}</TD>
-                  <TD style={{ fontSize: 13, color: T.muted2 }}>{s.items}</TD>
+                  <TD style={{ fontSize: 14, fontWeight: 500 }}>{s.nome_cliente || s.client}</TD>
+                  <TD style={{ fontSize: 13, color: T.muted2 }}>
+                    {s.total_itens !== undefined ? `${s.total_itens} itens` : `${s.items} itens`}
+                  </TD>
                   <TD
                     style={{
                       fontFamily: "JetBrains Mono, monospace",
@@ -1759,11 +2083,13 @@ const Vendas = () => {
                       fontWeight: 600,
                     }}
                   >
-                    {fmt(s.total)}
+                    {fmt(parseFloat(s.valor_total || s.total))}
                   </TD>
-                  <TD style={{ fontSize: 13, color: T.muted2 }}>{s.date}</TD>
+                  <TD style={{ fontSize: 13, color: T.muted2 }}>
+                    {s.data_emissao ? new Date(s.data_emissao).toLocaleDateString("pt-BR") : s.date}
+                  </TD>
                   <TD>
-                    <Badge status={s.status} />
+                    <Badge status={s.status_venda ? (s.status_venda === "CONCLUIDA" ? "Concluído" : s.status_venda) : s.status} />
                   </TD>
                 </tr>
               ))}
@@ -1794,13 +2120,13 @@ const Vendas = () => {
               </label>
               <select
                 className="inp"
-                value={client}
-                onChange={(e) => setClient(e.target.value)}
+                value={clientId}
+                onChange={(e) => setClientId(e.target.value)}
               >
                 <option value="">— Selecione o cliente —</option>
-                {CLIENTS.map((c) => (
-                  <option key={c.id} value={c.name}>
-                    {c.name} – {c.city}
+                {dbClients.map((c) => (
+                  <option key={c.id_cliente} value={c.id_cliente}>
+                    {c.nome_cliente} – CPF: {c.cpf}
                   </option>
                 ))}
               </select>
@@ -1984,11 +2310,7 @@ const Vendas = () => {
                     justifyContent: "center",
                     padding: "10px",
                   }}
-                  onClick={() => {
-                    alert("✅ Venda registrada com sucesso!");
-                    setCartV([]);
-                    setTab("lista");
-                  }}
+                  onClick={handleFinalize}
                 >
                   <CheckCircle size={14} /> Finalizar Venda
                 </button>
@@ -2003,11 +2325,112 @@ const Vendas = () => {
 
 // ─── CLIENTES ─────────────────────────────────────────────────────
 const Clientes = () => {
+  const [clients, setClients] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const filtered = CLIENTS.filter(
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingClient, setEditingClient] = useState(null);
+
+  // Form
+  const [name, setName] = useState("");
+  const [cpf, setCpf] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+
+  const loadClients = () => {
+    setLoading(true);
+    fetch("http://localhost:3000/api/clientes")
+      .then((res) => {
+        if (!res.ok) throw new Error("Erro ao carregar clientes");
+        return res.json();
+      })
+      .then((data) => {
+        setClients(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    loadClients();
+  }, []);
+
+  const handleOpenModal = (c = null) => {
+    if (c) {
+      setEditingClient(c);
+      setName(c.nome_cliente || "");
+      setCpf(c.cpf || "");
+      setEmail(c.email || "");
+      setPhone(c.telefone || "");
+    } else {
+      setEditingClient(null);
+      setName("");
+      setCpf("");
+      setEmail("");
+      setPhone("");
+    }
+    setModalOpen(true);
+  };
+
+  const handleSave = (e) => {
+    e.preventDefault();
+    if (!name || !cpf) {
+      alert("⚠️ Nome e CPF são obrigatórios!");
+      return;
+    }
+
+    const payload = { name, cpf, email, phone };
+    const method = editingClient ? "PUT" : "POST";
+    const url = editingClient
+      ? `http://localhost:3000/api/clientes/${editingClient.id_cliente}`
+      : "http://localhost:3000/api/clientes";
+
+    fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          return res.json().then((err) => {
+            throw new Error(err.error || "Erro ao salvar cliente");
+          });
+        }
+        return res.json();
+      })
+      .then(() => {
+        alert(editingClient ? "✅ Cliente atualizado!" : "✅ Cliente cadastrado!");
+        setModalOpen(false);
+        loadClients();
+      })
+      .catch((err) => alert(`❌ Erro: ${err.message}`));
+  };
+
+  const handleDelete = (id, name) => {
+    if (!confirm(`⚠️ Tem certeza de que deseja excluir o cliente ${name}?`)) return;
+
+    fetch(`http://localhost:3000/api/clientes/${id}`, {
+      method: "DELETE",
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Erro ao excluir cliente");
+        return res.json();
+      })
+      .then(() => {
+        alert("✅ Cliente excluído!");
+        loadClients();
+      })
+      .catch((err) => alert(`❌ Erro: ${err.message}`));
+  };
+
+  const filtered = clients.filter(
     (c) =>
-      c.name.toLowerCase().includes(search.toLowerCase()) ||
-      c.city.toLowerCase().includes(search.toLowerCase()),
+      c.nome_cliente?.toLowerCase().includes(search.toLowerCase()) ||
+      c.cpf?.includes(search) ||
+      (c.email && c.email.toLowerCase().includes(search.toLowerCase()))
   );
 
   return (
@@ -2016,208 +2439,514 @@ const Clientes = () => {
         <SearchBar
           value={search}
           onChange={setSearch}
-          placeholder="Buscar cliente..."
+          placeholder="Buscar por nome, CPF ou e-mail..."
         />
-        <button className="btn-p">
+        <button className="btn-p" onClick={() => handleOpenModal(null)}>
           <Plus size={14} /> Novo Cliente
         </button>
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill,minmax(270px,1fr))",
-          gap: 16,
-        }}
-      >
-        {filtered.map((c) => (
-          <div key={c.id} className="card card-h" style={{ padding: 20 }}>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-                marginBottom: 16,
-              }}
-            >
-              <Avatar name={c.name} size={42} />
+      {loading ? (
+        <div style={{ textAlign: "center", padding: "40px", color: T.muted2 }}>
+          Carregando clientes do banco de dados...
+        </div>
+      ) : filtered.length === 0 ? (
+        <div style={{ textAlign: "center", padding: "40px", color: T.muted2 }}>
+          Nenhum cliente cadastrado no momento.
+        </div>
+      ) : (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill,minmax(295px,1fr))",
+            gap: 16,
+          }}
+        >
+          {filtered.map((c) => (
+            <div key={c.id_cliente} className="card card-h" style={{ padding: 20 }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 12,
+                  marginBottom: 16,
+                }}
+              >
+                <Avatar name={c.nome_cliente} size={42} />
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div style={{ fontWeight: 600, fontSize: 14, textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>
+                    {c.nome_cliente}
+                  </div>
+                  <div style={{ fontSize: 11, color: T.muted2 }}>
+                    CPF: {c.cpf}
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ fontSize: 12, color: T.muted, marginBottom: 6 }}>
+                📧 {c.email || "Sem e-mail cadastrado"}
+              </div>
+              <div style={{ fontSize: 12, color: T.muted }}>
+                📞 {c.telefone || "Sem telefone cadastrado"}
+              </div>
+              <div style={{ fontSize: 10, color: T.muted2, marginTop: 10, borderTop: `1px solid ${T.border}`, paddingTop: 8 }}>
+                Cadastrado em: {new Date(c.data_cadastro).toLocaleDateString("pt-BR")}
+              </div>
+
+              <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
+                <button
+                  className="btn-g"
+                  style={{ flex: 1, justifyContent: "center", fontSize: 12 }}
+                  onClick={() => alert(`Histórico de vendas indisponível para ${c.nome_cliente}.`)}
+                >
+                  Ver Histórico
+                </button>
+                <button className="btn-g" style={{ padding: "7px 10px" }} onClick={() => handleOpenModal(c)}>
+                  <Edit2 size={13} />
+                </button>
+                <button
+                  className="btn-d"
+                  style={{ padding: "7px 10px", borderColor: "rgba(255,71,87,0.2)", color: T.danger }}
+                  onClick={() => handleDelete(c.id_cliente, c.nome_cliente)}
+                >
+                  <Trash2 size={13} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Modal Cliente */}
+      {modalOpen && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.6)",
+            zIndex: 1000,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 20,
+          }}
+        >
+          <div
+            className="card"
+            style={{
+              width: "100%",
+              maxWidth: 420,
+              padding: 24,
+              background: T.surface,
+              border: `1px solid ${T.border}`,
+              borderRadius: 12,
+              boxShadow: "0 20px 40px rgba(0,0,0,0.4)",
+            }}
+          >
+            <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 18 }}>
+              {editingClient ? "Editar Cliente" : "Novo Cliente"}
+            </h3>
+            <form onSubmit={handleSave} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               <div>
-                <div style={{ fontWeight: 600, fontSize: 14 }}>{c.name}</div>
-                <div style={{ fontSize: 12, color: T.muted2 }}>
-                  {c.city} · desde {c.since}
-                </div>
+                <label style={{ display: "block", fontSize: 11, color: T.muted2, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                  Nome Completo *
+                </label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="modal-input"
+                  style={{ width: "100%", padding: "10px 12px", background: T.surface2, border: `1px solid ${T.border}`, borderRadius: 8, color: T.text }}
+                  required
+                />
               </div>
-            </div>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: 8,
-                marginBottom: 12,
-              }}
-            >
-              <div
-                style={{
-                  background: T.surface2,
-                  borderRadius: 8,
-                  padding: "9px 12px",
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: 10,
-                    color: T.muted,
-                    marginBottom: 3,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.07em",
-                  }}
-                >
-                  Pedidos
-                </div>
-                <div
-                  style={{
-                    fontWeight: 700,
-                    color: T.cyan,
-                    fontSize: 18,
-                    fontFamily: "JetBrains Mono, monospace",
-                  }}
-                >
-                  {c.purchases}
-                </div>
+
+              <div>
+                <label style={{ display: "block", fontSize: 11, color: T.muted2, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                  CPF *
+                </label>
+                <input
+                  type="text"
+                  value={cpf}
+                  placeholder="000.000.000-00"
+                  onChange={(e) => setCpf(e.target.value)}
+                  className="modal-input"
+                  style={{ width: "100%", padding: "10px 12px", background: T.surface2, border: `1px solid ${T.border}`, borderRadius: 8, color: T.text }}
+                  required
+                />
               </div>
-              <div
-                style={{
-                  background: T.surface2,
-                  borderRadius: 8,
-                  padding: "9px 12px",
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: 10,
-                    color: T.muted,
-                    marginBottom: 3,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.07em",
-                  }}
-                >
-                  Total
-                </div>
-                <div
-                  style={{
-                    fontWeight: 700,
-                    color: T.cyan,
-                    fontSize: 13,
-                    fontFamily: "JetBrains Mono, monospace",
-                  }}
-                >
-                  {fmt(c.total)}
-                </div>
+
+              <div>
+                <label style={{ display: "block", fontSize: 11, color: T.muted2, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                  E-mail
+                </label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="modal-input"
+                  style={{ width: "100%", padding: "10px 12px", background: T.surface2, border: `1px solid ${T.border}`, borderRadius: 8, color: T.text }}
+                />
               </div>
-            </div>
-            <div style={{ fontSize: 12, color: T.muted2, marginBottom: 4 }}>
-              {c.email}
-            </div>
-            <div style={{ fontSize: 12, color: T.muted2 }}>{c.phone}</div>
-            <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
-              <button
-                className="btn-g"
-                style={{ flex: 1, justifyContent: "center", fontSize: 12 }}
-              >
-                Ver Histórico
-              </button>
-              <button className="btn-g" style={{ padding: "7px 10px" }}>
-                <Edit2 size={13} />
-              </button>
-            </div>
+
+              <div>
+                <label style={{ display: "block", fontSize: 11, color: T.muted2, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                  Telefone
+                </label>
+                <input
+                  type="text"
+                  value={phone}
+                  placeholder="(00) 00000-0000"
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="modal-input"
+                  style={{ width: "100%", padding: "10px 12px", background: T.surface2, border: `1px solid ${T.border}`, borderRadius: 8, color: T.text }}
+                />
+              </div>
+
+              <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
+                <button
+                  type="button"
+                  className="btn-g"
+                  style={{ flex: 1, justifyContent: "center", padding: "10px" }}
+                  onClick={() => setModalOpen(false)}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="btn-p"
+                  style={{ flex: 1, justifyContent: "center", padding: "10px" }}
+                >
+                  Salvar
+                </button>
+              </div>
+            </form>
           </div>
-        ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
 
 // ─── FUNCIONÁRIOS ─────────────────────────────────────────────────
-const Funcionarios = () => (
-  <div className="fi" style={{ padding: 22, overflowY: "auto", flex: 1 }}>
-    <div
-      style={{ display: "flex", justifyContent: "flex-end", marginBottom: 18 }}
-    >
-      <button className="btn-p">
-        <Plus size={14} /> Novo Funcionário
-      </button>
-    </div>
+const Funcionarios = () => {
+  const [employees, setEmployees] = useState([]);
+  const [cargos, setCargos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingEmployee, setEditingEmployee] = useState(null);
 
-    <div className="card" style={{ overflow: "hidden" }}>
-      <table style={{ width: "100%", borderCollapse: "collapse" }}>
-        <thead>
-          <tr
-            style={{
-              borderBottom: `1px solid ${T.border}`,
-              background: T.surface2,
-            }}
-          >
-            {[
-              "Funcionário",
-              "Cargo",
-              "Nível",
-              "Salário",
-              "E-mail",
-              "Desde",
-              "Ações",
-            ].map((h) => (
-              <TH key={h}>{h}</TH>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {EMPLOYEES.map((e) => (
-            <tr key={e.id} className="tr">
-              <TD>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <Avatar name={e.name} size={34} />
-                  <span style={{ fontWeight: 500, fontSize: 14 }}>
-                    {e.name}
-                  </span>
-                </div>
-              </TD>
-              <TD style={{ fontSize: 13 }}>{e.role}</TD>
-              <TD>
-                <Badge status={e.level} />
-              </TD>
-              <TD
+  // Form fields
+  const [name, setName] = useState("");
+  const [cpf, setCpf] = useState("");
+  const [cargoId, setCargoId] = useState("");
+  const [hireDate, setHireDate] = useState("");
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      // Carrega funcionários
+      const resEmp = await fetch("http://localhost:3000/api/funcionarios");
+      const dataEmp = await resEmp.json();
+      setEmployees(dataEmp);
+
+      // Carrega cargos para o dropdown do cadastro
+      const resCargos = await fetch("http://localhost:3000/api/cargos");
+      const dataCargos = await resCargos.json();
+      setCargos(dataCargos);
+
+      setLoading(false);
+    } catch (err) {
+      console.error("Erro ao carregar dados dos funcionários:", err);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const handleOpenModal = (e = null) => {
+    if (e) {
+      setEditingEmployee(e);
+      setName(e.nome_funcionario || "");
+      setCpf(e.cpf || "");
+      setCargoId(e.id_cargo || "");
+
+      // Formata a data AAAA-MM-DD para o input do tipo date
+      if (e.data_admissao) {
+        const d = new Date(e.data_admissao);
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+        setHireDate(`${y}-${m}-${day}`);
+      } else {
+        setHireDate("");
+      }
+    } else {
+      setEditingEmployee(null);
+      setName("");
+      setCpf("");
+      setCargoId("");
+      setHireDate("");
+    }
+    setModalOpen(true);
+  };
+
+  const handleSave = (e) => {
+    e.preventDefault();
+    if (!name || !cpf || !cargoId) {
+      alert("⚠️ Nome, CPF e Cargo são obrigatórios!");
+      return;
+    }
+
+    const payload = { name, cpf, id_cargo: parseInt(cargoId), hire_date: hireDate || null };
+    const method = editingEmployee ? "PUT" : "POST";
+    const url = editingEmployee
+      ? `http://localhost:3000/api/funcionarios/${editingEmployee.id_funcionario}`
+      : "http://localhost:3000/api/funcionarios";
+
+    fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          return res.json().then((err) => {
+            throw new Error(err.error || "Erro ao salvar funcionário");
+          });
+        }
+        return res.json();
+      })
+      .then(() => {
+        alert(editingEmployee ? "✅ Funcionário atualizado com sucesso!" : "✅ Funcionário cadastrado com sucesso!");
+        setModalOpen(false);
+        loadData();
+      })
+      .catch((err) => alert(`❌ Erro: ${err.message}`));
+  };
+
+  const handleDelete = (id, name) => {
+    if (!confirm(`⚠️ Tem certeza de que deseja excluir o funcionário ${name}?`)) return;
+
+    fetch(`http://localhost:3000/api/funcionarios/${id}`, {
+      method: "DELETE",
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Erro ao excluir funcionário");
+        return res.json();
+      })
+      .then(() => {
+        alert("✅ Funcionário excluído!");
+        loadData();
+      })
+      .catch((err) => alert(`❌ Erro: ${err.message}`));
+  };
+
+  return (
+    <div className="fi" style={{ padding: 22, overflowY: "auto", flex: 1 }}>
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 18 }}>
+        <button className="btn-p" onClick={() => handleOpenModal(null)}>
+          <Plus size={14} /> Novo Funcionário
+        </button>
+      </div>
+
+      {loading ? (
+        <div style={{ textAlign: "center", padding: "40px", color: T.muted2 }}>
+          Carregando dados dos funcionários...
+        </div>
+      ) : employees.length === 0 ? (
+        <div style={{ textAlign: "center", padding: "40px", color: T.muted2 }}>
+          Nenhum funcionário cadastrado no momento.
+        </div>
+      ) : (
+        <div className="card" style={{ overflow: "hidden" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr
                 style={{
-                  fontFamily: "JetBrains Mono, monospace",
-                  color: T.success,
-                  fontWeight: 600,
+                  borderBottom: `1px solid ${T.border}`,
+                  background: T.surface2,
                 }}
               >
-                {fmt(e.salary)}
-              </TD>
-              <TD style={{ fontSize: 12, color: T.muted2 }}>{e.email}</TD>
-              <TD style={{ fontSize: 12, color: T.muted2 }}>{e.since}</TD>
-              <TD>
-                <div style={{ display: "flex", gap: 6 }}>
-                  <button className="btn-g" style={{ padding: "5px 9px" }}>
-                    <Edit2 size={13} />
-                  </button>
-                  <button className="btn-d">
-                    <Trash2 size={13} />
-                  </button>
-                </div>
-              </TD>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                {[
+                  "Funcionário",
+                  "CPF",
+                  "Cargo",
+                  "Salário Base",
+                  "Data de Admissão",
+                  "Ações",
+                ].map((h) => (
+                  <TH key={h}>{h}</TH>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {employees.map((e) => (
+                <tr key={e.id_funcionario} className="tr">
+                  <TD>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <Avatar name={e.nome_funcionario} size={34} />
+                      <span style={{ fontWeight: 500, fontSize: 14 }}>
+                        {e.nome_funcionario}
+                      </span>
+                    </div>
+                  </TD>
+                  <TD style={{ fontSize: 12, fontFamily: "JetBrains Mono, monospace", color: T.muted2 }}>
+                    {e.cpf}
+                  </TD>
+                  <TD style={{ fontSize: 13 }}>{e.nome_cargo || "Sem cargo"}</TD>
+                  <TD
+                    style={{
+                      fontFamily: "JetBrains Mono, monospace",
+                      color: T.success,
+                      fontWeight: 600,
+                    }}
+                  >
+                    {e.salario_base ? fmt(parseFloat(e.salario_base)) : "—"}
+                  </TD>
+                  <TD style={{ fontSize: 12, color: T.muted2 }}>
+                    {e.data_admissao ? new Date(e.data_admissao).toLocaleDateString("pt-BR") : "—"}
+                  </TD>
+                  <TD>
+                    <div style={{ display: "flex", gap: 6 }}>
+                      <button className="btn-g" style={{ padding: "5px 9px" }} onClick={() => handleOpenModal(e)}>
+                        <Edit2 size={13} />
+                      </button>
+                      <button className="btn-d" onClick={() => handleDelete(e.id_funcionario, e.nome_funcionario)}>
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+                  </TD>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Modal Funcionário */}
+      {modalOpen && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.6)",
+            zIndex: 1000,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 20,
+          }}
+        >
+          <div
+            className="card"
+            style={{
+              width: "100%",
+              maxWidth: 420,
+              padding: 24,
+              background: T.surface,
+              border: `1px solid ${T.border}`,
+              borderRadius: 12,
+              boxShadow: "0 20px 40px rgba(0,0,0,0.4)",
+            }}
+          >
+            <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 18 }}>
+              {editingEmployee ? "Editar Funcionário" : "Novo Funcionário"}
+            </h3>
+            <form onSubmit={handleSave} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              <div>
+                <label style={{ display: "block", fontSize: 11, color: T.muted2, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                  Nome do Funcionário *
+                </label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="modal-input"
+                  style={{ width: "100%", padding: "10px 12px", background: T.surface2, border: `1px solid ${T.border}`, borderRadius: 8, color: T.text }}
+                  required
+                />
+              </div>
+
+              <div>
+                <label style={{ display: "block", fontSize: 11, color: T.muted2, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                  CPF *
+                </label>
+                <input
+                  type="text"
+                  value={cpf}
+                  placeholder="000.000.000-00"
+                  onChange={(e) => setCpf(e.target.value)}
+                  className="modal-input"
+                  style={{ width: "100%", padding: "10px 12px", background: T.surface2, border: `1px solid ${T.border}`, borderRadius: 8, color: T.text }}
+                  required
+                />
+              </div>
+
+              <div>
+                <label style={{ display: "block", fontSize: 11, color: T.muted2, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                  Cargo *
+                </label>
+                <select
+                  value={cargoId}
+                  onChange={(e) => setCargoId(e.target.value)}
+                  className="modal-input"
+                  style={{ width: "100%", padding: "10px 12px", background: T.surface2, border: `1px solid ${T.border}`, borderRadius: 8, color: T.text, outline: "none" }}
+                  required
+                >
+                  <option value="" disabled>Selecione um Cargo</option>
+                  {cargos.map((cargo) => (
+                    <option key={cargo.id_cargo} value={cargo.id_cargo}>
+                      {cargo.nome_cargo} (Salário: {fmt(parseFloat(cargo.salario_base))})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label style={{ display: "block", fontSize: 11, color: T.muted2, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                  Data de Admissão
+                </label>
+                <input
+                  type="date"
+                  value={hireDate}
+                  onChange={(e) => setHireDate(e.target.value)}
+                  className="modal-input"
+                  style={{ width: "100%", padding: "10px 12px", background: T.surface2, border: `1px solid ${T.border}`, borderRadius: 8, color: T.text }}
+                />
+              </div>
+
+              <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
+                <button
+                  type="button"
+                  className="btn-g"
+                  style={{ flex: 1, justifyContent: "center", padding: "10px" }}
+                  onClick={() => setModalOpen(false)}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="btn-p"
+                  style={{ flex: 1, justifyContent: "center", padding: "10px" }}
+                >
+                  Salvar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
-  </div>
-);
+  );
+};
 
 // ─── ALERTAS ──────────────────────────────────────────────────────
-const Alertas = () => {
+const Alertas = ({ products = [], loadProducts }) => {
   const [resolved, setResolved] = useState([]);
-  const alerts = PRODUCTS.filter((p) => p.stock <= p.minStock);
+  const alerts = products.filter((p) => p.stock <= p.minStock);
 
   return (
     <div className="fi" style={{ padding: 22, overflowY: "auto", flex: 1 }}>
@@ -2251,170 +2980,180 @@ const Alertas = () => {
           gap: 16,
         }}
       >
-        {alerts.map((p) => {
-          const isDone = resolved.includes(p.id);
-          const isCrit = p.stock === 0;
-          return (
-            <div
-              key={p.id}
-              className="card"
-              style={{
-                padding: 20,
-                borderColor: isDone
-                  ? "rgba(0,191,99,0.3)"
-                  : isCrit
-                    ? "rgba(255,71,87,0.3)"
-                    : "rgba(255,184,0,0.3)",
-                opacity: isDone ? 0.6 : 1,
-                transition: "opacity .3s",
-              }}
-            >
+        {alerts.length === 0 ? (
+          <div style={{ gridColumn: "1/-1", textAlign: "center", padding: "40px", color: T.muted2 }}>
+            🎉 Todos os produtos estão com níveis de estoque saudáveis!
+          </div>
+        ) : (
+          alerts.map((p) => {
+            const isDone = resolved.includes(p.id);
+            const isCrit = p.stock === 0;
+            return (
               <div
+                key={p.id}
+                className="card"
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                  marginBottom: 12,
-                }}
-              >
-                {isDone ? (
-                  <CheckCircle size={15} style={{ color: T.success }} />
-                ) : (
-                  <AlertTriangle
-                    size={15}
-                    style={{ color: isCrit ? T.danger : T.warning }}
-                    className={isDone ? "" : "pl"}
-                  />
-                )}
-                <span
-                  className={`badge ${isDone ? "b-ok" : isCrit ? "b-err" : "b-warn"}`}
-                >
-                  {isDone ? "Resolvido" : isCrit ? "Zerado" : "Crítico"}
-                </span>
-                <span
-                  style={{
-                    marginLeft: "auto",
-                    fontSize: 11,
-                    color: T.muted,
-                    fontFamily: "JetBrains Mono, monospace",
-                  }}
-                >
-                  {p.sku}
-                </span>
-              </div>
-
-              <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 4 }}>
-                {p.name}
-              </div>
-              <div style={{ fontSize: 12, color: T.muted2, marginBottom: 14 }}>
-                {p.category} · {p.supplier}
-              </div>
-
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: 8,
-                  marginBottom: 14,
+                  padding: 20,
+                  borderColor: isDone
+                    ? "rgba(0,191,99,0.3)"
+                    : isCrit
+                      ? "rgba(255,71,87,0.3)"
+                      : "rgba(255,184,0,0.3)",
+                  opacity: isDone ? 0.6 : 1,
+                  transition: "opacity .3s",
                 }}
               >
                 <div
                   style={{
-                    background: T.surface2,
-                    borderRadius: 8,
-                    padding: "10px 12px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    marginBottom: 12,
                   }}
                 >
-                  <div
-                    style={{
-                      fontSize: 10,
-                      color: T.muted,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.08em",
-                      marginBottom: 3,
-                    }}
+                  {isDone ? (
+                    <CheckCircle size={15} style={{ color: T.success }} />
+                  ) : (
+                    <AlertTriangle
+                      size={15}
+                      style={{ color: isCrit ? T.danger : T.warning }}
+                      className={isDone ? "" : "pl"}
+                    />
+                  )}
+                  <span
+                    className={`badge ${isDone ? "b-ok" : isCrit ? "b-err" : "b-warn"}`}
                   >
-                    Atual
-                  </div>
-                  <div
+                    {isDone ? "Resolvido" : isCrit ? "Zerado" : "Crítico"}
+                  </span>
+                  <span
                     style={{
-                      fontSize: 22,
-                      fontWeight: 700,
-                      color: isCrit ? T.danger : T.warning,
+                      marginLeft: "auto",
+                      fontSize: 11,
+                      color: T.muted,
                       fontFamily: "JetBrains Mono, monospace",
                     }}
                   >
-                    {p.stock}
-                  </div>
+                    {p.sku}
+                  </span>
                 </div>
+
+                <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 4 }}>
+                  {p.name}
+                </div>
+                <div style={{ fontSize: 12, color: T.muted2, marginBottom: 14 }}>
+                  {p.category} · {p.supplier}
+                </div>
+
                 <div
                   style={{
-                    background: T.surface2,
-                    borderRadius: 8,
-                    padding: "10px 12px",
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: 8,
+                    marginBottom: 14,
                   }}
                 >
                   <div
                     style={{
-                      fontSize: 10,
-                      color: T.muted,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.08em",
-                      marginBottom: 3,
+                      background: T.surface2,
+                      borderRadius: 8,
+                      padding: "10px 12px",
                     }}
                   >
-                    Mínimo
+                    <div
+                      style={{
+                        fontSize: 10,
+                        color: T.muted,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.08em",
+                        marginBottom: 3,
+                      }}
+                    >
+                      Atual
+                    </div>
+                    <div
+                      style={{
+                        fontSize: 22,
+                        fontWeight: 700,
+                        color: isCrit ? T.danger : T.warning,
+                        fontFamily: "JetBrains Mono, monospace",
+                      }}
+                    >
+                      {p.stock}
+                    </div>
                   </div>
                   <div
                     style={{
-                      fontSize: 22,
-                      fontWeight: 700,
-                      color: T.muted2,
-                      fontFamily: "JetBrains Mono, monospace",
+                      background: T.surface2,
+                      borderRadius: 8,
+                      padding: "10px 12px",
                     }}
                   >
-                    {p.minStock}
+                    <div
+                      style={{
+                        fontSize: 10,
+                        color: T.muted,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.08em",
+                        marginBottom: 3,
+                      }}
+                    >
+                      Mínimo
+                    </div>
+                    <div
+                      style={{
+                        fontSize: 22,
+                        fontWeight: 700,
+                        color: T.muted2,
+                        fontFamily: "JetBrains Mono, monospace",
+                      }}
+                    >
+                      {p.minStock}
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div style={{ display: "flex", gap: 8 }}>
-                <button
-                  className="btn-p"
-                  style={{
-                    flex: 1,
-                    justifyContent: "center",
-                    padding: "8px",
-                    opacity: isDone ? 0.5 : 1,
-                  }}
-                  disabled={isDone}
-                >
-                  Solicitar Reposição
-                </button>
-                <button
-                  className="btn-g"
-                  style={{ padding: "8px 12px" }}
-                  onClick={() =>
-                    setResolved((r) =>
-                      isDone ? r.filter((x) => x !== p.id) : [...r, p.id],
-                    )
-                  }
-                >
-                  {isDone ? <X size={13} /> : <CheckCircle size={13} />}
-                </button>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button
+                    className="btn-p"
+                    style={{
+                      flex: 1,
+                      justifyContent: "center",
+                      padding: "8px",
+                      opacity: isDone ? 0.5 : 1,
+                    }}
+                    disabled={isDone}
+                    onClick={() => alert(`Solicitado reabastecimento de ${p.name} ao fornecedor ${p.supplier}.`)}
+                  >
+                    Solicitar Reposição
+                  </button>
+                  <button
+                    className="btn-g"
+                    style={{ padding: "8px 12px" }}
+                    onClick={() =>
+                      setResolved((r) =>
+                        isDone ? r.filter((x) => x !== p.id) : [...r, p.id]
+                      )
+                    }
+                  >
+                    {isDone ? <X size={13} /> : <CheckCircle size={13} />}
+                  </button>
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })
+        )}
       </div>
     </div>
   );
 };
 
 // ─── ADMIN LAYOUT ─────────────────────────────────────────────────
-const AdminArea = ({ onLogout, theme, toggleTheme }) => {
+const AdminArea = ({ onLogout, theme, toggleTheme, products = [], loadProducts, sales = [], loadSales, topProducts = [], loadTopProducts }) => {
   const [page, setPage] = useState("dashboard");
   const [collapsed, setCollapsed] = useState(false);
+
+  const alertsCount = products.filter((p) => p.stock <= p.minStock).length;
+
   const PAGES = {
     dashboard: Dashboard,
     produtos: Produtos,
@@ -2425,6 +3164,7 @@ const AdminArea = ({ onLogout, theme, toggleTheme }) => {
     alertas: Alertas,
   };
   const Page = PAGES[page];
+
   return (
     <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
       <Sidebar
@@ -2433,6 +3173,7 @@ const AdminArea = ({ onLogout, theme, toggleTheme }) => {
         onLogout={onLogout}
         collapsed={collapsed}
         toggle={() => setCollapsed((v) => !v)}
+        alertsCount={alertsCount}
       />
       <div
         style={{
@@ -2443,7 +3184,15 @@ const AdminArea = ({ onLogout, theme, toggleTheme }) => {
         }}
       >
         <TopBar page={page} theme={theme} toggleTheme={toggleTheme} />
-        <Page key={page} />
+        <Page
+          key={page}
+          products={products}
+          loadProducts={loadProducts}
+          sales={sales}
+          loadSales={loadSales}
+          topProducts={topProducts}
+          loadTopProducts={loadTopProducts}
+        />
       </div>
     </div>
   );
@@ -2680,26 +3429,28 @@ const renderHeroIllustration = () => {
             />
             <circle cx="0" cy="0" r="58" fill="#070914" opacity="0.96" />
             <circle cx="0" cy="0" r="50" fill="#0f1724" />
-            <rect
-              x="-28"
-              y="-28"
-              width="56"
-              height="56"
-              rx="12"
-              fill="#37f2eb"
-              opacity="0.9"
-            />
-            <text
-              x="0"
-              y="10"
-              textAnchor="middle"
-              fontSize="28"
-              fontWeight="700"
-              fill="#070914"
-              fontFamily="Inter, sans-serif"
-            >
-              PR
-            </text>
+            <g className="chip-core">
+              <rect
+                x="-28"
+                y="-28"
+                width="56"
+                height="56"
+                rx="12"
+                fill="#37f2eb"
+                opacity="0.9"
+              />
+              <text
+                x="0"
+                y="10"
+                textAnchor="middle"
+                fontSize="28"
+                fontWeight="700"
+                fill="#070914"
+                fontFamily="Inter, sans-serif"
+              >
+                PR
+              </text>
+            </g>
           </g>
           <g stroke="#37f2eb" strokeWidth="3" fill="none" strokeLinecap="round">
             <path d="M-58,-40 H-84" />
@@ -2722,7 +3473,8 @@ const renderHeroIllustration = () => {
     </div>
   );
 };
-const ClientHome = ({ setPage, addToCart }) => (
+
+const ClientHome = ({ setPage, addToCart, products = [] }) => (
   <div style={{ overflowY: "auto", flex: 1 }}>
     {/* Hero */}
     <div
@@ -2781,17 +3533,17 @@ const ClientHome = ({ setPage, addToCart }) => (
             lineHeight: 1.15,
             marginBottom: 18,
             letterSpacing: "-0.025em",
-            color: T.text,
+            color: "#ffffff",
             textShadow: "0 2px 10px rgba(0,0,0,0.35)",
           }}
         >
           Tecnologia para
           <br />
-          <span style={{ color: T.text }}>quem cria o futuro</span>
+          <span style={{ color: "#ffffff" }}>quem cria o futuro</span>
         </h1>
         <p
           style={{
-            color: T.text,
+            color: "#ffffff",
             fontSize: 16,
             marginBottom: 28,
             lineHeight: 1.65,
@@ -2811,7 +3563,13 @@ const ClientHome = ({ setPage, addToCart }) => (
           </button>
           <button
             className="btn-g"
-            style={{ padding: "12px 22px", fontSize: 15 }}
+            style={{
+              padding: "12px 22px",
+              fontSize: 15,
+              color: "#ffffff",
+              background: "rgba(255, 255, 255, 0.08)",
+              borderColor: "rgba(255, 255, 255, 0.2)",
+            }}
           >
             Sobre a Loja
           </button>
@@ -2874,123 +3632,133 @@ const ClientHome = ({ setPage, addToCart }) => (
           gap: 18,
         }}
       >
-        {PRODUCTS.slice(0, 6).map((p) => (
-          <div
-            key={p.id}
-            className="card card-h"
-            style={{ overflow: "hidden" }}
-          >
+        {products.length === 0 ? (
+          <div style={{ gridColumn: "1/-1", textAlign: "center", padding: "40px", color: T.muted2 }}>
+            Carregando produtos em destaque...
+          </div>
+        ) : (
+          products.slice(0, 10).map((p) => (
             <div
-              style={{
-                position: "relative",
-                height: 180,
-                overflow: "hidden",
-                background: "#f8f9fa",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
+              key={p.id}
+              className="card card-h"
+              style={{ overflow: "hidden" }}
             >
-              <img
-                src={p.image}
-                alt={p.name}
-                style={{
-                  width: "85%",
-                  height: "85%",
-                  objectFit: "contain",
-                  display: "block",
-                }}
-              />
               <div
                 style={{
-                  position: "absolute",
-                  inset: 0,
-                  background:
-                    "linear-gradient(180deg,rgba(0,0,0,0) 30%,rgba(0,0,0,0.35) 100%)",
-                }}
-              />
-              <span
-                className={`badge ${p.stock > 0 ? "b-ok" : "b-err"}`}
-                style={{
-                  position: "absolute",
-                  top: 12,
-                  right: 12,
-                  zIndex: 2,
-                  fontSize: "11px",
-                  padding: "4px 10px",
-                  fontWeight: "800",
-                  letterSpacing: "0.4px",
-                  boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
-                }}
-              >
-                {p.stock > 0 ? "Em estoque" : "Esgotado"}
-              </span>
-            </div>
-            <div style={{ padding: 16 }}>
-              <span
-                style={{
-                  fontSize: 10,
-                  color: T.muted,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.08em",
-                }}
-              >
-                {p.category}
-              </span>
-              <p
-                style={{
-                  fontWeight: 600,
-                  fontSize: 14,
-                  marginTop: 4,
-                  marginBottom: 10,
-                  lineHeight: 1.3,
-                }}
-              >
-                {p.name}
-              </p>
-              <div
-                style={{
+                  position: "relative",
+                  height: 180,
+                  overflow: "hidden",
+                  background: "#f8f9fa",
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "space-between",
+                  justifyContent: "center",
                 }}
               >
-                <span
+                {p.image ? (
+                  <img
+                    src={p.image}
+                    alt={p.name}
+                    style={{
+                      width: "85%",
+                      height: "85%",
+                      objectFit: "contain",
+                      display: "block",
+                    }}
+                  />
+                ) : (
+                  <Package size={48} style={{ color: `${T.cyan}33` }} />
+                )}
+                <div
                   style={{
-                    fontFamily: "JetBrains Mono, monospace",
-                    fontSize: 18,
-                    fontWeight: 700,
-                    color: T.cyan,
+                    position: "absolute",
+                    inset: 0,
+                    background:
+                      "linear-gradient(180deg,rgba(0,0,0,0) 30%,rgba(0,0,0,0.35) 100%)",
+                  }}
+                />
+                <span
+                  className={`badge ${p.stock > 0 ? "b-ok" : "b-err"}`}
+                  style={{
+                    position: "absolute",
+                    top: 12,
+                    right: 12,
+                    zIndex: 2,
+                    fontSize: "11px",
+                    padding: "4px 10px",
+                    fontWeight: "800",
+                    letterSpacing: "0.4px",
+                    boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
                   }}
                 >
-                  {fmt(p.price)}
+                  {p.stock > 0 ? "Em estoque" : "Esgotado"}
                 </span>
-                <button
-                  className="btn-p"
-                  style={{ padding: "6px 12px", fontSize: 12 }}
-                  onClick={() => addToCart(p)}
-                  disabled={p.stock === 0}
+              </div>
+              <div style={{ padding: 16 }}>
+                <span
+                  style={{
+                    fontSize: 10,
+                    color: T.muted,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.08em",
+                  }}
                 >
-                  <Plus size={13} />
-                </button>
+                  {p.category}
+                </span>
+                <p
+                  style={{
+                    fontWeight: 600,
+                    fontSize: 14,
+                    marginTop: 4,
+                    marginBottom: 10,
+                    lineHeight: 1.3,
+                  }}
+                >
+                  {p.name}
+                </p>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontFamily: "JetBrains Mono, monospace",
+                      fontSize: 18,
+                      fontWeight: 700,
+                      color: T.cyan,
+                    }}
+                  >
+                    {fmt(p.price)}
+                  </span>
+                  <button
+                    className="btn-p"
+                    style={{ padding: "6px 12px", fontSize: 12 }}
+                    onClick={() => addToCart(p)}
+                    disabled={p.stock === 0}
+                  >
+                    <Plus size={13} />
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   </div>
 );
 
 // ─── CATÁLOGO ─────────────────────────────────────────────────────
-const Catalogo = ({ addToCart }) => {
+const Catalogo = ({ addToCart, products = [] }) => {
   const [search, setSearch] = useState("");
   const [cat, setCat] = useState("Todos");
-  const cats = ["Todos", ...new Set(PRODUCTS.map((p) => p.category))];
-  const filtered = PRODUCTS.filter(
+  const cats = ["Todos", ...new Set(products.map((p) => p.category))];
+  const filtered = products.filter(
     (p) =>
       (cat === "Todos" || p.category === cat) &&
-      p.name.toLowerCase().includes(search.toLowerCase()),
+      p.name?.toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
@@ -3035,112 +3803,122 @@ const Catalogo = ({ addToCart }) => {
           gap: 16,
         }}
       >
-        {filtered.map((p) => (
-          <div
-            key={p.id}
-            className="card card-h"
-            style={{ overflow: "hidden" }}
-          >
+        {filtered.length === 0 ? (
+          <div style={{ gridColumn: "1/-1", textAlign: "center", padding: "40px", color: T.muted2 }}>
+            Nenhum produto encontrado.
+          </div>
+        ) : (
+          filtered.map((p) => (
             <div
-              style={{
-                position: "relative",
-                height: 160,
-                overflow: "hidden",
-                background: "#f8f9fa",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
+              key={p.id}
+              className="card card-h"
+              style={{ overflow: "hidden" }}
             >
-              <img
-                src={p.image}
-                alt={p.name}
-                style={{
-                  width: "85%",
-                  height: "85%",
-                  objectFit: "contain",
-                  display: "block",
-                }}
-              />
               <div
                 style={{
-                  position: "absolute",
-                  inset: 0,
-                  background:
-                    "linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.34))",
-                }}
-              />
-            </div>
-            <div style={{ padding: 14 }}>
-              <span
-                style={{
-                  fontSize: 10,
-                  color: T.muted,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.08em",
-                }}
-              >
-                {p.category}
-              </span>
-              <p
-                style={{
-                  fontWeight: 600,
-                  fontSize: 13,
-                  marginTop: 3,
-                  marginBottom: 6,
-                  lineHeight: 1.35,
-                }}
-              >
-                {p.name}
-              </p>
-              <div
-                style={{
+                  position: "relative",
+                  height: 160,
+                  overflow: "hidden",
+                  background: "#f8f9fa",
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "space-between",
-                  marginBottom: 10,
-                }}
-              >
-                <span
-                  style={{
-                    fontFamily: "JetBrains Mono, monospace",
-                    fontSize: 16,
-                    fontWeight: 700,
-                    color: T.cyan,
-                  }}
-                >
-                  {fmt(p.price)}
-                </span>
-                <span
-                  style={{
-                    fontSize: 11,
-                    color:
-                      p.stock > 10
-                        ? T.success
-                        : p.stock > 0
-                          ? T.warning
-                          : T.danger,
-                  }}
-                >
-                  {p.stock > 0 ? `${p.stock} un.` : "Esgotado"}
-                </span>
-              </div>
-              <button
-                className="btn-p"
-                style={{
-                  width: "100%",
                   justifyContent: "center",
-                  padding: "7px",
-                  opacity: p.stock === 0 ? 0.45 : 1,
                 }}
-                onClick={() => addToCart(p)}
-                disabled={p.stock === 0}
               >
-                <ShoppingCart size={13} /> Adicionar
-              </button>
+                {p.image ? (
+                  <img
+                    src={p.image}
+                    alt={p.name}
+                    style={{
+                      width: "85%",
+                      height: "85%",
+                      objectFit: "contain",
+                      display: "block",
+                    }}
+                  />
+                ) : (
+                  <Package size={42} style={{ color: `${T.cyan}33` }} />
+                )}
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    background:
+                      "linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.34))",
+                  }}
+                />
+              </div>
+              <div style={{ padding: 14 }}>
+                <span
+                  style={{
+                    fontSize: 10,
+                    color: T.muted,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.08em",
+                  }}
+                >
+                  {p.category}
+                </span>
+                <p
+                  style={{
+                    fontWeight: 600,
+                    fontSize: 13,
+                    marginTop: 3,
+                    marginBottom: 6,
+                    lineHeight: 1.35,
+                  }}
+                >
+                  {p.name}
+                </p>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    marginBottom: 10,
+                  }}
+                >
+                  <span
+                    style={{
+                      fontFamily: "JetBrains Mono, monospace",
+                      fontSize: 16,
+                      fontWeight: 700,
+                      color: T.cyan,
+                    }}
+                  >
+                    {fmt(p.price)}
+                  </span>
+                  <span
+                    style={{
+                      fontSize: 11,
+                      color:
+                        p.stock > 10
+                          ? T.success
+                          : p.stock > 0
+                            ? T.warning
+                            : T.danger,
+                    }}
+                  >
+                    {p.stock > 0 ? `${p.stock} un.` : "Esgotado"}
+                  </span>
+                </div>
+                <button
+                  className="btn-p"
+                  style={{
+                    width: "100%",
+                    justifyContent: "center",
+                    padding: "7px",
+                    opacity: p.stock === 0 ? 0.45 : 1,
+                  }}
+                  onClick={() => addToCart(p)}
+                  disabled={p.stock === 0}
+                >
+                  <ShoppingCart size={13} /> Adicionar
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );
@@ -3421,7 +4199,16 @@ const Perfil = () => {
         width: "100%",
       }}
     >
-      <div className="card" style={{ padding: 28, marginBottom: 18 }}>
+      <div
+        className="card"
+        style={{
+          padding: 28,
+          marginBottom: 18,
+          background: "var(--color-surface)",
+          border: "1px solid var(--color-border)",
+          boxShadow: "0 20px 40px -15px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.05)",
+        }}
+      >
         <div
           style={{
             display: "flex",
@@ -3432,8 +4219,8 @@ const Perfil = () => {
         >
           <Avatar name={c.name} size={60} color={T.cyan} />
           <div>
-            <h2 style={{ fontSize: 20, fontWeight: 700 }}>{c.name}</h2>
-            <p style={{ color: T.muted2, fontSize: 13, marginTop: 2 }}>
+            <h2 style={{ fontSize: 20, fontWeight: 700, color: "var(--color-text)" }}>{c.name}</h2>
+            <p style={{ color: "var(--color-muted)", fontSize: 13, marginTop: 2 }}>
               Cliente desde {c.since}
             </p>
           </div>
@@ -3459,7 +4246,7 @@ const Perfil = () => {
             <div
               key={l}
               style={{
-                background: T.surface2,
+                background: "var(--color-surface2)",
                 borderRadius: 8,
                 padding: "12px 16px",
               }}
@@ -3467,7 +4254,7 @@ const Perfil = () => {
               <div
                 style={{
                   fontSize: 11,
-                  color: T.muted,
+                  color: "var(--color-muted)",
                   marginBottom: 4,
                   textTransform: "uppercase",
                   letterSpacing: "0.07em",
@@ -3475,7 +4262,7 @@ const Perfil = () => {
               >
                 {l}
               </div>
-              <div style={{ fontSize: 14, fontWeight: 500 }}>{v}</div>
+              <div style={{ fontSize: 14, fontWeight: 500, color: "var(--color-text)" }}>{v}</div>
             </div>
           ))}
         </div>
@@ -3485,8 +4272,8 @@ const Perfil = () => {
         >
           <div
             style={{
-              background: T.cyanBg,
-              border: `1px solid ${T.border}`,
+              background: "var(--color-cyanBg)",
+              border: "1px solid var(--color-border)",
               borderRadius: 10,
               padding: "16px",
               textAlign: "center",
@@ -3496,20 +4283,20 @@ const Perfil = () => {
               style={{
                 fontSize: 30,
                 fontWeight: 700,
-                color: T.cyan,
+                color: "var(--color-cyan)",
                 fontFamily: "JetBrains Mono, monospace",
               }}
             >
               {c.purchases}
             </div>
-            <div style={{ fontSize: 12, color: T.muted2, marginTop: 3 }}>
+            <div style={{ fontSize: 12, color: "var(--color-muted)", marginTop: 3 }}>
               Pedidos Realizados
             </div>
           </div>
           <div
             style={{
-              background: T.cyanBg,
-              border: `1px solid ${T.border}`,
+              background: "var(--color-cyanBg)",
+              border: "1px solid var(--color-border)",
               borderRadius: 10,
               padding: "16px",
               textAlign: "center",
@@ -3519,21 +4306,29 @@ const Perfil = () => {
               style={{
                 fontSize: 22,
                 fontWeight: 700,
-                color: T.cyan,
+                color: "var(--color-cyan)",
                 fontFamily: "JetBrains Mono, monospace",
               }}
             >
               {fmt(c.total)}
             </div>
-            <div style={{ fontSize: 12, color: T.muted2, marginTop: 3 }}>
+            <div style={{ fontSize: 12, color: "var(--color-muted)", marginTop: 3 }}>
               Total Investido
             </div>
           </div>
         </div>
       </div>
 
-      <div className="card" style={{ padding: 22 }}>
-        <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 16 }}>
+      <div
+        className="card"
+        style={{
+          padding: 22,
+          background: "var(--color-surface)",
+          border: "1px solid var(--color-border)",
+          boxShadow: "0 20px 40px -15px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.05)",
+        }}
+      >
+        <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 16, color: "var(--color-text)" }}>
           Pedidos Recentes
         </div>
         {RECENT_SALES.slice(0, 4).map((s) => (
@@ -3551,14 +4346,14 @@ const Perfil = () => {
               style={{
                 width: 36,
                 height: 36,
-                background: T.surface2,
+                background: "var(--color-surface2)",
                 borderRadius: 8,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
-              <ShoppingBag size={16} style={{ color: `${T.cyan}77` }} />
+              <ShoppingBag size={16} style={{ color: "var(--color-cyan)" }} />
             </div>
             <div style={{ flex: 1 }}>
               <div
@@ -3566,12 +4361,12 @@ const Perfil = () => {
                   fontSize: 13,
                   fontWeight: 500,
                   fontFamily: "JetBrains Mono, monospace",
-                  color: T.muted2,
+                  color: "var(--color-text)",
                 }}
               >
                 {s.id}
               </div>
-              <div style={{ fontSize: 12, color: T.muted2 }}>
+              <div style={{ fontSize: 12, color: "var(--color-muted)" }}>
                 {s.items} itens · {s.date}
               </div>
             </div>
@@ -3580,7 +4375,7 @@ const Perfil = () => {
               style={{
                 fontFamily: "JetBrains Mono, monospace",
                 fontWeight: 700,
-                color: T.cyan,
+                color: "var(--color-cyan)",
                 minWidth: 80,
                 textAlign: "right",
               }}
@@ -3595,7 +4390,7 @@ const Perfil = () => {
 };
 
 // ─── CLIENT AREA ──────────────────────────────────────────────────
-const ClientArea = ({ onLogout, theme, toggleTheme }) => {
+const ClientArea = ({ onLogout, theme, toggleTheme, products = [], loadProducts }) => {
   const [page, setPage] = useState("home");
   const [cart, setCart] = useState([]);
 
@@ -3607,18 +4402,17 @@ const ClientArea = ({ onLogout, theme, toggleTheme }) => {
         : [...c, { ...p, qty: 1 }];
     });
 
-  const PAGES = {
-    home: () => <ClientHome setPage={setPage} addToCart={addToCart} />,
-    catalogo: () => <Catalogo addToCart={addToCart} />,
-    carrinho: () => (
-      <Carrinho cart={cart} setCart={setCart} setPage={setPage} />
-    ),
-    perfil: () => <Perfil />,
-  };
-  const Page = PAGES[page] || PAGES.home;
-
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100vh",
+        background: theme === "light"
+          ? "linear-gradient(135deg, #cdffd8 0%, #94b9ff 100%)"
+          : "var(--color-bg)"
+      }}
+    >
       <ClientNav
         page={page}
         setPage={setPage}
@@ -3635,7 +4429,10 @@ const ClientArea = ({ onLogout, theme, toggleTheme }) => {
           overflow: "hidden",
         }}
       >
-        <Page key={page} />
+        {page === "home" && <ClientHome setPage={setPage} addToCart={addToCart} products={products} />}
+        {page === "catalogo" && <Catalogo addToCart={addToCart} products={products} />}
+        {page === "carrinho" && <Carrinho cart={cart} setCart={setCart} setPage={setPage} />}
+        {page === "perfil" && <Perfil />}
       </div>
     </div>
   );
@@ -3645,11 +4442,57 @@ const ClientArea = ({ onLogout, theme, toggleTheme }) => {
 export default function App() {
   const [session, setSession] = useState(null);
   const [theme, setTheme] = useState(() => localStorage.getItem("pt-theme") || "dark");
+  const [products, setProducts] = useState([]);
+  const [sales, setSales] = useState([]);
+  const [topProducts, setTopProducts] = useState([]);
+
+  const loadProducts = () => {
+    fetch("http://localhost:3000/api/produtos")
+      .then((res) => {
+        if (!res.ok) throw new Error("Status HTTP inválido");
+        return res.json();
+      })
+      .then((data) => setProducts(data))
+      .catch((err) => console.error("Erro ao carregar produtos:", err));
+  };
+
+  const loadSales = () => {
+    fetch("http://localhost:3000/api/vendas")
+      .then((res) => {
+        if (!res.ok) throw new Error("Status HTTP inválido");
+        return res.json();
+      })
+      .then((data) => setSales(data))
+      .catch((err) => console.error("Erro ao carregar vendas:", err));
+  };
+
+  const loadTopProducts = () => {
+    fetch("http://localhost:3000/api/dashboard/top-produtos")
+      .then((res) => {
+        if (!res.ok) throw new Error("Status HTTP inválido");
+        return res.json();
+      })
+      .then((data) => setTopProducts(data))
+      .catch((err) => console.error("Erro ao carregar top produtos:", err));
+  };
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("pt-theme", theme);
   }, [theme]);
+
+  // Carrega produtos, vendas e top produtos inicialmente e cria um intervalo de polling para manter atualizado em tempo real
+  useEffect(() => {
+    loadProducts();
+    loadSales();
+    loadTopProducts();
+    const interval = setInterval(() => {
+      loadProducts();
+      loadSales();
+      loadTopProducts();
+    }, 7000);
+    return () => clearInterval(interval);
+  }, []);
 
   const toggleTheme = () => setTheme(prev => prev === "dark" ? "light" : "dark");
 
@@ -3658,9 +4501,27 @@ export default function App() {
       <style>{GLOBAL_CSS}</style>
       <div className="pt-root">
         {!session && <Login onLogin={setSession} />}
-        {session === "admin" && <AdminArea onLogout={() => setSession(null)} theme={theme} toggleTheme={toggleTheme} />}
+        {session === "admin" && (
+          <AdminArea
+            onLogout={() => setSession(null)}
+            theme={theme}
+            toggleTheme={toggleTheme}
+            products={products}
+            loadProducts={loadProducts}
+            sales={sales}
+            loadSales={loadSales}
+            topProducts={topProducts}
+            loadTopProducts={loadTopProducts}
+          />
+        )}
         {session === "client" && (
-          <ClientArea onLogout={() => setSession(null)} theme={theme} toggleTheme={toggleTheme} />
+          <ClientArea
+            onLogout={() => setSession(null)}
+            theme={theme}
+            toggleTheme={toggleTheme}
+            products={products}
+            loadProducts={loadProducts}
+          />
         )}
       </div>
     </>

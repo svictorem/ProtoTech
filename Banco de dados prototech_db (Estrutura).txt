@@ -1,0 +1,174 @@
+CREATE DATABASE prototech_db;
+USE prototech_db;
+
+
+-- ==========================================
+-- 2. CRIAÇÃO DAS TABELAS (DDL - 3FN)
+-- ==========================================
+
+-- Tabela de Cargos (Garante a 3FN: Salário depende do Cargo)
+CREATE TABLE Cargo (
+    id_cargo INT AUTO_INCREMENT PRIMARY KEY,
+    nome_cargo VARCHAR(50) UNIQUE NOT NULL,
+    salario_base DECIMAL(10,2) NOT NULL,
+    descricao_atribuicoes VARCHAR(255)
+);
+
+CREATE TABLE Fornecedor (
+    id_fornecedor INT AUTO_INCREMENT PRIMARY KEY,
+    razao_social VARCHAR(100) NOT NULL,
+    cnpj VARCHAR(18) UNIQUE NOT NULL,
+    contato VARCHAR(50),
+    telefone VARCHAR(15)
+);
+
+CREATE TABLE Cliente (
+    id_cliente INT AUTO_INCREMENT PRIMARY KEY,
+    nome_cliente VARCHAR(100) NOT NULL,
+    cpf VARCHAR(14) UNIQUE NOT NULL,
+    email VARCHAR(100),
+    telefone VARCHAR(15),
+    data_cadastro DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE Funcionario (
+    id_funcionario INT AUTO_INCREMENT PRIMARY KEY,
+    nome_funcionario VARCHAR(100) NOT NULL,
+    cpf VARCHAR(14) UNIQUE NOT NULL,
+    id_cargo INT NOT NULL,
+    data_admissao DATE DEFAULT (CURRENT_DATE),
+    FOREIGN KEY (id_cargo) REFERENCES Cargo(id_cargo)
+);
+
+CREATE TABLE Administrador (
+    id_admin INT AUTO_INCREMENT PRIMARY KEY,
+    id_funcionario INT UNIQUE NOT NULL,
+    nivel_acesso INT DEFAULT 1,
+    FOREIGN KEY (id_funcionario) REFERENCES Funcionario(id_funcionario) ON DELETE CASCADE
+);
+
+CREATE TABLE Usuario (
+    id_usuario INT AUTO_INCREMENT PRIMARY KEY,
+    login VARCHAR(50) UNIQUE NOT NULL,
+    senha VARCHAR(255) NOT NULL,
+    id_cliente INT UNIQUE,
+    id_funcionario INT UNIQUE,
+    FOREIGN KEY (id_cliente) REFERENCES Cliente(id_cliente) ON DELETE CASCADE,
+    FOREIGN KEY (id_funcionario) REFERENCES Funcionario(id_funcionario) ON DELETE CASCADE
+);
+
+CREATE TABLE Produto (
+    id_produto INT AUTO_INCREMENT PRIMARY KEY,
+    nome_produto VARCHAR(100) NOT NULL,
+    descricao VARCHAR(255),
+    preco_custo DECIMAL(10,2) NOT NULL,
+    preco_venda DECIMAL(10,2) NOT NULL,
+    estoque_minimo INT DEFAULT 5,
+    id_fornecedor INT,
+    FOREIGN KEY (id_fornecedor) REFERENCES Fornecedor(id_fornecedor)
+);
+
+CREATE TABLE Estoque (
+    id_estoque INT AUTO_INCREMENT PRIMARY KEY,
+    id_produto INT UNIQUE NOT NULL,
+    quantidade_atual INT DEFAULT 0,
+    localizacao_prateleira VARCHAR(50),
+    FOREIGN KEY (id_produto) REFERENCES Produto(id_produto) ON DELETE CASCADE
+);
+
+CREATE TABLE NotaFiscal (
+    id_nota INT AUTO_INCREMENT PRIMARY KEY,
+    numero_nf VARCHAR(50) UNIQUE NOT NULL,
+    tipo_operacao ENUM('ENTRADA', 'SAIDA') NOT NULL,
+    data_emissao DATETIME DEFAULT CURRENT_TIMESTAMP,
+    valor_total DECIMAL(10,2) DEFAULT 0.00
+);
+
+CREATE TABLE ItemNotaFiscal (
+    id_item INT AUTO_INCREMENT PRIMARY KEY,
+    id_nota INT NOT NULL,
+    id_produto INT NOT NULL,
+    quantidade INT NOT NULL,
+    valor_unitario DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (id_nota) REFERENCES NotaFiscal(id_nota) ON DELETE CASCADE,
+    FOREIGN KEY (id_produto) REFERENCES Produto(id_produto)
+);
+
+CREATE TABLE Venda (
+    id_venda INT AUTO_INCREMENT PRIMARY KEY,
+    id_cliente INT NOT NULL,
+    id_funcionario INT NOT NULL,
+    id_nota INT UNIQUE NOT NULL,
+    status_venda VARCHAR(20) DEFAULT 'CONCLUIDA',
+    FOREIGN KEY (id_cliente) REFERENCES Cliente(id_cliente),
+    FOREIGN KEY (id_funcionario) REFERENCES Funcionario(id_funcionario),
+    FOREIGN KEY (id_nota) REFERENCES NotaFiscal(id_nota)
+);
+
+CREATE TABLE AlertaEstoque (
+    id_alerta INT AUTO_INCREMENT PRIMARY KEY,
+    id_produto INT NOT NULL,
+    mensagem VARCHAR(255) NOT NULL,
+    data_alerta DATETIME DEFAULT CURRENT_TIMESTAMP,
+    status_alerta ENUM('PENDENTE', 'RESOLVIDO') DEFAULT 'PENDENTE',
+    FOREIGN KEY (id_produto) REFERENCES Produto(id_produto)
+);
+
+-- ==========================================
+-- 3. PROCEDURES E TRIGGERS
+-- ==========================================
+
+DELIMITER //
+
+-- Procedure: Atualização automática de saldo (Entrada/Saída)
+CREATE PROCEDURE sp_AtualizarSaldoEstoque(
+    IN p_id_produto INT,
+    IN p_quantidade INT,
+    IN p_tipo_operacao VARCHAR(10)
+)
+BEGIN
+    IF p_tipo_operacao = 'ENTRADA' THEN
+        UPDATE Estoque 
+        SET quantidade_atual = quantidade_atual + p_quantidade 
+        WHERE id_produto = p_id_produto;
+    ELSEIF p_tipo_operacao = 'SAIDA' THEN
+        UPDATE Estoque 
+        SET quantidade_atual = quantidade_atual - p_quantidade 
+        WHERE id_produto = p_id_produto;
+    END IF;
+END //
+
+-- Trigger: Alerta automático de estoque mínimo
+CREATE TRIGGER trg_VerificarEstoqueMinimo
+AFTER UPDATE ON Estoque
+FOR EACH ROW
+BEGIN
+    DECLARE v_minimo INT;
+    DECLARE v_nome VARCHAR(100);
+    
+    -- Busca o limite mínimo e o nome do produto
+    SELECT estoque_minimo, nome_produto INTO v_minimo, v_nome 
+    FROM Produto WHERE id_produto = NEW.id_produto;
+    
+    -- CENÁRIO A: Estoque atingiu ou caiu abaixo do nível crítico
+    IF NEW.quantidade_atual <= v_minimo THEN
+        -- Opcional: Verifica se já existe um alerta pendente para não duplicar mensagens
+        IF NOT EXISTS (SELECT 1 FROM AlertaEstoque 
+                       WHERE id_produto = NEW.id_produto AND status_alerta = 'PENDENTE') THEN
+            
+            INSERT INTO AlertaEstoque (id_produto, mensagem, status_alerta)
+            VALUES (NEW.id_produto, 
+                    CONCAT('Estoque crítico para: ', v_nome, '. Saldo atual: ', NEW.quantidade_atual), 
+                    'PENDENTE');
+        END IF;
+
+    -- CENÁRIO B: Estoque foi reposto e agora está acima do mínimo
+    ELSEIF NEW.quantidade_atual > v_minimo THEN
+        -- Atualiza todos os alertas pendentes desse produto para RESOLVIDO
+        UPDATE AlertaEstoque 
+        SET status_alerta = 'RESOLVIDO'
+        WHERE id_produto = NEW.id_produto AND status_alerta = 'PENDENTE';
+    END IF;
+END //
+
+DELIMITER ;
