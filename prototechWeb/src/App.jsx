@@ -39,7 +39,12 @@ import {
   User,
   Sun,
   Moon,
+  Sparkles,
 } from "lucide-react";
+
+import { ToastProvider } from "./components/premium/ToastSystem";
+import Showcase from "./components/premium/Showcase";
+import ResponsiveHeader from "./components/premium/ResponsiveHeader";
 
 // ─── UTILS ────────────────────────────────────────────────────────
 const getProductImage = (name) => {
@@ -5004,9 +5009,11 @@ const ClientArea = ({ onLogout, theme, toggleTheme, products = [], loadProducts 
 // ─── ROOT ─────────────────────────────────────────────────────────
 export default function App() {
   const [session, setSession] = useState(null);
+  const [showcase, setShowcase] = useState(false);
   const [theme, setTheme] = useState(() => localStorage.getItem("pt-theme") || "dark");
   const [products, setProducts] = useState([]);
   const [sales, setSales] = useState([]);
+
   const [topProducts, setTopProducts] = useState([]);
 
   const loadProducts = () => {
@@ -5066,33 +5073,62 @@ export default function App() {
   const toggleTheme = () => setTheme(prev => prev === "dark" ? "light" : "dark");
 
   return (
-    <>
+    <ToastProvider>
       <style>{GLOBAL_CSS}</style>
       <div className="pt-root">
-        {!session && <Login onLogin={setSession} />}
-        {session === "admin" && (
-          <AdminArea
-            onLogout={() => setSession(null)}
-            theme={theme}
-            toggleTheme={toggleTheme}
-            products={products}
-            loadProducts={loadProducts}
-            sales={sales}
-            loadSales={loadSales}
-            topProducts={topProducts}
-            loadTopProducts={loadTopProducts}
-          />
-        )}
-        {session === "client" && (
-          <ClientArea
-            onLogout={() => setSession(null)}
-            theme={theme}
-            toggleTheme={toggleTheme}
-            products={products}
-            loadProducts={loadProducts}
-          />
+        {showcase ? (
+          <>
+            <ResponsiveHeader theme={theme} toggleTheme={toggleTheme} />
+            <div style={{ paddingTop: 80 }}>
+              <button 
+                className="btn-p" 
+                style={{ margin: '20px auto', display: 'flex', alignItems: 'center', gap: '8px' }}
+                onClick={() => setShowcase(false)}
+              >
+                Voltar para o App
+              </button>
+              <Showcase />
+            </div>
+          </>
+        ) : (
+          <>
+            {!session && (
+              <div style={{ position: 'absolute', top: 20, right: 20, zIndex: 999 }}>
+                <button 
+                  className="btn-p" 
+                  onClick={() => setShowcase(true)}
+                  style={{ background: 'var(--color-purple)', display: 'flex', gap: '8px' }}
+                >
+                  <Sparkles size={16} /> Ver Componentes Premium
+                </button>
+              </div>
+            )}
+            {!session && <Login onLogin={setSession} />}
+            {session === "admin" && (
+              <AdminArea
+                onLogout={() => setSession(null)}
+                theme={theme}
+                toggleTheme={toggleTheme}
+                products={products}
+                loadProducts={loadProducts}
+                sales={sales}
+                loadSales={loadSales}
+                topProducts={topProducts}
+                loadTopProducts={loadTopProducts}
+              />
+            )}
+            {session === "client" && (
+              <ClientArea
+                onLogout={() => setSession(null)}
+                theme={theme}
+                toggleTheme={toggleTheme}
+                products={products}
+                loadProducts={loadProducts}
+              />
+            )}
+          </>
         )}
       </div>
-    </>
+    </ToastProvider>
   );
 }
