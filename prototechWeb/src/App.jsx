@@ -41,8 +41,74 @@ import {
   Moon,
 } from "lucide-react";
 
+// ─── UTILS ────────────────────────────────────────────────────────
+const getProductImage = (name) => {
+  if (!name) return null;
+  const cleanName = name.trim();
+  const map = {
+    "Arduino Uno R3": "Arduino Uno R3.png",
+    "ESP32 WiFi+BT": "ESP32 WiFi+BT.webp",
+    "Raspberry Pi Pico": "Raspberry Pi Pico.jpg",
+    "Sensor Ultrassônico HC-SR04": "Sensor Ultrassônico HC-SR04.jpg",
+    "Módulo Relé 1 Canal": "Módulo Relé 1 Canal.png",
+    "Sensor DHT11": "Sensor DHT11.png",
+    "Display LCD 16x2 I2C": "Display LCD 16x2 I2C.png",
+    "Jumpers Macho-Fêmea (40 un)": "Jumpers Macho-Fêmea (40 un.png",
+    "Protoboard 830 Pontos": "Protoboard 830 Pontos.png",
+    "Sensor PIR Movimento": "Sensor PIR Movimento (HC-SR501).jpg",
+    "Módulo Lora 915MHz": "Módulo Lora 915MHz.png",
+    "Servo Motor SG90": "Servo Motor SG90.webp",
+    "Bateria LiPo 3.7V": "Bateria LiPo 3.7V.png",
+    "Módulo MP3 DFPlayer": "Módulo MP3 DFPlayer.png",
+    "NFC PN532": "NFC PN532.png",
+    "Kit Resistores (100 un)": "Kit Resistores (100 un).png",
+    "Potenciômetro 10k": "Potenciômetro 10k.png",
+    "Ponte H L298N": "Ponte H L298N.png",
+    "Joystick KY-023": "Joystick KY-023.png",
+    "Sensor de Gás MQ-2": "Sensor de Gás MQ-2.png",
+    "Módulo Bluetooth HC-05": "Módulo Bluetooth HC-05.png",
+    "OLED 0.96 I2C": "OLED 0.96 I2C.png",
+    "Sensor Umidade Solo": "Sensor Umidade Solo.png",
+    "Cabo USB AB 1.5m": "Cabo USB AB 1.5m.png",
+    "ESP8266 NodeMCU": "ESP8266 NodeMCU V3.png"
+  };
+
+  let fileName = map[cleanName];
+  if (!fileName) {
+    const lower = cleanName.toLowerCase();
+    if (lower.includes("arduino")) fileName = "Arduino Uno R3.png";
+    else if (lower.includes("esp32")) fileName = "ESP32 WiFi+BT.webp";
+    else if (lower.includes("pico") || lower.includes("raspberry pi pico")) fileName = "Raspberry Pi Pico.jpg";
+    else if (lower.includes("ultrassônico") || lower.includes("hc-sr04")) fileName = "Sensor Ultrassônico HC-SR04.jpg";
+    else if (lower.includes("relé") || lower.includes("rele")) fileName = "Módulo Relé 1 Canal.png";
+    else if (lower.includes("dht11") || lower.includes("dht22") || lower.includes("dht")) fileName = "Sensor DHT11.png";
+    else if (lower.includes("lcd")) fileName = "Display LCD 16x2 I2C.png";
+    else if (lower.includes("jumper")) fileName = "Jumpers Macho-Fêmea (40 un.png";
+    else if (lower.includes("protoboard")) fileName = "Protoboard 830 Pontos.png";
+    else if (lower.includes("pir") || lower.includes("movimento")) fileName = "Sensor PIR Movimento (HC-SR501).jpg";
+    else if (lower.includes("lora")) fileName = "Módulo Lora 915MHz.png";
+    else if (lower.includes("servo") || lower.includes("sg90")) fileName = "Servo Motor SG90.webp";
+    else if (lower.includes("lipo") || lower.includes("bateria")) fileName = "Bateria LiPo 3.7V.png";
+    else if (lower.includes("mp3") || lower.includes("dfplayer")) fileName = "Módulo MP3 DFPlayer.png";
+    else if (lower.includes("nfc") || lower.includes("pn532")) fileName = "NFC PN532.png";
+    else if (lower.includes("resistor")) fileName = "Kit Resistores (100 un).png";
+    else if (lower.includes("potenciômetro") || lower.includes("potenciometro")) fileName = "Potenciômetro 10k.png";
+    else if (lower.includes("ponte h") || lower.includes("l298n")) fileName = "Ponte H L298N.png";
+    else if (lower.includes("joystick")) fileName = "Joystick KY-023.png";
+    else if (lower.includes("gás") || lower.includes("gas") || lower.includes("mq-2")) fileName = "Sensor de Gás MQ-2.png";
+    else if (lower.includes("bluetooth") || lower.includes("hc-05")) fileName = "Módulo Bluetooth HC-05.png";
+    else if (lower.includes("oled")) fileName = "OLED 0.96 I2C.png";
+    else if (lower.includes("solo") || lower.includes("umidade")) fileName = "Sensor Umidade Solo.png";
+    else if (lower.includes("usb") || lower.includes("cabo")) fileName = "Cabo USB AB 1.5m.png";
+    else if (lower.includes("esp8266") || lower.includes("nodemcu")) fileName = "ESP8266 NodeMCU V3.png";
+  }
+
+  if (!fileName) return null;
+  return new URL(`./assets/${fileName}`, import.meta.url).href;
+};
+
 // ─── MOCK DATA ────────────────────────────────────────────────────
-const PRODUCTS = [
+const PRODUCTS_MOCK = [
   {
     id: 1,
     image: null,
@@ -164,6 +230,7 @@ const PRODUCTS = [
     sku: "JMP-MF-40",
   },
 ];
+const PRODUCTS = PRODUCTS_MOCK.map(p => ({ ...p, image: getProductImage(p.name) }));
 
 const CLIENTS = [
   {
@@ -499,6 +566,25 @@ const GLOBAL_CSS = `
     animation: chipPulse 2.2s ease-in-out infinite;
     transform-origin: center;
   }
+  
+  @keyframes logoPulseRotate {
+    0% {
+      transform: scale(1) rotate(0deg);
+    }
+    50% {
+      transform: scale(1.15) rotate(12deg);
+    }
+    100% {
+      transform: scale(1) rotate(0deg);
+    }
+  }
+  .logo-animated {
+    transition: transform 0.3s ease, filter 0.3s ease;
+  }
+  .card-neon:hover .logo-animated {
+    animation: logoPulseRotate 2s ease-in-out infinite;
+    filter: drop-shadow(0 0 10px var(--glow-color, rgba(255,255,255,0.45)));
+  }
 `;
 
 // ─── UTILS ────────────────────────────────────────────────────────
@@ -512,6 +598,21 @@ const initials = (name) =>
     .slice(0, 2)
     .map((w) => w[0])
     .join("");
+
+const useWindowSize = () => {
+  const [width, setWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 1200);
+  useEffect(() => {
+    const handleResize = () => setWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  return {
+    width,
+    isMobile: width < 768,
+    isTablet: width >= 768 && width < 1024,
+    isDesktop: width >= 1024,
+  };
+};
 
 const Badge = ({ status }) => {
   const map = {
@@ -3199,98 +3300,341 @@ const AdminArea = ({ onLogout, theme, toggleTheme, products = [], loadProducts, 
 };
 
 // ─── CLIENT NAV ───────────────────────────────────────────────────
-const ClientNav = ({ page, setPage, cart, onLogout, theme, toggleTheme }) => (
-  <nav
-    style={{
-      background: T.surface,
-      borderBottom: `1px solid ${T.border}`,
-      padding: "0 28px",
-      height: 58,
-      display: "flex",
-      alignItems: "center",
-      gap: 24,
-      flexShrink: 0,
-    }}
-  >
-    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-      <Cpu size={18} style={{ color: T.cyan }} />
-      <span style={{ fontWeight: 700, fontSize: 17, letterSpacing: "-0.03em" }}>
-        Proto<span style={{ color: T.cyan }}>Tech</span>
-      </span>
-    </div>
-    <div style={{ display: "flex", gap: 4 }}>
-      {[
-        { id: "home", l: "Início" },
-        { id: "catalogo", l: "Catálogo" },
-        { id: "perfil", l: "Meu Perfil" },
-      ].map(({ id, l }) => (
-        <button
-          key={id}
-          onClick={() => setPage(id)}
-          style={{
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            color: page === id ? T.cyan : T.muted2,
-            fontWeight: page === id ? 600 : 400,
-            fontSize: 14,
-            padding: "6px 12px",
-            borderRadius: 8,
-            transition: "all .15s",
-          }}
-        >
-          {l}
-        </button>
-      ))}
-    </div>
-    <div
+const ClientNav = ({ page, setPage, cart, onLogout, theme, toggleTheme }) => {
+  const { isMobile } = useWindowSize();
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const cartCount = cart.reduce((s, i) => s + i.qty, 0);
+
+  return (
+    <nav
       style={{
-        marginLeft: "auto",
+        background: T.surface,
+        borderBottom: `1px solid ${T.border}`,
+        padding: isMobile ? "0 16px" : "0 28px",
+        height: 58,
         display: "flex",
-        gap: 10,
         alignItems: "center",
+        flexShrink: 0,
+        position: "relative",
+        zIndex: 100,
       }}
     >
-      <button
-        className="btn-g"
-        style={{ position: "relative" }}
-        onClick={() => setPage("carrinho")}
+      {/* Centered bounds wrapper */}
+      <div
+        style={{
+          width: "100%",
+          maxWidth: 1400,
+          margin: "0 auto",
+          display: "flex",
+          alignItems: "center",
+          gap: isMobile ? 12 : 24,
+        }}
       >
-        <ShoppingCart size={15} /> Carrinho
-        {cart.length > 0 && (
-          <span
+        <div
+          onClick={() => {
+            if (page === "home") {
+              document.getElementById("client-home-container")?.scrollTo({
+                top: 0,
+                behavior: "smooth"
+              });
+            } else {
+              setPage("home");
+            }
+          }}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            cursor: "pointer",
+            userSelect: "none",
+          }}
+        >
+          <Cpu size={18} style={{ color: T.cyan }} />
+          <span style={{ fontWeight: 700, fontSize: 17, letterSpacing: "-0.03em" }}>
+            Proto<span style={{ color: T.cyan }}>Tech</span>
+          </span>
+        </div>
+
+        {!isMobile ? (
+          <>
+            <div style={{ display: "flex", gap: 4 }}>
+              <button
+                onClick={() => setPage("home")}
+                style={{
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  color: page === "home" ? T.cyan : T.muted2,
+                  fontWeight: page === "home" ? 600 : 400,
+                  fontSize: 14,
+                  padding: "6px 12px",
+                  borderRadius: 8,
+                  transition: "all .15s",
+                }}
+              >
+                Início
+              </button>
+              <button
+                onClick={() => {
+                  if (page !== "home") {
+                    setPage("home");
+                    setTimeout(() => {
+                      document.getElementById("sobre-projeto")?.scrollIntoView({ behavior: "smooth" });
+                    }, 150);
+                  } else {
+                    document.getElementById("sobre-projeto")?.scrollIntoView({ behavior: "smooth" });
+                  }
+                }}
+                style={{
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  color: T.muted2,
+                  fontWeight: 400,
+                  fontSize: 14,
+                  padding: "6px 12px",
+                  borderRadius: 8,
+                  transition: "all .15s",
+                }}
+              >
+                Sobre
+              </button>
+              <button
+                onClick={() => setPage("catalogo")}
+                style={{
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  color: page === "catalogo" ? T.cyan : T.muted2,
+                  fontWeight: page === "catalogo" ? 600 : 400,
+                  fontSize: 14,
+                  padding: "6px 12px",
+                  borderRadius: 8,
+                  transition: "all .15s",
+                }}
+              >
+                Catálogo
+              </button>
+              <button
+                onClick={() => setPage("perfil")}
+                style={{
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  color: page === "perfil" ? T.cyan : T.muted2,
+                  fontWeight: page === "perfil" ? 600 : 400,
+                  fontSize: 14,
+                  padding: "6px 12px",
+                  borderRadius: 8,
+                  transition: "all .15s",
+                }}
+              >
+                Meu Perfil
+              </button>
+            </div>
+            <div
+              style={{
+                marginLeft: "auto",
+                display: "flex",
+                gap: 10,
+                alignItems: "center",
+              }}
+            >
+              <button
+                className="btn-g"
+                style={{ position: "relative" }}
+                onClick={() => setPage("carrinho")}
+              >
+                <ShoppingCart size={15} /> Carrinho
+                {cartCount > 0 && (
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: -6,
+                      right: -6,
+                      background: T.cyan,
+                      color: "#070914",
+                      borderRadius: "50%",
+                      width: 18,
+                      height: 18,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: 10,
+                      fontWeight: 700,
+                    }}
+                  >
+                    {cartCount}
+                  </span>
+                )}
+              </button>
+              <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
+              <button
+                className="btn-g"
+                onClick={onLogout}
+                style={{ padding: "8px 12px" }}
+                title="Sair"
+              >
+                <LogOut size={14} />
+              </button>
+            </div>
+          </>
+        ) : (
+          <div
             style={{
-              position: "absolute",
-              top: -6,
-              right: -6,
-              background: T.cyan,
-              color: "#070914",
-              borderRadius: "50%",
-              width: 18,
-              height: 18,
+              marginLeft: "auto",
               display: "flex",
+              gap: 8,
               alignItems: "center",
-              justifyContent: "center",
-              fontSize: 10,
-              fontWeight: 700,
             }}
           >
-            {cart.reduce((s, i) => s + i.qty, 0)}
-          </span>
+            <button
+              className="btn-g"
+              style={{
+                position: "relative",
+                padding: "8px 10px",
+                minWidth: "auto",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              onClick={() => setPage("carrinho")}
+            >
+              <ShoppingCart size={16} />
+              {cartCount > 0 && (
+                <span
+                  style={{
+                    position: "absolute",
+                    top: -5,
+                    right: -5,
+                    background: T.cyan,
+                    color: "#070914",
+                    borderRadius: "50%",
+                    width: 16,
+                    height: 16,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 9,
+                    fontWeight: 700,
+                  }}
+                >
+                  {cartCount}
+                </span>
+              )}
+            </button>
+            <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
+            <button
+              className="btn-g"
+              style={{
+                padding: "8px 10px",
+                minWidth: "auto",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              onClick={() => setDrawerOpen(!drawerOpen)}
+            >
+              <Menu size={16} />
+            </button>
+          </div>
         )}
-      </button>
-      <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
-      <button
-        className="btn-g"
-        onClick={onLogout}
-        style={{ padding: "8px 12px" }}
-        title="Sair"
-      >
-        <LogOut size={14} />
-      </button>
-    </div>
-  </nav>
-);
+      </div>
+
+      {/* Mobile Drawer Backdrop & Menu */}
+      {isMobile && drawerOpen && (
+        <div
+          style={{
+            position: "fixed",
+            top: 58,
+            left: 0,
+            width: "100%",
+            height: "calc(100vh - 58px)",
+            background: "rgba(7, 9, 20, 0.96)",
+            backdropFilter: "blur(12px)",
+            zIndex: 999,
+            display: "flex",
+            flexDirection: "column",
+            padding: 24,
+            gap: 16,
+            animation: "fi .25s ease-out forwards",
+            borderTop: `1px solid ${T.border}`,
+          }}
+        >
+          {[
+            { id: "home", l: "Início", action: () => setPage("home") },
+            {
+              id: "sobre",
+              l: "Sobre o Projeto",
+              action: () => {
+                if (page !== "home") {
+                  setPage("home");
+                  setTimeout(() => {
+                    document.getElementById("sobre-projeto")?.scrollIntoView({ behavior: "smooth" });
+                  }, 250);
+                } else {
+                  document.getElementById("sobre-projeto")?.scrollIntoView({ behavior: "smooth" });
+                }
+              },
+            },
+            { id: "catalogo", l: "Catálogo", action: () => setPage("catalogo") },
+            { id: "perfil", l: "Meu Perfil", action: () => setPage("perfil") },
+          ].map(({ id, l, action }) => (
+            <button
+              key={id}
+              onClick={() => {
+                action();
+                setDrawerOpen(false);
+              }}
+              style={{
+                background: page === id ? "rgba(140, 82, 255, 0.08)" : "rgba(255, 255, 255, 0.02)",
+                border: `1px solid ${page === id ? T.cyan : T.border}`,
+                borderRadius: 12,
+                color: page === id ? T.cyan : T.text,
+                fontSize: 16,
+                fontWeight: 600,
+                padding: "16px 20px",
+                cursor: "pointer",
+                textAlign: "left",
+                transition: "all .15s",
+                display: "block",
+                width: "100%",
+              }}
+            >
+              {l}
+            </button>
+          ))}
+
+          <button
+            onClick={() => {
+              onLogout();
+              setDrawerOpen(false);
+            }}
+            style={{
+              background: "rgba(255, 71, 87, 0.1)",
+              border: `1px solid rgba(255, 71, 87, 0.25)`,
+              borderRadius: 12,
+              color: T.danger,
+              fontSize: 16,
+              fontWeight: 600,
+              padding: "16px 20px",
+              cursor: "pointer",
+              textAlign: "left",
+              marginTop: "auto",
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              width: "100%",
+            }}
+          >
+            <LogOut size={16} /> Sair da Conta
+          </button>
+        </div>
+      )}
+    </nav>
+  );
+};
 
 // ─── CLIENT HOME ──────────────────────────────────────────────────
 const HERO_STYLE = "technical"; // 'technical' | 'minimal' | 'colorful'
@@ -3474,451 +3818,622 @@ const renderHeroIllustration = () => {
   );
 };
 
-const ClientHome = ({ setPage, addToCart, products = [] }) => (
-  <div style={{ overflowY: "auto", flex: 1 }}>
-    {/* Hero */}
-    <div
-      style={{
-        padding: "56px 48px",
-        background: "linear-gradient(135deg, #8c52ff 0%, #00bf63 50%, #8c52ff 100%)",
-        backgroundSize: "400% 400%",
-        backgroundRepeat: "no-repeat",
-        animation: "gradientMove 12s ease infinite",
-        position: "relative",
-        overflow: "hidden",
-        transform: "translateZ(0)",
-      }}
-    >
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          background:
-            "radial-gradient(ellipse at 70% 50%, rgba(140,82,255,0.06) 0%, transparent 60%), radial-gradient(ellipse at 10% 90%, rgba(140,82,255,0.05) 0%, transparent 50%)",
-          pointerEvents: "none",
-        }}
-      />
-      {renderHeroIllustration()}
-      <div style={{ position: "relative", maxWidth: 520 }}>
-        <div
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 8,
-            background:
-              "linear-gradient(90deg, rgba(124,58,237,0.22), rgba(0,191,99,0.18))",
-            border: `1px solid rgba(255,255,255,0.06)`,
-            borderRadius: 20,
-            padding: "6px 16px",
-            marginBottom: 20,
-            boxShadow: "0 6px 18px rgba(0,0,0,0.28)",
-          }}
-        >
-          <Zap size={13} style={{ color: "#fff" }} />
-          <span
-            style={{
-              fontSize: 13,
-              color: "#fff",
-              fontWeight: 700,
-              textShadow: "0 1px 2px rgba(0,0,0,0.45)",
-            }}
-          >
-            ESP32 em promoção · até 30% off
-          </span>
-        </div>
-        <h1
-          style={{
-            fontSize: 40,
-            fontWeight: 700,
-            lineHeight: 1.15,
-            marginBottom: 18,
-            letterSpacing: "-0.025em",
-            color: "#ffffff",
-            textShadow: "0 2px 10px rgba(0,0,0,0.35)",
-          }}
-        >
-          Tecnologia para
-          <br />
-          <span style={{ color: "#ffffff" }}>quem cria o futuro</span>
-        </h1>
-        <p
-          style={{
-            color: "#ffffff",
-            fontSize: 16,
-            marginBottom: 28,
-            lineHeight: 1.65,
-            opacity: 0.92,
-          }}
-        >
-          Arduino, ESP32, sensores, IoT e tudo que você precisa para projetos de
-          automação e robótica.
-        </p>
-        <div style={{ display: "flex", gap: 12 }}>
-          <button
-            className="btn-p btn-shine"
-            style={{ padding: "12px 24px", fontSize: 15 }}
-            onClick={() => setPage("catalogo")}
-          >
-            Ver Catálogo <ArrowRight size={16} />
-          </button>
-          <button
-            className="btn-g"
-            style={{
-              padding: "12px 22px",
-              fontSize: 15,
-              color: "#ffffff",
-              background: "rgba(255, 255, 255, 0.08)",
-              borderColor: "rgba(255, 255, 255, 0.2)",
-            }}
-          >
-            Sobre a Loja
-          </button>
-        </div>
-      </div>
-    </div>
+const ClientHome = ({ setPage, addToCart, products = [] }) => {
+  const { isMobile } = useWindowSize();
 
-    {/* Chips */}
-    <div
-      style={{
-        display: "flex",
-        gap: 10,
-        padding: "14px 36px",
-        background: T.surface,
-        borderBottom: `1px solid ${T.border}`,
-        overflowX: "auto",
-        flexWrap: "wrap",
-      }}
-    >
-      {[
-        { i: Zap, l: "Envio Rápido" },
-        { i: Shield, l: "Garantia Oficial" },
-        { i: Star, l: "Top Vendidos" },
-        { i: TrendingUp, l: "Melhores Preços" },
-        { i: Cpu, l: "Componentes Originais" },
-      ].map(({ i: Icon, l }) => (
+  return (
+    <div id="client-home-container" style={{ overflowY: "auto", flex: 1 }}>
+      {/* Page Centering Wrapper for Ultra Large Screens */}
+      <div style={{ maxWidth: 1400, margin: "0 auto", width: "100%" }}>
+        {/* Hero */}
         <div
-          key={l}
+          style={{
+            padding: isMobile ? "36px 20px" : "56px 48px",
+            background: "linear-gradient(135deg, #8c52ff 0%, #00bf63 50%, #8c52ff 100%)",
+            backgroundSize: "400% 400%",
+            backgroundRepeat: "no-repeat",
+            animation: "gradientMove 12s ease infinite",
+            position: "relative",
+            overflow: "hidden",
+            transform: "translateZ(0)",
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background:
+                "radial-gradient(ellipse at 70% 50%, rgba(140,82,255,0.06) 0%, transparent 60%), radial-gradient(ellipse at 10% 90%, rgba(140,82,255,0.05) 0%, transparent 50%)",
+              pointerEvents: "none",
+            }}
+          />
+          {!isMobile && renderHeroIllustration()}
+          <div style={{ position: "relative", maxWidth: isMobile ? "100%" : 520, textAlign: isMobile ? "center" : "left" }}>
+            <div
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                background:
+                  "linear-gradient(90deg, rgba(124,58,237,0.22), rgba(0,191,99,0.18))",
+                border: `1px solid rgba(255,255,255,0.06)`,
+                borderRadius: 20,
+                padding: "6px 16px",
+                marginBottom: 20,
+                boxShadow: "0 6px 18px rgba(0,0,0,0.28)",
+              }}
+            >
+              <Zap size={13} style={{ color: "#fff" }} />
+              <span
+                style={{
+                  fontSize: 12,
+                  color: "#fff",
+                  fontWeight: 700,
+                  textShadow: "0 1px 2px rgba(0,0,0,0.45)",
+                }}
+              >
+                ESP32 em promoção · até 30% off
+              </span>
+            </div>
+            <h1
+              style={{
+                fontSize: isMobile ? 28 : 40,
+                fontWeight: 700,
+                lineHeight: 1.2,
+                marginBottom: 18,
+                letterSpacing: "-0.025em",
+                color: "#ffffff",
+                textShadow: "0 2px 10px rgba(0,0,0,0.35)",
+              }}
+            >
+              Tecnologia para
+              <br />
+              <span style={{ color: "#ffffff" }}>quem cria o futuro</span>
+            </h1>
+            <p
+              style={{
+                color: "#ffffff",
+                fontSize: isMobile ? 14 : 16,
+                marginBottom: 28,
+                lineHeight: 1.6,
+                opacity: 0.92,
+              }}
+            >
+              Arduino, ESP32, sensores, IoT e tudo que você precisa para projetos de
+              automação e robótica.
+            </p>
+            <div style={{ display: "flex", gap: 12, justifyContent: isMobile ? "center" : "flex-start" }}>
+              <button
+                className="btn-p btn-shine"
+                style={{ padding: isMobile ? "10px 20px" : "12px 24px", fontSize: isMobile ? 14 : 15 }}
+                onClick={() => setPage("catalogo")}
+              >
+                Ver Catálogo <ArrowRight size={16} />
+              </button>
+              <button
+                className="btn-g"
+                style={{
+                  padding: isMobile ? "10px 20px" : "12px 22px",
+                  fontSize: isMobile ? 14 : 15,
+                  color: "#ffffff",
+                  background: "rgba(255, 255, 255, 0.08)",
+                  borderColor: "rgba(255, 255, 255, 0.2)",
+                }}
+                onClick={() => document.getElementById("sobre-projeto")?.scrollIntoView({ behavior: "smooth" })}
+              >
+                Sobre
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Chips */}
+        <div
           style={{
             display: "flex",
-            alignItems: "center",
-            gap: 7,
-            whiteSpace: "nowrap",
-            fontSize: 12,
-            color: T.muted2,
-            padding: "6px 14px",
-            background: T.cyanBg,
-            border: `1px solid ${T.border}`,
-            borderRadius: 20,
+            gap: 10,
+            padding: isMobile ? "14px 16px" : "14px 36px",
+            background: T.surface,
+            borderBottom: `1px solid ${T.border}`,
+            overflowX: "auto",
+            flexWrap: "wrap",
+            justifyContent: isMobile ? "center" : "flex-start",
           }}
         >
-          <Icon size={13} style={{ color: T.cyan }} />
-          {l}
-        </div>
-      ))}
-    </div>
-
-    {/* Featured */}
-    <div style={{ padding: "36px 36px" }}>
-      <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 4 }}>
-        Produtos em Destaque
-      </h2>
-      <p style={{ color: T.muted2, fontSize: 13, marginBottom: 24 }}>
-        Os mais procurados da semana
-      </p>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill,minmax(230px,1fr))",
-          gap: 18,
-        }}
-      >
-        {products.length === 0 ? (
-          <div style={{ gridColumn: "1/-1", textAlign: "center", padding: "40px", color: T.muted2 }}>
-            Carregando produtos em destaque...
-          </div>
-        ) : (
-          products.slice(0, 10).map((p) => (
+          {[
+            { i: Zap, l: "Envio Rápido" },
+            { i: Shield, l: "Garantia Oficial" },
+            { i: Star, l: "Top Vendidos" },
+            { i: TrendingUp, l: "Melhores Preços" },
+            { i: Cpu, l: "Componentes Originais" },
+          ].map(({ i: Icon, l }) => (
             <div
-              key={p.id}
-              className="card card-h"
-              style={{ overflow: "hidden" }}
+              key={l}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 7,
+                whiteSpace: "nowrap",
+                fontSize: 12,
+                color: T.muted2,
+                padding: "6px 14px",
+                background: T.cyanBg,
+                border: `1px solid ${T.border}`,
+                borderRadius: 20,
+              }}
+            >
+              <Icon size={13} style={{ color: T.cyan }} />
+              {l}
+            </div>
+          ))}
+        </div>
+
+        {/* Featured */}
+        <div style={{ padding: isMobile ? "24px 16px" : "36px 36px" }}>
+          <h2 style={{ fontSize: isMobile ? 20 : 22, fontWeight: 700, marginBottom: 4, textAlign: isMobile ? "center" : "left" }}>
+            Produtos em Destaque
+          </h2>
+          <p style={{ color: T.muted2, fontSize: 13, marginBottom: 24, textAlign: isMobile ? "center" : "left" }}>
+            Os mais procurados da semana
+          </p>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "repeat(auto-fill, minmax(150px, 1fr))" : "repeat(auto-fill,minmax(230px,1fr))",
+              gap: isMobile ? 12 : 18,
+            }}
+          >
+            {products.length === 0 ? (
+              <div style={{ gridColumn: "1/-1", textAlign: "center", padding: "40px", color: T.muted2 }}>
+                Carregando produtos em destaque...
+              </div>
+            ) : (
+              products.slice(0, 10).map((p) => (
+                <div
+                  key={p.id}
+                  className="card card-h"
+                  style={{ overflow: "hidden" }}
+                >
+                  <div
+                    style={{
+                      position: "relative",
+                      height: isMobile ? 130 : 180,
+                      overflow: "hidden",
+                      background: "#ffffff",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      padding: 12,
+                    }}
+                  >
+                    {p.image ? (
+                      <img
+                        src={p.image}
+                        alt={p.name}
+                        style={{
+                          maxWidth: "100%",
+                          maxHeight: "100%",
+                          objectFit: "contain",
+                          display: "block",
+                        }}
+                      />
+                    ) : (
+                      <Package size={isMobile ? 36 : 48} style={{ color: `${T.cyan}33` }} />
+                    )}
+                    <div
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        background:
+                          "linear-gradient(180deg,rgba(0,0,0,0) 30%,rgba(0,0,0,0.35) 100%)",
+                      }}
+                    />
+                    <span
+                      className={`badge ${p.stock > 0 ? "b-ok" : "b-err"}`}
+                      style={{
+                        position: "absolute",
+                        top: isMobile ? 8 : 12,
+                        right: isMobile ? 8 : 12,
+                        zIndex: 2,
+                        fontSize: isMobile ? "9px" : "11px",
+                        padding: isMobile ? "3px 8px" : "4px 10px",
+                        fontWeight: "800",
+                        letterSpacing: "0.4px",
+                        boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
+                      }}
+                    >
+                      {p.stock > 0 ? "Em estoque" : "Esgotado"}
+                    </span>
+                  </div>
+                  <div style={{ padding: isMobile ? 10 : 16 }}>
+                    <span
+                      style={{
+                        fontSize: 9,
+                        color: T.muted,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.08em",
+                      }}
+                    >
+                      {p.category}
+                    </span>
+                    <p
+                      style={{
+                        fontWeight: 600,
+                        fontSize: isMobile ? 12.5 : 14,
+                        marginTop: 4,
+                        marginBottom: 10,
+                        lineHeight: 1.3,
+                        height: isMobile ? "34px" : "auto",
+                        overflow: "hidden",
+                        display: "-webkit-box",
+                        WebkitLineClamp: isMobile ? 2 : "unset",
+                        WebkitBoxOrient: "vertical",
+                      }}
+                    >
+                      {p.name}
+                    </p>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontFamily: "JetBrains Mono, monospace",
+                          fontSize: isMobile ? 14.5 : 18,
+                          fontWeight: 700,
+                          color: T.cyan,
+                        }}
+                      >
+                        {fmt(p.price)}
+                      </span>
+                      <button
+                        className="btn-p"
+                        style={{ padding: isMobile ? "4px 8px" : "6px 12px", fontSize: isMobile ? 11 : 12 }}
+                        onClick={() => addToCart(p)}
+                        disabled={p.stock === 0}
+                      >
+                        <Plus size={isMobile ? 11 : 13} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        {/* Seção Sobre o Projeto */}
+        <div
+          id="sobre-projeto"
+          style={{
+            padding: isMobile ? "40px 16px 36px 16px" : "64px 36px 48px 36px",
+            background: T.surface,
+            borderTop: `1px solid ${T.border}`,
+            display: "flex",
+            flexDirection: "column",
+            gap: 32,
+          }}
+        >
+          <div style={{ textAlign: "center", maxWidth: 650, margin: "0 auto" }}>
+            <h2
+              style={{
+                fontSize: isMobile ? 24 : 28,
+                fontWeight: 700,
+                color: "var(--color-text)",
+                marginBottom: 12,
+                background: "linear-gradient(90deg, #8c52ff, #00bf63)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              Sobre o Projeto
+            </h2>
+            <p style={{ color: T.muted2, fontSize: 13.5, lineHeight: 1.6 }}>
+              O <strong>ProtoTech</strong> é uma plataforma moderna desenvolvida para simplificar a gestão de estoque, controle de vendas e a aquisição de componentes eletrônicos. Unimos a robustez de um sistema de controle administrativo à facilidade de um e-commerce interativo para entusiastas e engenheiros.
+            </p>
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fit, minmax(250px, 1fr))",
+              gap: 20,
+              marginTop: isMobile ? 8 : 20,
+            }}
+          >
+            <div
+              className="card card-neon"
+              style={{
+                padding: "28px 24px",
+                background: T.surface2,
+                border: `1px solid ${T.border}`,
+                borderRadius: 16,
+                "--neon-color": "var(--color-cyan)",
+                "--neon-shadow": "rgba(140, 82, 255, 0.25)",
+                boxShadow: "0 10px 30px rgba(0,0,0,0.05)",
+              }}
             >
               <div
+                className="logo-animated"
                 style={{
-                  position: "relative",
-                  height: 180,
-                  overflow: "hidden",
-                  background: "#f8f9fa",
+                  width: 48,
+                  height: 48,
+                  borderRadius: 12,
+                  background: "rgba(140, 82, 255, 0.12)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
+                  marginBottom: 16,
+                  "--glow-color": "rgba(140, 82, 255, 0.4)",
                 }}
               >
-                {p.image ? (
-                  <img
-                    src={p.image}
-                    alt={p.name}
-                    style={{
-                      width: "85%",
-                      height: "85%",
-                      objectFit: "contain",
-                      display: "block",
-                    }}
-                  />
-                ) : (
-                  <Package size={48} style={{ color: `${T.cyan}33` }} />
-                )}
-                <div
-                  style={{
-                    position: "absolute",
-                    inset: 0,
-                    background:
-                      "linear-gradient(180deg,rgba(0,0,0,0) 30%,rgba(0,0,0,0.35) 100%)",
-                  }}
-                />
-                <span
-                  className={`badge ${p.stock > 0 ? "b-ok" : "b-err"}`}
-                  style={{
-                    position: "absolute",
-                    top: 12,
-                    right: 12,
-                    zIndex: 2,
-                    fontSize: "11px",
-                    padding: "4px 10px",
-                    fontWeight: "800",
-                    letterSpacing: "0.4px",
-                    boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
-                  }}
-                >
-                  {p.stock > 0 ? "Em estoque" : "Esgotado"}
-                </span>
+                <Cpu size={24} style={{ color: T.cyan }} />
               </div>
-              <div style={{ padding: 16 }}>
-                <span
-                  style={{
-                    fontSize: 10,
-                    color: T.muted,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.08em",
-                  }}
-                >
-                  {p.category}
-                </span>
-                <p
-                  style={{
-                    fontWeight: 600,
-                    fontSize: 14,
-                    marginTop: 4,
-                    marginBottom: 10,
-                    lineHeight: 1.3,
-                  }}
-                >
-                  {p.name}
-                </p>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <span
-                    style={{
-                      fontFamily: "JetBrains Mono, monospace",
-                      fontSize: 18,
-                      fontWeight: 700,
-                      color: T.cyan,
-                    }}
-                  >
-                    {fmt(p.price)}
-                  </span>
-                  <button
-                    className="btn-p"
-                    style={{ padding: "6px 12px", fontSize: 12 }}
-                    onClick={() => addToCart(p)}
-                    disabled={p.stock === 0}
-                  >
-                    <Plus size={13} />
-                  </button>
-                </div>
-              </div>
+              <h3 style={{ fontSize: 17, fontWeight: 700, marginBottom: 10, color: "var(--color-text)" }}>
+                E-commerce de Robótica
+              </h3>
+              <p style={{ color: "var(--color-muted2)", fontSize: 13.5, lineHeight: 1.55 }}>
+                Acesso facilitado a microcontroladores, sensores e módulos eletrônicos de última geração com interface fluida e intuitiva.
+              </p>
             </div>
-          ))
-        )}
+
+            <div
+              className="card card-neon"
+              style={{
+                padding: "28px 24px",
+                background: T.surface2,
+                border: `1px solid ${T.border}`,
+                borderRadius: 16,
+                "--neon-color": "var(--color-success)",
+                "--neon-shadow": "rgba(0, 191, 99, 0.25)",
+                boxShadow: "0 10px 30px rgba(0,0,0,0.05)",
+              }}
+            >
+              <div
+                className="logo-animated"
+                style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 12,
+                  background: "rgba(0, 191, 99, 0.12)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginBottom: 16,
+                  "--glow-color": "rgba(0, 191, 99, 0.4)",
+                }}
+              >
+                <Warehouse size={24} style={{ color: T.success }} />
+              </div>
+              <h3 style={{ fontSize: 17, fontWeight: 700, marginBottom: 10, color: "var(--color-text)" }}>
+                Controle Integrado
+              </h3>
+              <p style={{ color: "var(--color-muted2)", fontSize: 13.5, lineHeight: 1.55 }}>
+                Sincronização em tempo real entre o estoque físico e a disponibilidade da vitrine, prevenindo a venda de itens esgotados.
+              </p>
+            </div>
+
+            <div
+              className="card card-neon"
+              style={{
+                padding: "28px 24px",
+                background: T.surface2,
+                border: `1px solid ${T.border}`,
+                borderRadius: 16,
+                "--neon-color": "var(--color-purple)",
+                "--neon-shadow": "rgba(124, 58, 237, 0.25)",
+                boxShadow: "0 10px 30px rgba(0,0,0,0.05)",
+              }}
+            >
+              <div
+                className="logo-animated"
+                style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 12,
+                  background: "rgba(124, 58, 237, 0.12)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginBottom: 16,
+                  "--glow-color": "rgba(124, 58, 237, 0.4)",
+                }}
+              >
+                <Shield size={24} style={{ color: T.purple }} />
+              </div>
+              <h3 style={{ fontSize: 17, fontWeight: 700, marginBottom: 10, color: "var(--color-text)" }}>
+                Tecnologias Utilizadas
+              </h3>
+              <p style={{ color: "var(--color-muted2)", fontSize: 13.5, lineHeight: 1.55 }}>
+                Construído utilizando React para a interface responsiva e Express com banco de dados relacional MySQL no backend.
+              </p>
+            </div>
+          </div>
+
+          <div
+            style={{
+              borderTop: `1px solid rgba(255,255,255,0.03)`,
+              paddingTop: 32,
+              marginTop: 16,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: 16,
+            }}
+          >
+            <span style={{ fontSize: 12, color: T.muted }}>
+              &copy; {new Date().getFullYear()} ProtoTech. Todos os direitos reservados.
+            </span>
+            <div style={{ display: "flex", gap: 20 }}>
+              <span style={{ fontSize: 12, color: T.muted2, cursor: "pointer" }} onClick={() => setPage("catalogo")}>Vitrine</span>
+              <span style={{ fontSize: 12, color: T.muted2, cursor: "pointer" }} onClick={() => setPage("carrinho")}>Carrinho</span>
+              <span style={{ fontSize: 12, color: T.muted2, cursor: "pointer" }} onClick={() => document.getElementById("client-home-container")?.scrollTo({ top: 0, behavior: "smooth" })}>Voltar ao topo</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 // ─── CATÁLOGO ─────────────────────────────────────────────────────
 const Catalogo = ({ addToCart, products = [] }) => {
+  const { isMobile } = useWindowSize();
   const [search, setSearch] = useState("");
-  const [cat, setCat] = useState("Todos");
-  const cats = ["Todos", ...new Set(products.map((p) => p.category))];
   const filtered = products.filter(
     (p) =>
-      (cat === "Todos" || p.category === cat) &&
       p.name?.toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
-    <div style={{ padding: "28px 32px", overflowY: "auto", flex: 1 }}>
-      <div
-        style={{ display: "flex", gap: 12, marginBottom: 18, flexWrap: "wrap" }}
-      >
-        <SearchBar
-          value={search}
-          onChange={setSearch}
-          placeholder="Buscar produto..."
-        />
-      </div>
-      <div
-        style={{ display: "flex", gap: 6, marginBottom: 20, flexWrap: "wrap" }}
-      >
-        {cats.map((c) => (
-          <button
-            key={c}
-            onClick={() => setCat(c)}
-            style={{
-              padding: "6px 14px",
-              borderRadius: 8,
-              border: `1px solid ${cat === c ? T.cyan : T.border}`,
-              background: cat === c ? T.cyanBg : "transparent",
-              color: cat === c ? T.cyan : T.muted2,
-              fontSize: 12,
-              fontWeight: cat === c ? 600 : 400,
-              cursor: "pointer",
-              transition: "all .15s",
-            }}
-          >
-            {c}
-          </button>
-        ))}
-      </div>
+    <div style={{ padding: isMobile ? "16px 12px" : "28px 32px", overflowY: "auto", flex: 1 }}>
+      {/* Page Centering Wrapper for Ultra Large Screens */}
+      <div style={{ maxWidth: 1400, margin: "0 auto", width: "100%" }}>
+        <div
+          style={{ display: "flex", gap: 12, marginBottom: 18, flexWrap: "wrap" }}
+        >
+          <SearchBar
+            value={search}
+            onChange={setSearch}
+            placeholder="Buscar produto..."
+          />
+        </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill,minmax(210px,1fr))",
-          gap: 16,
-        }}
-      >
-        {filtered.length === 0 ? (
-          <div style={{ gridColumn: "1/-1", textAlign: "center", padding: "40px", color: T.muted2 }}>
-            Nenhum produto encontrado.
-          </div>
-        ) : (
-          filtered.map((p) => (
-            <div
-              key={p.id}
-              className="card card-h"
-              style={{ overflow: "hidden" }}
-            >
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: isMobile ? "repeat(auto-fill,minmax(150px,1fr))" : "repeat(auto-fill,minmax(210px,1fr))",
+            gap: isMobile ? 12 : 16,
+          }}
+        >
+          {filtered.length === 0 ? (
+            <div style={{ gridColumn: "1/-1", textAlign: "center", padding: "40px", color: T.muted2 }}>
+              Nenhum produto encontrado.
+            </div>
+          ) : (
+            filtered.map((p) => (
               <div
-                style={{
-                  position: "relative",
-                  height: 160,
-                  overflow: "hidden",
-                  background: "#f8f9fa",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
+                key={p.id}
+                className="card card-h"
+                style={{ overflow: "hidden" }}
               >
-                {p.image ? (
-                  <img
-                    src={p.image}
-                    alt={p.name}
-                    style={{
-                      width: "85%",
-                      height: "85%",
-                      objectFit: "contain",
-                      display: "block",
-                    }}
-                  />
-                ) : (
-                  <Package size={42} style={{ color: `${T.cyan}33` }} />
-                )}
                 <div
                   style={{
-                    position: "absolute",
-                    inset: 0,
-                    background:
-                      "linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.34))",
-                  }}
-                />
-              </div>
-              <div style={{ padding: 14 }}>
-                <span
-                  style={{
-                    fontSize: 10,
-                    color: T.muted,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.08em",
-                  }}
-                >
-                  {p.category}
-                </span>
-                <p
-                  style={{
-                    fontWeight: 600,
-                    fontSize: 13,
-                    marginTop: 3,
-                    marginBottom: 6,
-                    lineHeight: 1.35,
-                  }}
-                >
-                  {p.name}
-                </p>
-                <div
-                  style={{
+                    position: "relative",
+                    height: isMobile ? 120 : 160,
+                    overflow: "hidden",
+                    background: "#ffffff",
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "space-between",
-                    marginBottom: 10,
-                  }}
-                >
-                  <span
-                    style={{
-                      fontFamily: "JetBrains Mono, monospace",
-                      fontSize: 16,
-                      fontWeight: 700,
-                      color: T.cyan,
-                    }}
-                  >
-                    {fmt(p.price)}
-                  </span>
-                  <span
-                    style={{
-                      fontSize: 11,
-                      color:
-                        p.stock > 10
-                          ? T.success
-                          : p.stock > 0
-                            ? T.warning
-                            : T.danger,
-                    }}
-                  >
-                    {p.stock > 0 ? `${p.stock} un.` : "Esgotado"}
-                  </span>
-                </div>
-                <button
-                  className="btn-p"
-                  style={{
-                    width: "100%",
                     justifyContent: "center",
-                    padding: "7px",
-                    opacity: p.stock === 0 ? 0.45 : 1,
+                    padding: 12,
                   }}
-                  onClick={() => addToCart(p)}
-                  disabled={p.stock === 0}
                 >
-                  <ShoppingCart size={13} /> Adicionar
-                </button>
+                  {p.image ? (
+                    <img
+                      src={p.image}
+                      alt={p.name}
+                      style={{
+                        maxWidth: "100%",
+                        maxHeight: "100%",
+                        objectFit: "contain",
+                        display: "block",
+                      }}
+                    />
+                  ) : (
+                    <Package size={isMobile ? 32 : 42} style={{ color: `${T.cyan}33` }} />
+                  )}
+                  <div
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      background:
+                        "linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.34))",
+                    }}
+                  />
+                </div>
+                <div style={{ padding: isMobile ? 10 : 14 }}>
+                  <span
+                    style={{
+                      fontSize: 9,
+                      color: T.muted,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.08em",
+                    }}
+                  >
+                    {p.category}
+                  </span>
+                  <p
+                    style={{
+                      fontWeight: 600,
+                      fontSize: isMobile ? 12 : 13,
+                      marginTop: 3,
+                      marginBottom: 6,
+                      lineHeight: 1.35,
+                      height: isMobile ? "32px" : "auto",
+                      overflow: "hidden",
+                      display: "-webkit-box",
+                      WebkitLineClamp: isMobile ? 2 : "unset",
+                      WebkitBoxOrient: "vertical",
+                    }}
+                  >
+                    {p.name}
+                  </p>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      marginBottom: 10,
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontFamily: "JetBrains Mono, monospace",
+                        fontSize: isMobile ? 13.5 : 16,
+                        fontWeight: 700,
+                        color: T.cyan,
+                      }}
+                    >
+                      {fmt(p.price)}
+                    </span>
+                    <span
+                      style={{
+                        fontSize: 10,
+                        color:
+                          p.stock > 10
+                            ? T.success
+                            : p.stock > 0
+                              ? T.warning
+                              : T.danger,
+                      }}
+                    >
+                      {p.stock > 0 ? `${p.stock} un.` : "Esgotado"}
+                    </span>
+                  </div>
+                  <button
+                    className="btn-p"
+                    style={{
+                      width: "100%",
+                      justifyContent: "center",
+                      padding: "6px",
+                      fontSize: isMobile ? 11.5 : 13,
+                      opacity: p.stock === 0 ? 0.45 : 1,
+                    }}
+                    onClick={() => addToCart(p)}
+                    disabled={p.stock === 0}
+                  >
+                    <ShoppingCart size={isMobile ? 12 : 13} /> {isMobile ? "Adicionar" : "Adicionar ao carrinho"}
+                  </button>
+                </div>
               </div>
-            </div>
-          ))
-        )}
+            ))
+          )}
+        </div>
       </div>
     </div>
   );
@@ -3926,6 +4441,7 @@ const Catalogo = ({ addToCart, products = [] }) => {
 
 // ─── CARRINHO ─────────────────────────────────────────────────────
 const Carrinho = ({ cart, setCart, setPage }) => {
+  const { isMobile } = useWindowSize();
   const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
   const upd = (id, qty) => {
     if (qty < 1) return setCart((c) => c.filter((i) => i.id !== id));
@@ -3933,265 +4449,308 @@ const Carrinho = ({ cart, setCart, setPage }) => {
   };
 
   return (
-    <div style={{ padding: "28px 32px", overflowY: "auto", flex: 1 }}>
-      <h2
-        style={{
-          fontSize: 22,
-          fontWeight: 700,
-          marginBottom: 24,
-          display: "flex",
-          alignItems: "center",
-          gap: 10,
-        }}
-      >
-        <ShoppingCart size={20} style={{ color: T.cyan }} /> Carrinho
-        {cart.length > 0 && (
-          <span style={{ fontSize: 13, color: T.muted2, fontWeight: 400 }}>
-            ({cart.reduce((s, i) => s + i.qty, 0)} itens)
-          </span>
-        )}
-      </h2>
-
-      {cart.length === 0 ? (
-        <div
-          className="card"
-          style={{ padding: "56px 32px", textAlign: "center" }}
-        >
-          <ShoppingBag
-            size={52}
-            style={{ color: T.muted, margin: "0 auto 16px", display: "block" }}
-          />
-          <p style={{ color: T.muted, marginBottom: 18, fontSize: 14 }}>
-            Seu carrinho está vazio
-          </p>
-          <button
-            className="btn-p"
-            style={{ margin: "0 auto" }}
-            onClick={() => setPage("catalogo")}
-          >
-            Explorar Catálogo
-          </button>
-        </div>
-      ) : (
-        <div
+    <div style={{ padding: isMobile ? "16px 12px" : "28px 32px", overflowY: "auto", flex: 1 }}>
+      {/* Page Centering Wrapper for Ultra Large Screens */}
+      <div style={{ maxWidth: 1400, margin: "0 auto", width: "100%" }}>
+        <h2
           style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 300px",
-            gap: 20,
-            alignItems: "start",
+            fontSize: isMobile ? 20 : 22,
+            fontWeight: 700,
+            marginBottom: isMobile ? 16 : 24,
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
           }}
         >
-          <div className="card" style={{ overflow: "hidden" }}>
-            {cart.map((item) => (
+          <ShoppingCart size={isMobile ? 18 : 20} style={{ color: T.cyan }} /> Carrinho
+          {cart.length > 0 && (
+            <span style={{ fontSize: 13, color: T.muted2, fontWeight: 400 }}>
+              ({cart.reduce((s, i) => s + i.qty, 0)} itens)
+            </span>
+          )}
+        </h2>
+
+        {cart.length === 0 ? (
+          <div
+            className="card"
+            style={{ padding: isMobile ? "40px 20px" : "56px 32px", textAlign: "center" }}
+          >
+            <ShoppingBag
+              size={isMobile ? 44 : 52}
+              style={{ color: T.muted, margin: "0 auto 16px", display: "block" }}
+            />
+            <p style={{ color: T.muted, marginBottom: 18, fontSize: 14 }}>
+              Seu carrinho está vazio
+            </p>
+            <button
+              className="btn-p"
+              style={{ margin: "0 auto" }}
+              onClick={() => setPage("catalogo")}
+            >
+              Explorar Catálogo
+            </button>
+          </div>
+        ) : (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "1fr 300px",
+              gap: 20,
+              alignItems: "start",
+            }}
+          >
+            <div className="card" style={{ overflow: "hidden" }}>
+              {cart.map((item) => (
+                <div
+                  key={item.id}
+                  style={{
+                    display: "flex",
+                    flexDirection: isMobile ? "column" : "row",
+                    alignItems: isMobile ? "stretch" : "center",
+                    gap: isMobile ? 12 : 16,
+                    padding: 16,
+                    borderBottom: `1px solid ${T.border}`,
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <div
+                      style={{
+                        width: isMobile ? 44 : 54,
+                        height: isMobile ? 44 : 54,
+                        background: T.surface2,
+                        borderRadius: 10,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                        overflow: "hidden",
+                      }}
+                    >
+                      {item.image ? (
+                        <img src={item.image} alt={item.name} style={{ width: "80%", height: "80%", objectFit: "contain" }} />
+                      ) : (
+                        <Package size={isMobile ? 20 : 24} style={{ color: `${T.cyan}55` }} />
+                      )}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 600, fontSize: isMobile ? 13 : 14, textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>
+                        {item.name}
+                      </div>
+                      <div style={{ fontSize: 11, color: T.muted2 }}>
+                        {item.category}
+                      </div>
+                    </div>
+                    {isMobile && (
+                      <button
+                        onClick={() =>
+                          setCart((c) => c.filter((i) => i.id !== item.id))
+                        }
+                        style={{
+                          background: "none",
+                          border: "none",
+                          cursor: "pointer",
+                          color: T.muted,
+                          display: "flex",
+                          flexShrink: 0,
+                          padding: 4,
+                        }}
+                      >
+                        <X size={16} />
+                      </button>
+                    )}
+                  </div>
+
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: isMobile ? "space-between" : "flex-end",
+                      gap: isMobile ? 0 : 24,
+                      width: isMobile ? "100%" : "auto",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 6,
+                        flexShrink: 0,
+                      }}
+                    >
+                      <button
+                        onClick={() => upd(item.id, item.qty - 1)}
+                        style={{
+                          width: 28,
+                          height: 28,
+                          borderRadius: 6,
+                          border: `1px solid ${T.border}`,
+                          background: T.surface2,
+                          color: T.text,
+                          cursor: "pointer",
+                          fontSize: 16,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        −
+                      </button>
+                      <span
+                        style={{
+                          width: 28,
+                          textAlign: "center",
+                          fontWeight: 600,
+                          fontFamily: "JetBrains Mono, monospace",
+                          fontSize: 14,
+                        }}
+                      >
+                        {item.qty}
+                      </span>
+                      <button
+                        onClick={() => upd(item.id, item.qty + 1)}
+                        style={{
+                          width: 28,
+                          height: 28,
+                          borderRadius: 6,
+                          border: `1px solid ${T.border}`,
+                          background: T.surface2,
+                          color: T.text,
+                          cursor: "pointer",
+                          fontSize: 16,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                      <span
+                        style={{
+                          fontFamily: "JetBrains Mono, monospace",
+                          color: T.cyan,
+                          fontWeight: 700,
+                          minWidth: isMobile ? "auto" : 90,
+                          fontSize: isMobile ? 14 : 16,
+                          textAlign: "right",
+                        }}
+                      >
+                        {fmt(item.price * item.qty)}
+                      </span>
+                      {!isMobile && (
+                        <button
+                          onClick={() =>
+                            setCart((c) => c.filter((i) => i.id !== item.id))
+                          }
+                          style={{
+                            background: "none",
+                            border: "none",
+                            cursor: "pointer",
+                            color: T.muted,
+                            display: "flex",
+                            flexShrink: 0,
+                          }}
+                        >
+                          <X size={15} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="card" style={{ padding: 22 }}>
+              <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 18 }}>
+                Resumo do Pedido
+              </div>
+              {[
+                ["Subtotal", fmt(total)],
+                ["Frete", "Grátis"],
+                ["Desconto", "−"],
+              ].map(([l, v]) => (
+                <div
+                  key={l}
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    marginBottom: 10,
+                    fontSize: 13,
+                  }}
+                >
+                  <span style={{ color: T.muted2 }}>{l}</span>
+                  <span style={{ color: l === "Frete" ? T.success : T.text }}>
+                    {v}
+                  </span>
+                </div>
+              ))}
               <div
-                key={item.id}
                 style={{
+                  borderTop: `1px solid ${T.border}`,
+                  paddingTop: 14,
+                  marginTop: 4,
                   display: "flex",
-                  alignItems: "center",
-                  gap: 16,
-                  padding: 16,
-                  borderBottom: `1px solid ${T.border}`,
+                  justifyContent: "space-between",
+                  fontWeight: 700,
                 }}
               >
-                <div
-                  style={{
-                    width: 54,
-                    height: 54,
-                    background: T.surface2,
-                    borderRadius: 10,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    flexShrink: 0,
-                    overflow: "hidden",
-                  }}
-                >
-                  {item.image ? (
-                    <img src={item.image} alt={item.name} style={{ width: "80%", height: "80%", objectFit: "contain" }} />
-                  ) : (
-                    <Package size={24} style={{ color: `${T.cyan}55` }} />
-                  )}
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontWeight: 600, fontSize: 14 }}>
-                    {item.name}
-                  </div>
-                  <div style={{ fontSize: 12, color: T.muted2 }}>
-                    {item.category}
-                  </div>
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 6,
-                    flexShrink: 0,
-                  }}
-                >
-                  <button
-                    onClick={() => upd(item.id, item.qty - 1)}
-                    style={{
-                      width: 28,
-                      height: 28,
-                      borderRadius: 6,
-                      border: `1px solid ${T.border}`,
-                      background: T.surface2,
-                      color: T.text,
-                      cursor: "pointer",
-                      fontSize: 16,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    −
-                  </button>
-                  <span
-                    style={{
-                      width: 28,
-                      textAlign: "center",
-                      fontWeight: 600,
-                      fontFamily: "JetBrains Mono, monospace",
-                    }}
-                  >
-                    {item.qty}
-                  </span>
-                  <button
-                    onClick={() => upd(item.id, item.qty + 1)}
-                    style={{
-                      width: 28,
-                      height: 28,
-                      borderRadius: 6,
-                      border: `1px solid ${T.border}`,
-                      background: T.surface2,
-                      color: T.text,
-                      cursor: "pointer",
-                      fontSize: 16,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    +
-                  </button>
-                </div>
+                <span>Total</span>
                 <span
                   style={{
                     fontFamily: "JetBrains Mono, monospace",
                     color: T.cyan,
-                    fontWeight: 700,
-                    minWidth: 90,
-                    textAlign: "right",
+                    fontSize: 20,
                   }}
                 >
-                  {fmt(item.price * item.qty)}
-                </span>
-                <button
-                  onClick={() =>
-                    setCart((c) => c.filter((i) => i.id !== item.id))
-                  }
-                  style={{
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    color: T.muted,
-                    display: "flex",
-                    flexShrink: 0,
-                  }}
-                >
-                  <X size={15} />
-                </button>
-              </div>
-            ))}
-          </div>
-
-          <div className="card" style={{ padding: 22 }}>
-            <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 18 }}>
-              Resumo do Pedido
-            </div>
-            {[
-              ["Subtotal", fmt(total)],
-              ["Frete", "Grátis"],
-              ["Desconto", "−"],
-            ].map(([l, v]) => (
-              <div
-                key={l}
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  marginBottom: 10,
-                  fontSize: 13,
-                }}
-              >
-                <span style={{ color: T.muted2 }}>{l}</span>
-                <span style={{ color: l === "Frete" ? T.success : T.text }}>
-                  {v}
+                  {fmt(total)}
                 </span>
               </div>
-            ))}
-            <div
-              style={{
-                borderTop: `1px solid ${T.border}`,
-                paddingTop: 14,
-                marginTop: 4,
-                display: "flex",
-                justifyContent: "space-between",
-                fontWeight: 700,
-              }}
-            >
-              <span>Total</span>
-              <span
+              <button
+                className="btn-p"
                 style={{
-                  fontFamily: "JetBrains Mono, monospace",
-                  color: T.cyan,
-                  fontSize: 20,
+                  width: "100%",
+                  justifyContent: "center",
+                  padding: "12px",
+                  marginTop: 18,
+                }}
+                onClick={() => {
+                  alert("🎉 Pedido realizado com sucesso!");
+                  setCart([]);
+                  setPage("home");
                 }}
               >
-                {fmt(total)}
-              </span>
+                Finalizar Pedido <ArrowRight size={15} />
+              </button>
+              <button
+                className="btn-g"
+                style={{
+                  width: "100%",
+                  justifyContent: "center",
+                  padding: "9px",
+                  marginTop: 8,
+                }}
+                onClick={() => setPage("catalogo")}
+              >
+                Continuar Comprando
+              </button>
             </div>
-            <button
-              className="btn-p"
-              style={{
-                width: "100%",
-                justifyContent: "center",
-                padding: "12px",
-                marginTop: 18,
-              }}
-              onClick={() => {
-                alert("🎉 Pedido realizado com sucesso!");
-                setCart([]);
-                setPage("home");
-              }}
-            >
-              Finalizar Pedido <ArrowRight size={15} />
-            </button>
-            <button
-              className="btn-g"
-              style={{
-                width: "100%",
-                justifyContent: "center",
-                padding: "9px",
-                marginTop: 8,
-              }}
-              onClick={() => setPage("catalogo")}
-            >
-              Continuar Comprando
-            </button>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
 
 // ─── PERFIL ───────────────────────────────────────────────────────
 const Perfil = () => {
+  const { isMobile } = useWindowSize();
   const c = CLIENTS[0];
   return (
     <div
       style={{
-        padding: "28px 32px",
+        padding: isMobile ? "16px 12px" : "28px 32px",
         overflowY: "auto",
         flex: 1,
         maxWidth: 680,
@@ -4202,7 +4761,7 @@ const Perfil = () => {
       <div
         className="card"
         style={{
-          padding: 28,
+          padding: isMobile ? 18 : 28,
           marginBottom: 18,
           background: "var(--color-surface)",
           border: "1px solid var(--color-border)",
@@ -4213,26 +4772,26 @@ const Perfil = () => {
           style={{
             display: "flex",
             alignItems: "center",
-            gap: 16,
+            gap: isMobile ? 10 : 16,
             marginBottom: 24,
           }}
         >
-          <Avatar name={c.name} size={60} color={T.cyan} />
+          <Avatar name={c.name} size={isMobile ? 48 : 60} color={T.cyan} />
           <div>
-            <h2 style={{ fontSize: 20, fontWeight: 700, color: "var(--color-text)" }}>{c.name}</h2>
-            <p style={{ color: "var(--color-muted)", fontSize: 13, marginTop: 2 }}>
+            <h2 style={{ fontSize: isMobile ? 17 : 20, fontWeight: 700, color: "var(--color-text)" }}>{c.name}</h2>
+            <p style={{ color: "var(--color-muted)", fontSize: 12, marginTop: 2 }}>
               Cliente desde {c.since}
             </p>
           </div>
-          <button className="btn-g" style={{ marginLeft: "auto" }}>
-            <Edit2 size={13} /> Editar
+          <button className="btn-g" style={{ marginLeft: "auto", padding: isMobile ? "6px 10px" : "8px 12px", fontSize: isMobile ? 12 : 13 }}>
+            <Edit2 size={13} /> {!isMobile && "Editar"}
           </button>
         </div>
 
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr 1fr",
+            gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
             gap: 12,
             marginBottom: 14,
           }}
@@ -4268,7 +4827,7 @@ const Perfil = () => {
         </div>
 
         <div
-          style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}
+          style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12 }}
         >
           <div
             style={{
@@ -4322,7 +4881,7 @@ const Perfil = () => {
       <div
         className="card"
         style={{
-          padding: 22,
+          padding: isMobile ? 18 : 22,
           background: "var(--color-surface)",
           border: "1px solid var(--color-border)",
           boxShadow: "0 20px 40px -15px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.05)",
@@ -4355,13 +4914,16 @@ const Perfil = () => {
             >
               <ShoppingBag size={16} style={{ color: "var(--color-cyan)" }} />
             </div>
-            <div style={{ flex: 1 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
               <div
                 style={{
                   fontSize: 13,
                   fontWeight: 500,
                   fontFamily: "JetBrains Mono, monospace",
                   color: "var(--color-text)",
+                  textOverflow: "ellipsis",
+                  overflow: "hidden",
+                  whiteSpace: "nowrap",
                 }}
               >
                 {s.id}
@@ -4376,8 +4938,9 @@ const Perfil = () => {
                 fontFamily: "JetBrains Mono, monospace",
                 fontWeight: 700,
                 color: "var(--color-cyan)",
-                minWidth: 80,
+                minWidth: isMobile ? "auto" : 80,
                 textAlign: "right",
+                fontSize: isMobile ? 13 : 14,
               }}
             >
               {fmt(s.total)}
@@ -4452,7 +5015,13 @@ export default function App() {
         if (!res.ok) throw new Error("Status HTTP inválido");
         return res.json();
       })
-      .then((data) => setProducts(data))
+      .then((data) => {
+        const mapped = data.map((p) => ({
+          ...p,
+          image: getProductImage(p.name),
+        }));
+        setProducts(mapped);
+      })
       .catch((err) => console.error("Erro ao carregar produtos:", err));
   };
 
