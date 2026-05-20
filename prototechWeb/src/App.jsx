@@ -40,11 +40,19 @@ import {
   Sun,
   Moon,
   Sparkles,
+  MapPin,
+  CreditCard,
+  Lock,
+  ChevronLeft,
+  ChevronRight,
+  Building2,
+  QrCode,
+  Barcode,
+  PartyPopper,
 } from "lucide-react";
 
-import { ToastProvider } from "./components/premium/ToastSystem";
-import Showcase from "./components/premium/Showcase";
-import ResponsiveHeader from "./components/premium/ResponsiveHeader";
+import { ToastProvider } from "./components/ToastSystem";
+import Checkout from "./components/Checkout";
 
 // ─── UTILS ────────────────────────────────────────────────────────
 const getProductImage = (name) => {
@@ -552,23 +560,33 @@ const GLOBAL_CSS = `
   
   @keyframes chipPulse {
     0% {
-      filter: drop-shadow(0 0 2px rgba(55, 242, 235, 0.45));
-      opacity: 0.85;
-      transform: scale(0.98);
+      filter: drop-shadow(0 0 4px rgba(55, 242, 235, 0.35));
+      opacity: 0.92;
+      transform: scale(0.99);
     }
     50% {
-      filter: drop-shadow(0 0 15px rgba(55, 242, 235, 0.95));
+      filter: drop-shadow(0 0 10px rgba(55, 242, 235, 0.70));
       opacity: 1;
-      transform: scale(1.02);
+      transform: scale(1.01);
     }
     100% {
-      filter: drop-shadow(0 0 2px rgba(55, 242, 235, 0.45));
-      opacity: 0.85;
-      transform: scale(0.98);
+      filter: drop-shadow(0 0 4px rgba(55, 242, 235, 0.35));
+      opacity: 0.92;
+      transform: scale(0.99);
     }
   }
   .chip-core {
-    animation: chipPulse 2.2s ease-in-out infinite;
+    animation: chipPulse 3.5s ease-in-out infinite;
+    transform-origin: center;
+  }
+  
+  @keyframes gearSpin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+  .gear-spin {
+    animation: gearSpin 22s linear infinite;
+    transform-box: fill-box;
     transform-origin: center;
   }
   
@@ -3740,88 +3758,74 @@ const renderHeroIllustration = () => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        flex: "1 1 50%",
-        maxWidth: "480px",
+        flex: "1 1 60%",
+        maxWidth: "none",
         pointerEvents: "none",
       }}
     >
       <svg
         className="hero-illustration"
-        viewBox="0 0 520 340"
+        viewBox="75 45 490 350"
         xmlns="http://www.w3.org/2000/svg"
         aria-hidden="true"
-        style={{ width: "100%", height: "auto" }}
+        style={{ width: "100%", height: "auto", filter: "drop-shadow(0 10px 20px rgba(0,0,0,0.15))" }}
       >
-        <defs>
-          <radialGradient id="logoGlow" cx="50%" cy="45%" r="70%">
-            <stop offset="0%" stopColor="#37f2eb" stopOpacity="0.32" />
-            <stop offset="100%" stopColor="#37f2eb" stopOpacity="0" />
-          </radialGradient>
-          <linearGradient id="gearFill" x1="0" x2="1" y1="0" y2="1">
-            <stop offset="0%" stopColor="#26c7cc" />
-            <stop offset="100%" stopColor="#0b1b2c" />
-          </linearGradient>
-        </defs>
-        <rect width="520" height="340" fill="transparent" />
-        <circle cx="260" cy="170" r="110" fill="url(#logoGlow)" />
-        <g transform="translate(260 170)">
-          <circle
-            cx="0"
-            cy="0"
-            r="96"
-            fill="none"
-            stroke="#2bf2e3"
-            strokeWidth="4"
-            opacity="0.16"
-          />
-          <g>
+        <style>
+          {`
+            @keyframes wavePulse {
+              0%, 100% { transform: scaleX(1); opacity: 0.6; }
+              50% { transform: scaleX(1.15); opacity: 1; }
+            }
+          `}
+        </style>
+        <g transform="translate(320 220)">
+          {/* Radial connector lines (dashed) and dots with Wave Animation */}
+          <g stroke="#37f2eb" strokeWidth="2.5" strokeDasharray="6 8" fill="none">
+            {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => (
+              <g key={i} transform={`rotate(${angle})`}>
+                <g style={{ 
+                  animation: `wavePulse 2.4s ease-in-out infinite`, 
+                  animationDelay: `${i * 0.3}s`, 
+                  transformOrigin: "85px 0" 
+                }}>
+                  <line x1="85" y1="0" x2="160" y2="0" />
+                  <circle cx="160" cy="0" r="4.5" fill="#37f2eb" stroke="none" />
+                </g>
+              </g>
+            ))}
+          </g>
+
+          {/* Minimalist 2D Gear Silhouette - Spinning */}
+          <g className="gear-spin">
             <path
-              d="M-90,-14 h18 l8,-24 h24 l8,24 h18 l12,12 v24 l-12,12 h-18 l-8,24 h-24 l-8,-24 h-18 l-12,-12 v-24z"
-              fill="url(#gearFill)"
-              stroke="#18a7b2"
-              strokeWidth="2"
+              fillRule="evenodd"
+              d="M 72.1,-17.3 L 100.7,-16.0 L 100.7,16.0 L 72.1,17.3
+                 A 74,74 0 0,1 63.2,38.7 L 82.5,59.9 L 59.9,82.5 L 38.7,63.2
+                 A 74,74 0 0,1 17.3,72.1 L 16.0,100.7 L -16.0,100.7 L -17.3,72.1
+                 A 74,74 0 0,1 -38.7,63.2 L -59.9,82.5 L -82.5,59.9 L -63.2,38.7
+                 A 74,74 0 0,1 -72.1,17.3 L -100.7,16.0 L -100.7,-16.0 L -72.1,-17.3
+                 A 74,74 0 0,1 -63.2,-38.7 L -82.5,-59.9 L -59.9,-82.5 L -38.7,-63.2
+                 A 74,74 0 0,1 -17.3,-72.1 L -16.0,-100.7 L 16.0,-100.7 L 17.3,-72.1
+                 A 74,74 0 0,1 38.7,-63.2 L 59.9,-82.5 L 82.5,-59.9 L 63.2,-38.7
+                 A 74,74 0 0,1 72.1,-17.3 Z
+                 M 0,-48 A 48,48 0 1,0 0,48 A 48,48 0 1,0 0,-48 Z"
+              fill="#37f2eb"
             />
-            <circle cx="0" cy="0" r="58" fill="#070914" opacity="0.96" />
-            <circle cx="0" cy="0" r="50" fill="#0f1724" />
-            <g className="chip-core">
-              <rect
-                x="-28"
-                y="-28"
-                width="56"
-                height="56"
-                rx="12"
-                fill="#37f2eb"
-                opacity="0.9"
-              />
-              <text
-                x="0"
-                y="10"
-                textAnchor="middle"
-                fontSize="28"
-                fontWeight="700"
-                fill="#070914"
-                fontFamily="Inter, sans-serif"
-              >
-                PR
-              </text>
-            </g>
           </g>
-          <g stroke="#37f2eb" strokeWidth="3" fill="none" strokeLinecap="round">
-            <path d="M-58,-40 H-84" />
-            <path d="M58,-40 H84" />
-            <path d="M-58,40 H-84" />
-            <path d="M58,40 H84" />
-            <path d="M-20,-56 V-84" />
-            <path d="M20,-56 V-84" />
-            <path d="M-20,56 V84" />
-            <path d="M20,56 V84" />
-          </g>
-          <g fill="#37f2eb">
-            <circle cx="-84" cy="-40" r="5" />
-            <circle cx="84" cy="-40" r="5" />
-            <circle cx="-84" cy="40" r="5" />
-            <circle cx="84" cy="40" r="5" />
-          </g>
+          
+          {/* Text 'PR' - Removed from gear-spin to stay static */}
+          <text 
+            x="0" 
+            y="11" 
+            textAnchor="middle" 
+            fontSize="34" 
+            fontWeight="900" 
+            fill="#37f2eb" 
+            fontFamily="Inter, sans-serif"
+            letterSpacing="2"
+          >
+            PR
+          </text>
         </g>
       </svg>
     </div>
@@ -3942,7 +3946,7 @@ const ClientHome = ({ setPage, addToCart, products = [] }) => {
                   background: "rgba(255, 255, 255, 0.08)",
                   borderColor: "rgba(255, 255, 255, 0.2)",
                 }}
-                  onClick={() => document.getElementById("sobre-projeto")?.scrollIntoView({ behavior: "smooth" })}
+                onClick={() => document.getElementById("sobre-projeto")?.scrollIntoView({ behavior: "smooth" })}
               >
                 Sobre
               </button>
@@ -3952,384 +3956,384 @@ const ClientHome = ({ setPage, addToCart, products = [] }) => {
         </div>
       </div>
 
-        {/* Chips */}
+      {/* Chips */}
+      <div
+        style={{
+          background: T.surface,
+          borderBottom: `1px solid ${T.border}`,
+          width: "100%",
+        }}
+      >
         <div
           style={{
-            background: T.surface,
-            borderBottom: `1px solid ${T.border}`,
+            maxWidth: 1200,
+            margin: "0 auto",
             width: "100%",
+            display: "flex",
+            gap: 10,
+            padding: isMobile ? "14px 16px" : "14px 36px",
+            overflowX: "auto",
+            flexWrap: "wrap",
+            justifyContent: isMobile ? "center" : "flex-start",
           }}
         >
-          <div
-            style={{
-              maxWidth: 1200,
-              margin: "0 auto",
-              width: "100%",
-              display: "flex",
-              gap: 10,
-              padding: isMobile ? "14px 16px" : "14px 36px",
-              overflowX: "auto",
-              flexWrap: "wrap",
-              justifyContent: isMobile ? "center" : "flex-start",
-            }}
-          >
-            {[
-              { i: Zap, l: "Envio Rápido" },
-              { i: Shield, l: "Garantia Oficial" },
-              { i: Star, l: "Top Vendidos" },
-              { i: TrendingUp, l: "Melhores Preços" },
-              { i: Cpu, l: "Componentes Originais" },
-            ].map(({ i: Icon, l }) => (
-              <div
-                key={l}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 7,
-                  whiteSpace: "nowrap",
-                  fontSize: 12,
-                  color: T.muted2,
-                  padding: "6px 14px",
-                  background: T.cyanBg,
-                  border: `1px solid ${T.border}`,
-                  borderRadius: 20,
-                }}
-              >
-                <Icon size={13} style={{ color: T.cyan }} />
-                {l}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Featured */}
-        <div style={{ width: "100%" }}>
-          <div
-            style={{
-              maxWidth: 1200,
-              margin: "0 auto",
-              width: "100%",
-              padding: isMobile ? "24px 16px" : "36px 36px",
-            }}
-          >
-            <h2 style={{ fontSize: isMobile ? 20 : 22, fontWeight: 700, marginBottom: 4, textAlign: isMobile ? "center" : "left" }}>
-              Produtos em Destaque
-            </h2>
-            <p style={{ color: T.muted2, fontSize: 13, marginBottom: 24, textAlign: isMobile ? "center" : "left" }}>
-              Os mais procurados da semana
-            </p>
+          {[
+            { i: Zap, l: "Envio Rápido" },
+            { i: Shield, l: "Garantia Oficial" },
+            { i: Star, l: "Top Vendidos" },
+            { i: TrendingUp, l: "Melhores Preços" },
+            { i: Cpu, l: "Componentes Originais" },
+          ].map(({ i: Icon, l }) => (
             <div
+              key={l}
               style={{
-                display: "grid",
-                gridTemplateColumns: isMobile ? "repeat(auto-fill, minmax(150px, 1fr))" : "repeat(auto-fill,minmax(230px,1fr))",
-                gap: isMobile ? 12 : 18,
+                display: "flex",
+                alignItems: "center",
+                gap: 7,
+                whiteSpace: "nowrap",
+                fontSize: 12,
+                color: T.muted2,
+                padding: "6px 14px",
+                background: T.cyanBg,
+                border: `1px solid ${T.border}`,
+                borderRadius: 20,
               }}
             >
-              {products.length === 0 ? (
-                <div style={{ gridColumn: "1/-1", textAlign: "center", padding: "40px", color: T.muted2 }}>
-                  Carregando produtos em destaque...
-                </div>
-              ) : (
-                products.slice(0, 10).map((p) => (
-                  <div
-                    key={p.id}
-                    className="card card-h"
-                    style={{ overflow: "hidden" }}
-                  >
-                    <div
-                      style={{
-                        position: "relative",
-                        height: isMobile ? 130 : 180,
-                        overflow: "hidden",
-                        background: "#ffffff",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        padding: 12,
-                      }}
-                    >
-                      {p.image ? (
-                        <img
-                          src={p.image}
-                          alt={p.name}
-                          style={{
-                            maxWidth: "100%",
-                            maxHeight: "100%",
-                            objectFit: "contain",
-                            display: "block",
-                          }}
-                        />
-                      ) : (
-                        <Package size={isMobile ? 36 : 48} style={{ color: `${T.cyan}33` }} />
-                      )}
-                      <div
-                        style={{
-                          position: "absolute",
-                          inset: 0,
-                          background:
-                            "linear-gradient(180deg,rgba(0,0,0,0) 30%,rgba(0,0,0,0.35) 100%)",
-                        }}
-                      />
-                      <span
-                        className={`badge ${p.stock > 0 ? "b-ok" : "b-err"}`}
-                        style={{
-                          position: "absolute",
-                          top: isMobile ? 8 : 12,
-                          right: isMobile ? 8 : 12,
-                          zIndex: 2,
-                          fontSize: isMobile ? "9px" : "11px",
-                          padding: isMobile ? "3px 8px" : "4px 10px",
-                          fontWeight: "800",
-                          letterSpacing: "0.4px",
-                          boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
-                        }}
-                      >
-                        {p.stock > 0 ? "Em estoque" : "Esgotado"}
-                      </span>
-                    </div>
-                    <div style={{ padding: isMobile ? 10 : 16 }}>
-                      <span
-                        style={{
-                          fontSize: 9,
-                          color: T.muted,
-                          textTransform: "uppercase",
-                          letterSpacing: "0.08em",
-                        }}
-                      >
-                        {p.category}
-                      </span>
-                      <p
-                        style={{
-                          fontWeight: 600,
-                          fontSize: isMobile ? 12.5 : 14,
-                          marginTop: 4,
-                          marginBottom: 10,
-                          lineHeight: 1.3,
-                          height: isMobile ? "34px" : "auto",
-                          overflow: "hidden",
-                          display: "-webkit-box",
-                          WebkitLineClamp: isMobile ? 2 : "unset",
-                          WebkitBoxOrient: "vertical",
-                        }}
-                      >
-                        {p.name}
-                      </p>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                        }}
-                      >
-                        <span
-                          style={{
-                            fontFamily: "JetBrains Mono, monospace",
-                            fontSize: isMobile ? 14.5 : 18,
-                            fontWeight: 700,
-                            color: T.cyan,
-                          }}
-                        >
-                          {fmt(p.price)}
-                        </span>
-                        <button
-                          className="btn-p"
-                          style={{ padding: isMobile ? "4px 8px" : "6px 12px", fontSize: isMobile ? 11 : 12 }}
-                          onClick={() => addToCart(p)}
-                          disabled={p.stock === 0}
-                        >
-                          <Plus size={isMobile ? 11 : 13} />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              )}
+              <Icon size={13} style={{ color: T.cyan }} />
+              {l}
             </div>
-          </div>
+          ))}
         </div>
+      </div>
 
-        {/* Seção Sobre o Projeto */}
+      {/* Featured */}
+      <div style={{ width: "100%" }}>
         <div
-          id="sobre-projeto"
           style={{
-            background: T.surface,
-            borderTop: `1px solid ${T.border}`,
+            maxWidth: 1200,
+            margin: "0 auto",
             width: "100%",
+            padding: isMobile ? "24px 16px" : "36px 36px",
           }}
         >
+          <h2 style={{ fontSize: isMobile ? 20 : 22, fontWeight: 700, marginBottom: 4, textAlign: isMobile ? "center" : "left" }}>
+            Produtos em Destaque
+          </h2>
+          <p style={{ color: T.muted2, fontSize: 13, marginBottom: 24, textAlign: isMobile ? "center" : "left" }}>
+            Os mais procurados da semana
+          </p>
           <div
             style={{
-              maxWidth: 1200,
-              margin: "0 auto",
-              width: "100%",
-              padding: isMobile ? "40px 16px 36px 16px" : "64px 36px 48px 36px",
-              display: "flex",
-              flexDirection: "column",
-              gap: 32,
+              display: "grid",
+              gridTemplateColumns: isMobile ? "repeat(auto-fill, minmax(150px, 1fr))" : "repeat(auto-fill,minmax(230px,1fr))",
+              gap: isMobile ? 12 : 18,
             }}
           >
-            <div style={{ textAlign: "center", maxWidth: 650, margin: "0 auto" }}>
-              <h2
+            {products.length === 0 ? (
+              <div style={{ gridColumn: "1/-1", textAlign: "center", padding: "40px", color: T.muted2 }}>
+                Carregando produtos em destaque...
+              </div>
+            ) : (
+              products.slice(0, 10).map((p) => (
+                <div
+                  key={p.id}
+                  className="card card-h"
+                  style={{ overflow: "hidden" }}
+                >
+                  <div
+                    style={{
+                      position: "relative",
+                      height: isMobile ? 130 : 180,
+                      overflow: "hidden",
+                      background: "#ffffff",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      padding: 12,
+                    }}
+                  >
+                    {p.image ? (
+                      <img
+                        src={p.image}
+                        alt={p.name}
+                        style={{
+                          maxWidth: "100%",
+                          maxHeight: "100%",
+                          objectFit: "contain",
+                          display: "block",
+                        }}
+                      />
+                    ) : (
+                      <Package size={isMobile ? 36 : 48} style={{ color: `${T.cyan}33` }} />
+                    )}
+                    <div
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        background:
+                          "linear-gradient(180deg,rgba(0,0,0,0) 30%,rgba(0,0,0,0.35) 100%)",
+                      }}
+                    />
+                    <span
+                      className={`badge ${p.stock > 0 ? "b-ok" : "b-err"}`}
+                      style={{
+                        position: "absolute",
+                        top: isMobile ? 8 : 12,
+                        right: isMobile ? 8 : 12,
+                        zIndex: 2,
+                        fontSize: isMobile ? "9px" : "11px",
+                        padding: isMobile ? "3px 8px" : "4px 10px",
+                        fontWeight: "800",
+                        letterSpacing: "0.4px",
+                        boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
+                      }}
+                    >
+                      {p.stock > 0 ? "Em estoque" : "Esgotado"}
+                    </span>
+                  </div>
+                  <div style={{ padding: isMobile ? 10 : 16 }}>
+                    <span
+                      style={{
+                        fontSize: 9,
+                        color: T.muted,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.08em",
+                      }}
+                    >
+                      {p.category}
+                    </span>
+                    <p
+                      style={{
+                        fontWeight: 600,
+                        fontSize: isMobile ? 12.5 : 14,
+                        marginTop: 4,
+                        marginBottom: 10,
+                        lineHeight: 1.3,
+                        height: isMobile ? "34px" : "auto",
+                        overflow: "hidden",
+                        display: "-webkit-box",
+                        WebkitLineClamp: isMobile ? 2 : "unset",
+                        WebkitBoxOrient: "vertical",
+                      }}
+                    >
+                      {p.name}
+                    </p>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontFamily: "JetBrains Mono, monospace",
+                          fontSize: isMobile ? 14.5 : 18,
+                          fontWeight: 700,
+                          color: T.cyan,
+                        }}
+                      >
+                        {fmt(p.price)}
+                      </span>
+                      <button
+                        className="btn-p"
+                        style={{ padding: isMobile ? "4px 8px" : "6px 12px", fontSize: isMobile ? 11 : 12 }}
+                        onClick={() => addToCart(p)}
+                        disabled={p.stock === 0}
+                      >
+                        <Plus size={isMobile ? 11 : 13} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Seção Sobre o Projeto */}
+      <div
+        id="sobre-projeto"
+        style={{
+          background: T.surface,
+          borderTop: `1px solid ${T.border}`,
+          width: "100%",
+        }}
+      >
+        <div
+          style={{
+            maxWidth: 1200,
+            margin: "0 auto",
+            width: "100%",
+            padding: isMobile ? "40px 16px 36px 16px" : "64px 36px 48px 36px",
+            display: "flex",
+            flexDirection: "column",
+            gap: 32,
+          }}
+        >
+          <div style={{ textAlign: "center", maxWidth: 650, margin: "0 auto" }}>
+            <h2
+              style={{
+                fontSize: isMobile ? 24 : 28,
+                fontWeight: 700,
+                color: "var(--color-text)",
+                marginBottom: 12,
+                background: "linear-gradient(90deg, #8c52ff, #00bf63)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              Sobre o Projeto
+            </h2>
+            <p style={{ color: T.muted2, fontSize: 13.5, lineHeight: 1.6 }}>
+              O <strong>ProtoTech</strong> é uma plataforma moderna desenvolvida para simplificar a gestão de estoque, controle de vendas e a aquisição de componentes eletrônicos. Unimos a robustez de um sistema de controle administrativo à facilidade de um e-commerce interativo para entusiastas e engenheiros.
+            </p>
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fit, minmax(250px, 1fr))",
+              gap: 20,
+              marginTop: isMobile ? 8 : 20,
+            }}
+          >
+            <div
+              className="card card-neon"
+              style={{
+                padding: "28px 24px",
+                background: T.surface2,
+                border: `1px solid ${T.border}`,
+                borderRadius: 16,
+                "--neon-color": "var(--color-cyan)",
+                "--neon-shadow": "rgba(140, 82, 255, 0.25)",
+                boxShadow: "0 10px 30px rgba(0,0,0,0.05)",
+              }}
+            >
+              <div
+                className="logo-animated"
                 style={{
-                  fontSize: isMobile ? 24 : 28,
-                  fontWeight: 700,
-                  color: "var(--color-text)",
-                  marginBottom: 12,
-                  background: "linear-gradient(90deg, #8c52ff, #00bf63)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
+                  width: 48,
+                  height: 48,
+                  borderRadius: 12,
+                  background: "rgba(140, 82, 255, 0.12)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginBottom: 16,
+                  "--glow-color": "rgba(140, 82, 255, 0.4)",
                 }}
               >
-                Sobre o Projeto
-              </h2>
-              <p style={{ color: T.muted2, fontSize: 13.5, lineHeight: 1.6 }}>
-                O <strong>ProtoTech</strong> é uma plataforma moderna desenvolvida para simplificar a gestão de estoque, controle de vendas e a aquisição de componentes eletrônicos. Unimos a robustez de um sistema de controle administrativo à facilidade de um e-commerce interativo para entusiastas e engenheiros.
+                <Cpu size={24} style={{ color: T.cyan }} />
+              </div>
+              <h3 style={{ fontSize: 17, fontWeight: 700, marginBottom: 10, color: "var(--color-text)" }}>
+                E-commerce de Robótica
+              </h3>
+              <p style={{ color: "var(--color-muted2)", fontSize: 13.5, lineHeight: 1.55 }}>
+                Acesso facilitado a microcontroladores, sensores e módulos eletrônicos de última geração com interface fluida e intuitiva.
               </p>
             </div>
 
             <div
+              className="card card-neon"
               style={{
-                display: "grid",
-                gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fit, minmax(250px, 1fr))",
-                gap: 20,
-                marginTop: isMobile ? 8 : 20,
+                padding: "28px 24px",
+                background: T.surface2,
+                border: `1px solid ${T.border}`,
+                borderRadius: 16,
+                "--neon-color": "var(--color-success)",
+                "--neon-shadow": "rgba(0, 191, 99, 0.25)",
+                boxShadow: "0 10px 30px rgba(0,0,0,0.05)",
               }}
             >
               <div
-                className="card card-neon"
+                className="logo-animated"
                 style={{
-                  padding: "28px 24px",
-                  background: T.surface2,
-                  border: `1px solid ${T.border}`,
-                  borderRadius: 16,
-                  "--neon-color": "var(--color-cyan)",
-                  "--neon-shadow": "rgba(140, 82, 255, 0.25)",
-                  boxShadow: "0 10px 30px rgba(0,0,0,0.05)",
+                  width: 48,
+                  height: 48,
+                  borderRadius: 12,
+                  background: "rgba(0, 191, 99, 0.12)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginBottom: 16,
+                  "--glow-color": "rgba(0, 191, 99, 0.4)",
                 }}
               >
-                <div
-                  className="logo-animated"
-                  style={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: 12,
-                    background: "rgba(140, 82, 255, 0.12)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    marginBottom: 16,
-                    "--glow-color": "rgba(140, 82, 255, 0.4)",
-                  }}
-                >
-                  <Cpu size={24} style={{ color: T.cyan }} />
-                </div>
-                <h3 style={{ fontSize: 17, fontWeight: 700, marginBottom: 10, color: "var(--color-text)" }}>
-                  E-commerce de Robótica
-                </h3>
-                <p style={{ color: "var(--color-muted2)", fontSize: 13.5, lineHeight: 1.55 }}>
-                  Acesso facilitado a microcontroladores, sensores e módulos eletrônicos de última geração com interface fluida e intuitiva.
-                </p>
+                <Warehouse size={24} style={{ color: T.success }} />
               </div>
-
-              <div
-                className="card card-neon"
-                style={{
-                  padding: "28px 24px",
-                  background: T.surface2,
-                  border: `1px solid ${T.border}`,
-                  borderRadius: 16,
-                  "--neon-color": "var(--color-success)",
-                  "--neon-shadow": "rgba(0, 191, 99, 0.25)",
-                  boxShadow: "0 10px 30px rgba(0,0,0,0.05)",
-                }}
-              >
-                <div
-                  className="logo-animated"
-                  style={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: 12,
-                    background: "rgba(0, 191, 99, 0.12)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    marginBottom: 16,
-                    "--glow-color": "rgba(0, 191, 99, 0.4)",
-                  }}
-                >
-                  <Warehouse size={24} style={{ color: T.success }} />
-                </div>
-                <h3 style={{ fontSize: 17, fontWeight: 700, marginBottom: 10, color: "var(--color-text)" }}>
-                  Controle Integrado
-                </h3>
-                <p style={{ color: "var(--color-muted2)", fontSize: 13.5, lineHeight: 1.55 }}>
-                  Sincronização em tempo real entre o estoque físico e a disponibilidade da vitrine, prevenindo a venda de itens esgotados.
-                </p>
-              </div>
-
-              <div
-                className="card card-neon"
-                style={{
-                  padding: "28px 24px",
-                  background: T.surface2,
-                  border: `1px solid ${T.border}`,
-                  borderRadius: 16,
-                  "--neon-color": "var(--color-purple)",
-                  "--neon-shadow": "rgba(124, 58, 237, 0.25)",
-                  boxShadow: "0 10px 30px rgba(0,0,0,0.05)",
-                }}
-              >
-                <div
-                  className="logo-animated"
-                  style={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: 12,
-                    background: "rgba(124, 58, 237, 0.12)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    marginBottom: 16,
-                    "--glow-color": "rgba(124, 58, 237, 0.4)",
-                  }}
-                >
-                  <Shield size={24} style={{ color: T.purple }} />
-                </div>
-                <h3 style={{ fontSize: 17, fontWeight: 700, marginBottom: 10, color: "var(--color-text)" }}>
-                  Tecnologias Utilizadas
-                </h3>
-                <p style={{ color: "var(--color-muted2)", fontSize: 13.5, lineHeight: 1.55 }}>
-                  Construído utilizando React para a interface responsiva e Express com banco de dados relacional MySQL no backend.
-                </p>
-              </div>
+              <h3 style={{ fontSize: 17, fontWeight: 700, marginBottom: 10, color: "var(--color-text)" }}>
+                Controle Integrado
+              </h3>
+              <p style={{ color: "var(--color-muted2)", fontSize: 13.5, lineHeight: 1.55 }}>
+                Sincronização em tempo real entre o estoque físico e a disponibilidade da vitrine, prevenindo a venda de itens esgotados.
+              </p>
             </div>
 
             <div
+              className="card card-neon"
               style={{
-                borderTop: `1px solid rgba(255,255,255,0.03)`,
-                paddingTop: 32,
-                marginTop: 16,
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                flexWrap: "wrap",
-                gap: 16,
+                padding: "28px 24px",
+                background: T.surface2,
+                border: `1px solid ${T.border}`,
+                borderRadius: 16,
+                "--neon-color": "var(--color-purple)",
+                "--neon-shadow": "rgba(124, 58, 237, 0.25)",
+                boxShadow: "0 10px 30px rgba(0,0,0,0.05)",
               }}
             >
-              <span style={{ fontSize: 12, color: T.muted }}>
-                &copy; {new Date().getFullYear()} ProtoTech. Todos os direitos reservados.
-              </span>
-              <div style={{ display: "flex", gap: 20 }}>
-                <span style={{ fontSize: 12, color: T.muted2, cursor: "pointer" }} onClick={() => setPage("catalogo")}>Vitrine</span>
-                <span style={{ fontSize: 12, color: T.muted2, cursor: "pointer" }} onClick={() => setPage("carrinho")}>Carrinho</span>
-                <span style={{ fontSize: 12, color: T.muted2, cursor: "pointer" }} onClick={() => document.getElementById("client-home-container")?.scrollTo({ top: 0, behavior: "smooth" })}>Voltar ao topo</span>
+              <div
+                className="logo-animated"
+                style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 12,
+                  background: "rgba(124, 58, 237, 0.12)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginBottom: 16,
+                  "--glow-color": "rgba(124, 58, 237, 0.4)",
+                }}
+              >
+                <Shield size={24} style={{ color: T.purple }} />
               </div>
+              <h3 style={{ fontSize: 17, fontWeight: 700, marginBottom: 10, color: "var(--color-text)" }}>
+                Tecnologias Utilizadas
+              </h3>
+              <p style={{ color: "var(--color-muted2)", fontSize: 13.5, lineHeight: 1.55 }}>
+                Construído utilizando React para a interface responsiva e Express com banco de dados relacional MySQL no backend.
+              </p>
+            </div>
+          </div>
+
+          <div
+            style={{
+              borderTop: `1px solid rgba(255,255,255,0.03)`,
+              paddingTop: 32,
+              marginTop: 16,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: 16,
+            }}
+          >
+            <span style={{ fontSize: 12, color: T.muted }}>
+              &copy; {new Date().getFullYear()} ProtoTech. Todos os direitos reservados.
+            </span>
+            <div style={{ display: "flex", gap: 20 }}>
+              <span style={{ fontSize: 12, color: T.muted2, cursor: "pointer" }} onClick={() => setPage("catalogo")}>Vitrine</span>
+              <span style={{ fontSize: 12, color: T.muted2, cursor: "pointer" }} onClick={() => setPage("carrinho")}>Carrinho</span>
+              <span style={{ fontSize: 12, color: T.muted2, cursor: "pointer" }} onClick={() => document.getElementById("client-home-container")?.scrollTo({ top: 0, behavior: "smooth" })}>Voltar ao topo</span>
             </div>
           </div>
         </div>
       </div>
-    );
-  };
+    </div>
+  );
+};
 
 // ─── CATÁLOGO ─────────────────────────────────────────────────────
 const Catalogo = ({ addToCart, products = [] }) => {
@@ -4766,11 +4770,7 @@ const Carrinho = ({ cart, setCart, setPage }) => {
                   padding: "12px",
                   marginTop: 18,
                 }}
-                onClick={() => {
-                  alert("🎉 Pedido realizado com sucesso!");
-                  setCart([]);
-                  setPage("home");
-                }}
+                onClick={() => setPage("checkout")}
               >
                 Finalizar Pedido <ArrowRight size={15} />
               </button>
@@ -5047,6 +5047,7 @@ const ClientArea = ({ onLogout, theme, toggleTheme, products = [], loadProducts 
         {page === "catalogo" && <Catalogo addToCart={addToCart} products={products} />}
         {page === "carrinho" && <Carrinho cart={cart} setCart={setCart} setPage={setPage} />}
         {page === "perfil" && <Perfil />}
+        {page === "checkout" && <Checkout cart={cart} setCart={setCart} setPage={setPage} />}
       </div>
     </div>
   );
@@ -5055,7 +5056,6 @@ const ClientArea = ({ onLogout, theme, toggleTheme, products = [], loadProducts 
 // ─── ROOT ─────────────────────────────────────────────────────────
 export default function App() {
   const [session, setSession] = useState(null);
-  const [showcase, setShowcase] = useState(false);
   const [theme, setTheme] = useState(() => localStorage.getItem("pt-theme") || "dark");
   const [products, setProducts] = useState([]);
   const [sales, setSales] = useState([]);
@@ -5122,57 +5122,28 @@ export default function App() {
     <ToastProvider>
       <style>{GLOBAL_CSS}</style>
       <div className="pt-root">
-        {showcase ? (
-          <>
-            <ResponsiveHeader theme={theme} toggleTheme={toggleTheme} />
-            <div style={{ paddingTop: 80 }}>
-              <button 
-                className="btn-p" 
-                style={{ margin: '20px auto', display: 'flex', alignItems: 'center', gap: '8px' }}
-                onClick={() => setShowcase(false)}
-              >
-                Voltar para o App
-              </button>
-              <Showcase />
-            </div>
-          </>
-        ) : (
-          <>
-            {!session && (
-              <div style={{ position: 'absolute', top: 20, right: 20, zIndex: 999 }}>
-                <button 
-                  className="btn-p" 
-                  onClick={() => setShowcase(true)}
-                  style={{ background: 'var(--color-purple)', display: 'flex', gap: '8px' }}
-                >
-                  <Sparkles size={16} /> Ver Componentes Premium
-                </button>
-              </div>
-            )}
-            {!session && <Login onLogin={setSession} />}
-            {session === "admin" && (
-              <AdminArea
-                onLogout={() => setSession(null)}
-                theme={theme}
-                toggleTheme={toggleTheme}
-                products={products}
-                loadProducts={loadProducts}
-                sales={sales}
-                loadSales={loadSales}
-                topProducts={topProducts}
-                loadTopProducts={loadTopProducts}
-              />
-            )}
-            {session === "client" && (
-              <ClientArea
-                onLogout={() => setSession(null)}
-                theme={theme}
-                toggleTheme={toggleTheme}
-                products={products}
-                loadProducts={loadProducts}
-              />
-            )}
-          </>
+        {!session && <Login onLogin={setSession} />}
+        {session === "admin" && (
+          <AdminArea
+            onLogout={() => setSession(null)}
+            theme={theme}
+            toggleTheme={toggleTheme}
+            products={products}
+            loadProducts={loadProducts}
+            sales={sales}
+            loadSales={loadSales}
+            topProducts={topProducts}
+            loadTopProducts={loadTopProducts}
+          />
+        )}
+        {session === "client" && (
+          <ClientArea
+            onLogout={() => setSession(null)}
+            theme={theme}
+            toggleTheme={toggleTheme}
+            products={products}
+            loadProducts={loadProducts}
+          />
         )}
       </div>
     </ToastProvider>
