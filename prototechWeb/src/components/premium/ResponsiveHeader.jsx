@@ -30,65 +30,71 @@ const ResponsiveHeader = ({ theme, toggleTheme }) => {
           WebkitBackdropFilter: scrolled ? 'blur(12px)' : 'none',
           borderBottom: scrolled ? `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'}` : '1px solid transparent',
           transition: 'all 0.3s ease',
+        }}
+      >
+        <div style={{
+          width: '100%',
+          maxWidth: '1200px',
+          margin: '0 auto',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center'
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{
-            width: '32px', height: '32px', borderRadius: '8px',
-            background: 'linear-gradient(135deg, var(--color-cyan), var(--color-purple))',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: 'white', fontWeight: 'bold'
-          }}>P</div>
-          <span style={{ fontSize: '18px', fontWeight: 700, letterSpacing: '-0.5px' }}>ProtoTech</span>
-        </div>
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{
+              width: '32px', height: '32px', borderRadius: '8px',
+              background: 'linear-gradient(135deg, var(--color-cyan), var(--color-purple))',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              color: 'white', fontWeight: 'bold'
+            }}>P</div>
+            <span style={{ fontSize: '18px', fontWeight: 700, letterSpacing: '-0.5px' }}>ProtoTech</span>
+          </div>
 
-        {/* Desktop Nav */}
-        <nav style={{ display: 'none', gap: '24px', alignItems: 'center' }} className="desktop-nav">
-          <a href="#" style={{ color: 'var(--color-text)', textDecoration: 'none', fontSize: '14px', fontWeight: 500 }}>Dashboard</a>
-          <a href="#" style={{ color: 'var(--color-muted)', textDecoration: 'none', fontSize: '14px', fontWeight: 500 }}>Catálogo</a>
-          <a href="#" style={{ color: 'var(--color-muted)', textDecoration: 'none', fontSize: '14px', fontWeight: 500 }}>Configurações</a>
-          
-          <button
-            onClick={toggleTheme}
-            style={{
-              background: 'var(--color-surface2)',
-              border: `1px solid var(--color-border)`,
-              color: 'var(--color-muted)',
-              width: 36,
-              height: 36,
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-            }}
+          {/* Desktop Nav */}
+          <nav style={{ display: 'none', gap: '24px', alignItems: 'center' }} className="desktop-nav">
+            <a href="#" style={{ color: 'var(--color-text)', textDecoration: 'none', fontSize: '14px', fontWeight: 500 }}>Dashboard</a>
+            <a href="#" style={{ color: 'var(--color-muted)', textDecoration: 'none', fontSize: '14px', fontWeight: 500 }}>Catálogo</a>
+            <a href="#" style={{ color: 'var(--color-muted)', textDecoration: 'none', fontSize: '14px', fontWeight: 500 }}>Configurações</a>
+            
+            <button
+              onClick={toggleTheme}
+              style={{
+                background: 'var(--color-surface2)',
+                border: `1px solid var(--color-border)`,
+                color: 'var(--color-muted)',
+                width: 36,
+                height: 36,
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+              }}
+            >
+              {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+            </button>
+          </nav>
+
+          {/* Mobile Toggle */}
+          <button 
+            className="mobile-toggle"
+            style={{ background: 'none', border: 'none', color: 'var(--color-text)', cursor: 'pointer', display: 'none' }}
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
-        </nav>
 
-        {/* Mobile Toggle */}
-        <button 
-          className="mobile-toggle"
-          style={{ background: 'none', border: 'none', color: 'var(--color-text)', cursor: 'pointer', display: 'none' }}
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-        >
-          {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
-
-        <style>{`
-          @media (min-width: 768px) {
-            .desktop-nav { display: flex !important; }
-            .mobile-toggle { display: none !important; }
-          }
-          @media (max-width: 767px) {
-            .mobile-toggle { display: block !important; }
-          }
-        `}</style>
+          <style>{`
+            @media (min-width: 768px) {
+              .desktop-nav { display: flex !important; }
+              .mobile-toggle { display: none !important; }
+            }
+            @media (max-width: 767px) {
+              .mobile-toggle { display: block !important; }
+            }
+          `}</style>
+        </div>
       </header>
 
       {/* Mobile Menu */}
