@@ -487,6 +487,15 @@ const GLOBAL_CSS = `
   ::-webkit-scrollbar{width:4px;height:4px}
   ::-webkit-scrollbar-track{background:var(--color-surface)}
   ::-webkit-scrollbar-thumb{background:rgba(var(--rgb-cyan),0.2);border-radius:2px}
+  select.inp{cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235a7090' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:32px}
+  .select-scroll-wrapper{position:relative;width:100%}
+  .select-scroll-wrapper select{width:100%;max-height:160px;overflow-y:auto}
+  .select-scroll-wrapper select[size]{border-radius:8px;scrollbar-width:thin;scrollbar-color:rgba(var(--rgb-cyan),0.25) var(--color-surface2)}
+  .select-scroll-wrapper select[size] option{padding:8px 12px;cursor:pointer;transition:background .1s}
+  .select-scroll-wrapper select[size] option:checked,.select-scroll-wrapper select[size] option:hover{background:rgba(var(--rgb-cyan),0.15)}
+  .select-scroll-wrapper select[size]::-webkit-scrollbar{width:4px}
+  .select-scroll-wrapper select[size]::-webkit-scrollbar-track{background:var(--color-surface2)}
+  .select-scroll-wrapper select[size]::-webkit-scrollbar-thumb{background:rgba(var(--rgb-cyan),0.3);border-radius:2px}
   .pt-root{font-family:'Space Grotesk',system-ui,sans-serif;color:var(--color-text);background:var(--color-bg);min-height:100vh}
   .mono{font-family:'JetBrains Mono',monospace}
   input,select,textarea,button{font-family:inherit}
@@ -1575,12 +1584,16 @@ const Produtos = ({ products = [], loadProducts }) => {
   const [edit, setEdit] = useState(null);
   const [suppliers, setSuppliers] = useState([]);
 
-  useEffect(() => {
-    // Carrega fornecedores reais do banco para popular o select do formulário
+  // Carrega (ou recarrega) fornecedores do banco — chamada sempre que o modal abre
+  const loadSuppliers = () => {
     fetch(`${API_URL}/fornecedores`)
       .then((res) => res.json())
       .then((data) => setSuppliers(data))
       .catch((err) => console.error("Erro ao carregar fornecedores:", err));
+  };
+
+  useEffect(() => {
+    loadSuppliers();
   }, []);
 
   const filtered = products.filter(
@@ -1664,6 +1677,7 @@ const Produtos = ({ products = [], loadProducts }) => {
           className="btn-p"
           onClick={() => {
             setEdit(null);
+            loadSuppliers();
             setModal(true);
           }}
         >
@@ -1753,6 +1767,7 @@ const Produtos = ({ products = [], loadProducts }) => {
                         style={{ padding: "5px 9px" }}
                         onClick={() => {
                           setEdit(p);
+                          loadSuppliers();
                           setModal(true);
                         }}
                       >
@@ -1836,19 +1851,26 @@ const Produtos = ({ products = [], loadProducts }) => {
                 }}
               >
                 Fornecedor Associado
+                {suppliers.length === 0 && (
+                  <span style={{ fontSize: 10, color: T.warning, marginLeft: 8 }}>⚠ Nenhum fornecedor no banco</span>
+                )}
               </label>
-              <select
-                className="inp"
-                id="inp-id_fornecedor"
-                defaultValue={edit ? edit.id_fornecedor || "" : ""}
-              >
-                <option value="">— Sem Fornecedor —</option>
-                {suppliers.map((s) => (
-                  <option key={s.id_fornecedor} value={s.id_fornecedor}>
-                    {s.razao_social}
-                  </option>
-                ))}
-              </select>
+              <div className="select-scroll-wrapper">
+                <select
+                  className="inp"
+                  id="inp-id_fornecedor"
+                  defaultValue={edit ? edit.id_fornecedor || "" : ""}
+                  size={suppliers.length > 4 ? 5 : undefined}
+                  style={suppliers.length > 4 ? { height: "auto", appearance: "auto", WebkitAppearance: "auto", paddingRight: 12 } : {}}
+                >
+                  <option value="">— Sem Fornecedor —</option>
+                  {suppliers.map((s) => (
+                    <option key={s.id_fornecedor} value={s.id_fornecedor}>
+                      {s.razao_social}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
           <div
@@ -2249,18 +2271,22 @@ const Vendas = ({ products = [], sales = [], loadSales, loadProducts }) => {
               >
                 Selecionar Cliente
               </label>
-              <select
-                className="inp"
-                value={clientId}
-                onChange={(e) => setClientId(e.target.value)}
-              >
-                <option value="">— Selecione o cliente —</option>
-                {dbClients.map((c) => (
-                  <option key={c.id_cliente} value={c.id_cliente}>
-                    {c.nome_cliente} – CPF: {c.cpf}
-                  </option>
-                ))}
-              </select>
+              <div className="select-scroll-wrapper">
+                <select
+                  className="inp"
+                  value={clientId}
+                  onChange={(e) => setClientId(e.target.value)}
+                  size={dbClients.length > 4 ? 5 : undefined}
+                  style={dbClients.length > 4 ? { height: "auto", appearance: "auto", WebkitAppearance: "auto", paddingRight: 12 } : {}}
+                >
+                  <option value="">— Selecione o cliente —</option>
+                  {dbClients.map((c) => (
+                    <option key={c.id_cliente} value={c.id_cliente}>
+                      {c.nome_cliente} – CPF: {c.cpf}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             <div className="card" style={{ overflow: "hidden" }}>
@@ -2773,19 +2799,29 @@ const Funcionarios = () => {
   const [cargoId, setCargoId] = useState("");
   const [hireDate, setHireDate] = useState("");
 
-  const loadData = async () => {
-    setLoading(true);
+  // Recarrega apenas os cargos (usado ao abrir o modal para pegar novos cargos do banco)
+  const loadCargos = async () => {
     try {
-      // Carrega funcionários
-      const resEmp = await fetch("http://localhost:3000/api/funcionarios");
-      const dataEmp = await resEmp.json();
-      setEmployees(dataEmp);
-
-      // Carrega cargos para o dropdown do cadastro
       const resCargos = await fetch("http://localhost:3000/api/cargos");
       const dataCargos = await resCargos.json();
       setCargos(dataCargos);
+    } catch (err) {
+      console.error("Erro ao carregar cargos:", err);
+    }
+  };
 
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      // Carrega funcionários e cargos em paralelo
+      const [resEmp, resCargos] = await Promise.all([
+        fetch("http://localhost:3000/api/funcionarios"),
+        fetch("http://localhost:3000/api/cargos"),
+      ]);
+      const dataEmp = await resEmp.json();
+      const dataCargos = await resCargos.json();
+      setEmployees(dataEmp);
+      setCargos(dataCargos);
       setLoading(false);
     } catch (err) {
       console.error("Erro ao carregar dados dos funcionários:", err);
@@ -2798,6 +2834,9 @@ const Funcionarios = () => {
   }, []);
 
   const handleOpenModal = (e = null) => {
+    // Sempre recarrega cargos do banco ao abrir o modal (garante que novos cargos apareçam)
+    loadCargos();
+
     if (e) {
       setEditingEmployee(e);
       setName(e.nome_funcionario || "");
@@ -2927,7 +2966,14 @@ const Funcionarios = () => {
                   <TD style={{ fontSize: 12, fontFamily: "JetBrains Mono, monospace", color: T.muted2 }}>
                     {e.cpf}
                   </TD>
-                  <TD style={{ fontSize: 13 }}>{e.nome_cargo || "Sem cargo"}</TD>
+                  <TD style={{ fontSize: 13 }}>
+                    <div style={{ fontWeight: 500 }}>{e.nome_cargo || "Sem cargo"}</div>
+                    {e.descricao_atribuicoes && (
+                      <div style={{ fontSize: 11, color: T.muted, marginTop: 2, maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={e.descricao_atribuicoes}>
+                        {e.descricao_atribuicoes}
+                      </div>
+                    )}
+                  </TD>
                   <TD
                     style={{
                       fontFamily: "JetBrains Mono, monospace",
@@ -3019,21 +3065,62 @@ const Funcionarios = () => {
               <div>
                 <label style={{ display: "block", fontSize: 11, color: T.muted2, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.05em" }}>
                   Cargo *
+                  {cargos.length === 0 && (
+                    <span style={{ fontSize: 10, color: T.warning, marginLeft: 8, textTransform: "none" }}>⚠ Nenhum cargo encontrado no banco</span>
+                  )}
                 </label>
                 <select
+                  className="inp"
                   value={cargoId}
                   onChange={(e) => setCargoId(e.target.value)}
-                  className="modal-input"
-                  style={{ width: "100%", padding: "10px 12px", background: T.surface2, border: `1px solid ${T.border}`, borderRadius: 8, color: T.text, outline: "none" }}
+                  style={{
+                    width: "100%",
+                    padding: "10px 12px",
+                    background: T.surface2,
+                    border: `1px solid ${T.border}`,
+                    borderRadius: 8,
+                    color: T.text,
+                    outline: "none",
+                  }}
                   required
                 >
-                  <option value="" disabled>Selecione um Cargo</option>
+                  <option value="" disabled>— Selecione um Cargo —</option>
                   {cargos.map((cargo) => (
                     <option key={cargo.id_cargo} value={cargo.id_cargo}>
-                      {cargo.nome_cargo} (Salário: {fmt(parseFloat(cargo.salario_base))})
+                      {cargo.nome_cargo} — Salário: {fmt(parseFloat(cargo.salario_base))}
                     </option>
                   ))}
                 </select>
+
+                {/* Painel de descrição do cargo selecionado */}
+                {(() => {
+                  const cargoSelecionado = cargos.find((c) => String(c.id_cargo) === String(cargoId));
+                  if (!cargoSelecionado || !cargoSelecionado.descricao_atribuicoes) return null;
+                  return (
+                    <div
+                      style={{
+                        marginTop: 8,
+                        padding: "10px 12px",
+                        background: `rgba(var(--rgb-cyan),0.06)`,
+                        border: `1px solid rgba(var(--rgb-cyan),0.18)`,
+                        borderRadius: 8,
+                        display: "flex",
+                        gap: 8,
+                        alignItems: "flex-start",
+                      }}
+                    >
+                      <span style={{ fontSize: 14, flexShrink: 0, marginTop: 1 }}>📋</span>
+                      <div>
+                        <div style={{ fontSize: 10, fontWeight: 600, color: T.cyan, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>
+                          Atribuições do Cargo
+                        </div>
+                        <div style={{ fontSize: 12, color: T.muted2, lineHeight: 1.55 }}>
+                          {cargoSelecionado.descricao_atribuicoes}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
 
               <div>

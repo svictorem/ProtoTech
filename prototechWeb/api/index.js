@@ -342,7 +342,8 @@ app.get('/api/funcionarios', async (req, res) => {
                 f.id_cargo, 
                 f.data_admissao, 
                 c.nome_cargo, 
-                c.salario_base
+                c.salario_base,
+                c.descricao_atribuicoes
             FROM Funcionario f
             LEFT JOIN Cargo c ON f.id_cargo = c.id_cargo
         `;
@@ -430,7 +431,7 @@ app.delete('/api/funcionarios/:id', async (req, res) => {
 // Helper - Rota para carregar Cargos
 app.get('/api/cargos', async (req, res) => {
     try {
-        const query = 'SELECT id_cargo, nome_cargo, salario_base FROM Cargo';
+        const query = 'SELECT id_cargo, nome_cargo, salario_base, descricao_atribuicoes FROM Cargo';
         const [rows] = await pool.query(query);
         res.json(rows);
     } catch (err) {
