@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import "./global.css";
 
 import {
   AreaChart,
@@ -55,13 +56,6 @@ import { ToastProvider } from "./components/ToastSystem";
 import Checkout from "./components/Checkout";
 
 // ─── UTILS ────────────────────────────────────────────────────────
-// Importa todos os assets de imagem de produtos de forma estática para que o Vite
-// possa resolver e empacotar corretamente os arquivos WebP, JPG e WEBP.
-const _assetModules = import.meta.glob('./assets/*.{webp,jpg,png}', { eager: true, query: '?url', import: 'default' });
-const _assetMap = Object.fromEntries(
-  Object.entries(_assetModules).map(([path, url]) => [path.replace('./assets/', ''), url])
-);
-
 const getProductImage = (name) => {
   if (!name) return null;
   const cleanName = name.trim();
@@ -124,134 +118,10 @@ const getProductImage = (name) => {
   }
 
   if (!fileName) return null;
-  return _assetMap[fileName] ?? null;
+  return new URL(`./assets/${fileName}`, import.meta.url).href;
 };
 
 // ─── MOCK DATA ────────────────────────────────────────────────────
-const PRODUCTS_MOCK = [
-  {
-    id: 1,
-    image: null,
-    name: "Arduino UNO R3",
-    category: "Microcontroladores",
-    price: 89.9,
-    cost: 45.0,
-    stock: 32,
-    minStock: 10,
-    supplier: "TechParts BR",
-    sku: "ARD-UNO-R3",
-  },
-  {
-    id: 2,
-    image: null,
-    name: "ESP32 DevKit V1",
-    category: "IoT/WiFi",
-    price: 49.9,
-    cost: 22.0,
-    stock: 5,
-    minStock: 8,
-    supplier: "MicroElec",
-    sku: "ESP-32-DK1",
-  },
-  {
-    id: 3,
-    image: null,
-    name: "Sensor Ultrassônico HC-SR04",
-    category: "Sensores",
-    price: 12.9,
-    cost: 5.5,
-    stock: 78,
-    minStock: 20,
-    supplier: "SensorTech",
-    sku: "SEN-ULT-HC",
-  },
-  {
-    id: 4,
-    image: null,
-    name: "Módulo Relé 4 Canais",
-    category: "Automação",
-    price: 24.9,
-    cost: 11.0,
-    stock: 3,
-    minStock: 10,
-    supplier: "AutoParts",
-    sku: "MOD-REL-4C",
-  },
-  {
-    id: 5,
-    image: null,
-    name: "Raspberry Pi 4 Model B 4GB",
-    category: "SBC",
-    price: 459.9,
-    cost: 320.0,
-    stock: 12,
-    minStock: 5,
-    supplier: "RPi Brasil",
-    sku: "RPI-4-4GB",
-  },
-  {
-    id: 6,
-    image: null,
-    name: "Servo Motor SG90",
-    category: "Robótica",
-    price: 18.9,
-    cost: 8.0,
-    stock: 45,
-    minStock: 15,
-    supplier: "RoboTech",
-    sku: "SRV-SG90",
-  },
-  {
-    id: 7,
-    image: null,
-    name: "Sensor DHT22 Temp/Umidade",
-    category: "Sensores",
-    price: 19.9,
-    cost: 8.5,
-    stock: 0,
-    minStock: 10,
-    supplier: "SensorTech",
-    sku: "SEN-DHT22",
-  },
-  {
-    id: 8,
-    image: null,
-    name: 'Display OLED 0.96" I2C',
-    category: "Displays",
-    price: 29.9,
-    cost: 13.0,
-    stock: 22,
-    minStock: 8,
-    supplier: "DisplayBR",
-    sku: "DIS-OL-096",
-  },
-  {
-    id: 9,
-    image: null,
-    name: "Protoboard 830 Pontos",
-    category: "Ferramentas",
-    price: 22.9,
-    cost: 10.0,
-    stock: 60,
-    minStock: 20,
-    supplier: "ElecTools",
-    sku: "PRO-830P",
-  },
-  {
-    id: 10,
-    image: null,
-    name: "Kit Jumpers Macho-Fêmea 40pcs",
-    category: "Cabos",
-    price: 14.9,
-    cost: 5.0,
-    stock: 120,
-    minStock: 30,
-    supplier: "CableParts",
-    sku: "JMP-MF-40",
-  },
-];
-const PRODUCTS = PRODUCTS_MOCK.map(p => ({ ...p, image: getProductImage(p.name) }));
-
 const CLIENTS = [
   {
     id: 1,
@@ -302,45 +172,6 @@ const CLIENTS = [
     since: "Mar 2024",
     purchases: 2,
     total: 189.8,
-  },
-];
-
-const EMPLOYEES = [
-  {
-    id: 1,
-    name: "Rafael Torres",
-    role: "Vendedor",
-    salary: 2200,
-    level: "Operacional",
-    email: "rafael@prototech.com",
-    since: "Jun 2022",
-  },
-  {
-    id: 2,
-    name: "Juliana Reis",
-    role: "Gerente de Estoque",
-    salary: 3500,
-    level: "Supervisor",
-    email: "juliana@prototech.com",
-    since: "Mar 2021",
-  },
-  {
-    id: 3,
-    name: "Marcos Lima",
-    role: "Técnico Eletrônico",
-    salary: 2800,
-    level: "Operacional",
-    email: "marcos@prototech.com",
-    since: "Jan 2023",
-  },
-  {
-    id: 4,
-    name: "Admin Sistema",
-    role: "Administrador",
-    salary: 6000,
-    level: "Admin",
-    email: "admin@prototech.com",
-    since: "Jan 2020",
   },
 ];
 
@@ -431,200 +262,7 @@ const COLOR_RGB = {
   [T.purple]: "var(--rgb-purple)",
 };
 
-const GLOBAL_CSS = `
-  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-  
-  :root {
-    --color-bg: #070914;
-    --color-surface: #0c1526;
-    --color-surface2: #111d33;
-    --color-surface3: #162240;
-    --color-border: rgba(140,82,255,0.1);
-    --color-borderHover: rgba(140,82,255,0.3);
-    --color-cyan: #8c52ff;
-    --color-cyanBg: rgba(140,82,255,0.08);
-    --color-text: #dde8f5;
-    --color-muted: #5a7090;
-    --color-muted2: #8a9bb5;
-    --color-success: #00bf63;
-    --color-warning: #ffb800;
-    --color-danger: #ff4757;
-    --color-purple: #7c3aed;
-    
-    --rgb-cyan: 140,82,255;
-    --rgb-success: 0,191,99;
-    --rgb-warning: 255,184,0;
-    --rgb-danger: 255,71,87;
-    --rgb-purple: 124,58,237;
-  }
 
-  [data-theme="light"] {
-    --color-bg: #ffffff;
-    --color-surface: #f8fafc;
-    --color-surface2: #f1f5f9;
-    --color-surface3: #e2e8f0;
-    --color-border: rgba(140,82,255,0.15);
-    --color-borderHover: rgba(140,82,255,0.35);
-    --color-cyan: #7c3aed;
-    --color-cyanBg: rgba(124,58,237,0.08);
-    --color-text: #0f172a;
-    --color-muted: #475569;
-    --color-muted2: #64748b;
-    --color-success: #059669;
-    --color-warning: #d97706;
-    --color-danger: #dc2626;
-    --color-purple: #6d28d9;
-    
-    --rgb-cyan: 124,58,237;
-    --rgb-success: 5,150,105;
-    --rgb-warning: 217,119,6;
-    --rgb-danger: 220,38,38;
-    --rgb-purple: 109,40,217;
-  }
-
-  *{box-sizing:border-box;margin:0;padding:0}
-  html,body{background:var(--color-bg)}
-  ::-webkit-scrollbar{width:4px;height:4px}
-  ::-webkit-scrollbar-track{background:var(--color-surface)}
-  ::-webkit-scrollbar-thumb{background:rgba(var(--rgb-cyan),0.2);border-radius:2px}
-  select.inp{cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235a7090' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:32px}
-  .select-scroll-wrapper{position:relative;width:100%}
-  .select-scroll-wrapper select{width:100%;max-height:160px;overflow-y:auto}
-  .select-scroll-wrapper select[size]{border-radius:8px;scrollbar-width:thin;scrollbar-color:rgba(var(--rgb-cyan),0.25) var(--color-surface2)}
-  .select-scroll-wrapper select[size] option{padding:8px 12px;cursor:pointer;transition:background .1s}
-  .select-scroll-wrapper select[size] option:checked,.select-scroll-wrapper select[size] option:hover{background:rgba(var(--rgb-cyan),0.15)}
-  .select-scroll-wrapper select[size]::-webkit-scrollbar{width:4px}
-  .select-scroll-wrapper select[size]::-webkit-scrollbar-track{background:var(--color-surface2)}
-  .select-scroll-wrapper select[size]::-webkit-scrollbar-thumb{background:rgba(var(--rgb-cyan),0.3);border-radius:2px}
-  .pt-root{font-family:'Space Grotesk',system-ui,sans-serif;color:var(--color-text);background:var(--color-bg);min-height:100vh}
-  .mono{font-family:'JetBrains Mono',monospace}
-  input,select,textarea,button{font-family:inherit}
-  
-  .sb-item{display:flex;align-items:center;gap:10px;padding:9px 14px;border-radius:8px;cursor:pointer;transition:all .15s;color:var(--color-muted);font-size:14px;font-weight:500;border-left:2px solid transparent}
-  .sb-item:hover{background:var(--color-cyanBg);color:var(--color-text)}
-  .sb-item.active{background:rgba(var(--rgb-cyan),0.1);color:var(--color-cyan);border-left-color:var(--color-cyan)}
-  
-  .card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:12px}
-  .card-h{transition:border-color .2s,transform .15s}
-  .card-h:hover{border-color:var(--color-borderHover);transform:translateY(-2px)}
-  .card-neon{transition:transform .3s cubic-bezier(.4,0,.2,1),box-shadow .3s cubic-bezier(.4,0,.2,1),border-color .3s ease}
-  .card-neon:hover{transform:translateY(-4px);border-color:var(--neon-color);box-shadow:0 12px 28px -6px var(--neon-shadow),0 0 14px -3px var(--neon-shadow)}
-  
-  .btn-p{background:var(--color-cyan);color:var(--color-bg);border:none;padding:8px 16px;border-radius:8px;font-weight:600;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:6px;transition:opacity .15s;white-space:nowrap}
-  .btn-p:hover{opacity:.85}
-  .btn-p:disabled{opacity:.4;cursor:not-allowed}
-  .btn-g{background:var(--color-cyanBg);color:var(--color-cyan);border:1px solid rgba(var(--rgb-cyan),0.2);padding:8px 14px;border-radius:8px;font-weight:500;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:6px;transition:all .15s;white-space:nowrap}
-  .btn-g:hover{background:rgba(var(--rgb-cyan),0.15);border-color:rgba(var(--rgb-cyan),0.4)}
-
-  /* Contraste maior para botões sobre gradientes fortes */
-  .btn-p{color:#ffffff;background:linear-gradient(90deg,var(--color-purple),var(--color-success));box-shadow:0 10px 30px rgba(0,0,0,0.35);border:none}
-  .btn-p:hover{filter:brightness(1.03);transform:translateY(-1px)}
-  .btn-g{background:rgba(120,120,120,0.06);color:var(--color-text);border:1px solid rgba(120,120,120,0.08)}
-  .btn-g:hover{background:rgba(120,120,120,0.12);border-color:rgba(120,120,120,0.12)}
-
-  /* Ilustração do hero (SVG desenhado e animado) */
-  .hero-illustration{display:block;max-width:56vw;width:520px;filter:drop-shadow(0 10px 38px rgba(0,0,0,0.35));opacity:0.98;pointer-events:none;transform-origin:center;animation:float 6s ease-in-out infinite}
-  .hero-illustration:hover{filter:drop-shadow(0 16px 65px rgba(0,0,0,0.45));}
-  @keyframes float{0%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-10px) rotate(1deg)}100%{transform:translateY(0) rotate(-1deg)}}
-  .btn-d{background:rgba(var(--rgb-danger),0.1);color:var(--color-danger);border:1px solid rgba(var(--rgb-danger),0.2);padding:6px 10px;border-radius:6px;cursor:pointer;transition:all .15s;display:flex;align-items:center}
-  .btn-d:hover{background:rgba(var(--rgb-danger),0.2)}
-  
-  .badge{display:inline-flex;align-items:center;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:800;letter-spacing:0.4px;box-shadow:0 2px 6px rgba(0,0,0,0.3)}
-  .b-ok{background:rgba(var(--rgb-success),0.5);color:#ffffff;border:1.5px solid var(--color-success);text-shadow:0 1px 3px rgba(0,0,0,0.4)}
-  .b-warn{background:rgba(var(--rgb-warning),0.4);color:#ffffff;border:1.5px solid var(--color-warning);text-shadow:0 1px 3px rgba(0,0,0,0.4)}
-  .b-err{background:rgba(var(--rgb-danger),0.5);color:#ffffff;border:1.5px solid var(--color-danger);text-shadow:0 1px 3px rgba(0,0,0,0.4)}
-  .b-info{background:var(--color-cyanBg);color:var(--color-cyan)}
-  .b-dim{background:rgba(90,112,144,0.2);color:var(--color-muted2)}
-  
-  .tr{border-bottom:1px solid rgba(var(--rgb-cyan),0.06);transition:all .2s ease}
-  .tr:hover{background:rgba(var(--rgb-cyan),0.15);border-bottom:1px solid rgba(var(--rgb-cyan),0.4)}
-  
-  .inp{background:var(--color-surface2);border:1px solid rgba(var(--rgb-cyan),0.15);border-radius:8px;padding:8px 12px;color:var(--color-text);font-size:14px;width:100%;transition:border-color .15s}
-  .inp:focus{outline:none;border-color:var(--color-cyan)}
-  .inp::placeholder{color:var(--color-muted)}
-  
-  .tab-btn{padding:10px 16px;background:none;border:none;cursor:pointer;font-size:14px;transition:all .15s;border-bottom:2px solid transparent;margin-bottom:-1px}
-  
-  @keyframes fi{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-  .fi{animation:fi .45s cubic-bezier(.2,.8,.2,1) forwards}
-  @keyframes pl{0%,100%{opacity:1}50%{opacity:.4}}
-  .pl{animation:pl 2s infinite}
-  @keyframes gradientMove {
-    0% { background-position: 0% 50% }
-    50% { background-position: 100% 50% }
-    100% { background-position: 0% 50% }
-  }
-  @keyframes shine {
-    0% { left: -100% }
-    20% { left: 100% }
-    100% { left: 100% }
-  }
-  .btn-shine {
-    position: relative;
-    overflow: hidden;
-  }
-  .btn-shine::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 50%;
-    height: 100%;
-    transform: skewX(-20deg);
-    animation: shine 4s infinite;
-  }
-  
-  @keyframes chipPulse {
-    0% {
-      filter: drop-shadow(0 0 4px rgba(55, 242, 235, 0.35));
-      opacity: 0.92;
-      transform: scale(0.99);
-    }
-    50% {
-      filter: drop-shadow(0 0 10px rgba(55, 242, 235, 0.70));
-      opacity: 1;
-      transform: scale(1.01);
-    }
-    100% {
-      filter: drop-shadow(0 0 4px rgba(55, 242, 235, 0.35));
-      opacity: 0.92;
-      transform: scale(0.99);
-    }
-  }
-  .chip-core {
-    animation: chipPulse 3.5s ease-in-out infinite;
-    transform-origin: center;
-  }
-  
-  @keyframes gearSpin {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
-  }
-  .gear-spin {
-    animation: gearSpin 22s linear infinite;
-    transform-box: fill-box;
-    transform-origin: center;
-  }
-  
-  @keyframes logoPulseRotate {
-    0% {
-      transform: scale(1) rotate(0deg);
-    }
-    50% {
-      transform: scale(1.15) rotate(12deg);
-    }
-    100% {
-      transform: scale(1) rotate(0deg);
-    }
-  }
-  .logo-animated {
-    transition: transform 0.3s ease, filter 0.3s ease;
-  }
-  .card-neon:hover .logo-animated {
-    animation: logoPulseRotate 2s ease-in-out infinite;
-    filter: drop-shadow(0 0 10px var(--glow-color, rgba(255,255,255,0.45)));
-  }
-`;
 
 // ─── UTILS ────────────────────────────────────────────────────────
 const fmt = (n) =>
@@ -1289,7 +927,7 @@ const PAGE_TITLES = {
   alertas: "Alertas de Estoque",
 };
 
-const TopBar = ({ page, theme, toggleTheme }) => (
+const TopBar = ({ page, theme, toggleTheme, onRefresh }) => (
   <div
     style={{
       height: 54,
@@ -1306,6 +944,23 @@ const TopBar = ({ page, theme, toggleTheme }) => (
       {PAGE_TITLES[page]}
     </h1>
     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+      {onRefresh && (
+        <button
+          onClick={onRefresh}
+          className="btn-g"
+          style={{
+            padding: "6px 10px",
+            height: 32,
+            display: "flex",
+            alignItems: "center",
+            gap: 4,
+          }}
+          title="Recarregar Dados"
+        >
+          <Zap size={14} />
+          <span>Atualizar</span>
+        </button>
+      )}
       <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
       <span
         style={{
@@ -3401,7 +3056,16 @@ const AdminArea = ({ onLogout, theme, toggleTheme, products = [], loadProducts, 
           overflow: "hidden",
         }}
       >
-        <TopBar page={page} theme={theme} toggleTheme={toggleTheme} />
+        <TopBar 
+          page={page} 
+          theme={theme} 
+          toggleTheme={toggleTheme} 
+          onRefresh={() => {
+            loadProducts();
+            loadSales();
+            loadTopProducts();
+          }} 
+        />
         <Page
           key={page}
           products={products}
@@ -5197,24 +4861,32 @@ export default function App() {
     localStorage.setItem("pt-theme", theme);
   }, [theme]);
 
-  // Carrega produtos, vendas e top produtos inicialmente e cria um intervalo de polling para manter atualizado em tempo real
+  // Carrega produtos, vendas e top produtos inicialmente e ao focar/retornar à aba do navegador
   useEffect(() => {
-    loadProducts();
-    loadSales();
-    loadTopProducts();
-    const interval = setInterval(() => {
+    const loadAll = () => {
       loadProducts();
       loadSales();
       loadTopProducts();
-    }, 7000);
-    return () => clearInterval(interval);
+    };
+
+    loadAll();
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        loadAll();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, []);
 
   const toggleTheme = () => setTheme(prev => prev === "dark" ? "light" : "dark");
 
   return (
     <ToastProvider>
-      <style>{GLOBAL_CSS}</style>
       <div className="pt-root">
         {!session && <Login onLogin={setSession} />}
         {session === "admin" && (
