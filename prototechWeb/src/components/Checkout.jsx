@@ -122,14 +122,39 @@ function Step1({ data, setData }) {
 // ── Etapa 2: Endereço ───────────────────────────────────────────────
 function Step2({ data, setData }) {
   const [loading, setLoading] = useState(false);
+  const { addToast } = useToast();
   const fetchCep = () => {
     const cep = data.cep.replace(/\D/g, "");
-    if (cep.length !== 8) return;
+    if (cep.length !== 8) {
+      addToast({ type: "warning", message: "CEP deve conter 8 dígitos!", duration: 3000 });
+      return;
+    }
     setLoading(true);
-    setTimeout(() => {
-      setData(p => ({ ...p, rua: "Rua das Flores", bairro: "Centro", cidade: "Manaus", estado: "AM" }));
-      setLoading(false);
-    }, 800);
+    fetch(`https://viacep.com.br/ws/${cep}/json/`)
+      .then((res) => {
+        if (!res.ok) throw new Error();
+        return res.json();
+      })
+      .then((res) => {
+        if (res.erro) {
+          addToast({ type: "error", message: "CEP não encontrado!", duration: 3000 });
+        } else {
+          setData((p) => ({
+            ...p,
+            rua: res.logradouro || "",
+            bairro: res.bairro || "",
+            cidade: res.localidade || "",
+            estado: res.uf || "",
+          }));
+          addToast({ type: "success", message: "Endereço localizado com sucesso!", duration: 2000 });
+        }
+      })
+      .catch(() => {
+        addToast({ type: "error", message: "Erro ao buscar CEP!", duration: 3000 });
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
   return (
     <div className="fi" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
@@ -413,6 +438,7 @@ function Step4({ cart, personal, address, payment }) {
 export default function Checkout({ cart, setCart, setPage }) {
   const { addToast } = useToast();
   const [step, setStep] = useState(1);
+  const [submitting, setSubmitting] = useState(false);
 
   const [personal, setPersonal] = useState({
     nome: "Lucas Ferreira", email: "lucas@email.com",
@@ -432,10 +458,78 @@ export default function Checkout({ cart, setCart, setPage }) {
     return true;
   };
 
-  const handleConfirm = () => {
-    addToast({ type: "success", message: "🎉 Pedido confirmado com sucesso! Obrigado pela compra!", duration: 5000 });
-    setCart([]);
-    setPage("home");
+  const handleConfirm = async () => {
+    setSubmitting(true);
+    try {
+      // 1. Busca todos os clientes cadastrados no banco de dados para verificar duplicidade por CPF
+      const clientsRes = await fetch("http://localhost:3000/api/clientes");
+      if (!clientsRes.ok) throw new Error("Erro ao buscar base de clientes no servidor");
+      const clientsList = await clientsRes.json();
+      
+      const cleanCpf = personal.cpf.replace(/\D/g, "");
+      let targetClient = clientsList.find(c => c.cpf && c.cpf.replace(/\D/g, "") === cleanCpf);
+      let id_cliente = targetClient ? targetClient.id_cliente : null;
+      
+      // 2. Se o cliente não existir no banco de dados, cadastra um novo de forma automática
+      if (!id_cliente) {
+        const createRes = await fetch("http://localhost:3000/api/clientes", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: personal.nome,
+            cpf: personal.cpf,
+            email: personal.email,
+            phone: personal.tel
+          })
+        });
+        if (!createRes.ok) {
+          const errData = await createRes.json();
+          throw new Error(errData.error || "Erro ao cadastrar cliente no banco");
+        }
+        const createData = await createRes.json();
+        id_cliente = createData.id;
+      }
+      
+      // 3. Mapeia os itens do carrinho para o formato esperado pelo endpoint de Vendas da API
+      const apiItems = cart.map(item => ({
+        id_produto: item.id,
+        quantidade: item.qty,
+        preco_unitario: item.price
+      }));
+      
+      // 4. Registra a Venda no banco (transacional com baixa automática e geração de Nota Fiscal)
+      const saleRes = await fetch("http://localhost:3000/api/vendas", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id_cliente: id_cliente,
+          items: apiItems
+        })
+      });
+      
+      if (!saleRes.ok) {
+        const errData = await saleRes.json();
+        throw new Error(errData.error || "Erro ao registrar venda");
+      }
+      
+      const saleData = await saleRes.json();
+      addToast({ 
+        type: "success", 
+        message: `🎉 Pedido confirmado com sucesso! Nota Fiscal gerada: ${saleData.numero_nf || ""}`, 
+        duration: 6000 
+      });
+      setCart([]);
+      setPage("home");
+    } catch (err) {
+      console.error("Erro no checkout:", err);
+      addToast({ 
+        type: "error", 
+        message: err.message || "Erro de conexão ao processar compra!", 
+        duration: 5000 
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
@@ -502,10 +596,12 @@ export default function Checkout({ cart, setCart, setPage }) {
           ) : (
             <button
               className="btn-p"
-              style={{ flex: 1, justifyContent: "center", padding: "13px", fontSize: 14 }}
+              style={{ flex: 1, justifyContent: "center", padding: "13px", fontSize: 14, opacity: submitting ? 0.6 : 1 }}
+              disabled={submitting}
               onClick={handleConfirm}
             >
-              Confirmar Pedido <ArrowRight size={16} />
+              {submitting ? "Processando..." : "Confirmar Pedido"}
+              {!submitting && <ArrowRight size={16} />}
             </button>
           )}
         </div>
