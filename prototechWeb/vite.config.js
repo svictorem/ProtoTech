@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/ProtoTech/', // 👈 ADICIONE ISSO AQUI (Substitua pelo nome real do repositório no GitHub)
   plugins: [react()],
   build: {
     rollupOptions: {
@@ -25,4 +26,3 @@ export default defineConfig({
     chunkSizeWarningLimit: 600,
   }
 })
-
