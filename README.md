@@ -1,20 +1,16 @@
-# ProtoTech
+# React + Vite
 
-## O que é?
-A ProtoTech é um hub de suprimentos para inovação. Ela funciona como um varejo especializado (físico e digital) que resolve uma das maiores "dores" de quem trabalha com tecnologia: a dificuldade de encontrar componentes eletrônicos específicos, de qualidade, com entrega rápida e suporte técnico confiável.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-Em vez de ser uma loja de elétrica tradicional (que vende fios e lâmpadas) ou uma gigante do e-commerce internacional (onde o cliente espera 30 dias para um chip chegar da Ásia), a ProtoTech foca na agilidade e na experiência do desenvolvedor. Ela vende o ecossistema para que projetos de IoT (Internet das Coisas), robótica e automação saiam do papel.
+Currently, two official plugins are available:
 
-## Banco de Dados da ProtoTech
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-Sistema de controle de estoque e vendas de componentes eletrônicos.
+## React Compiler
 
-## Objetivo 
-Desenvolver e implementar um sistema de banco de dados robusto e normalizado para o gerenciamento de estoque e vendas de uma loja de componentes eletrônicos, garantindo a integridade dos dados e a automação de processos operacionais críticos.
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-## Funcionalidades
+## Expanding the ESLint configuration
 
-- **Monitoramento em Tempo Real**: Atualização automática dos níveis de estoque a cada transação de venda.  
-- **Automação via Triggers**: Implementação de gatilhos que impedem a saída de produtos sem saldo suficiente e disparam alertas de reposição.  
-- **Procedimentos de Consulta (Stored Procedures)**: Rotinas otimizadas para gerar relatórios de inventário e histórico de movimentações por categoria de componente.  
-- **Gestão de Fornecedores e Clientes**: Módulos que permitem associar cada lote de entrada ao seu respectivo fornecedor, facilitando o rastreio técnico.
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
