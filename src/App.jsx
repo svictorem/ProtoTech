@@ -7,7 +7,7 @@ import ClientArea from "./components/client/ClientArea";
 import { getProductImage, API_URL } from "./utils/helpers";
 
 export default function App() {
-  const [session, setSession] = useState(null);
+  const [session, setSession] = useState(() => localStorage.getItem("pt-session") || null);
   const [theme, setTheme] = useState(() => localStorage.getItem("pt-theme") || "dark");
   const [products, setProducts] = useState([]);
   const [sales, setSales] = useState([]);
@@ -54,6 +54,15 @@ export default function App() {
     localStorage.setItem("pt-theme", theme);
   }, [theme]);
 
+  // Persiste a sessão no localStorage para sobreviver recarregamentos de página
+  useEffect(() => {
+    if (session) {
+      localStorage.setItem("pt-session", session);
+    } else {
+      localStorage.removeItem("pt-session");
+    }
+  }, [session]);
+
   // Carrega produtos, vendas e top produtos inicialmente e ao focar/retornar à aba do navegador
   useEffect(() => {
     const loadAll = () => {
@@ -84,7 +93,7 @@ export default function App() {
         {!session && <Login onLogin={setSession} />}
         {session === "admin" && (
           <AdminArea
-            onLogout={() => setSession(null)}
+            onLogout={() => { localStorage.removeItem("pt-session"); setSession(null); }}
             theme={theme}
             toggleTheme={toggleTheme}
             products={products}
@@ -97,7 +106,7 @@ export default function App() {
         )}
         {session === "client" && (
           <ClientArea
-            onLogout={() => setSession(null)}
+            onLogout={() => { localStorage.removeItem("pt-session"); setSession(null); }}
             theme={theme}
             toggleTheme={toggleTheme}
             products={products}
