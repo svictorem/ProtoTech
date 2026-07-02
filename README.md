@@ -1,4 +1,4 @@
-# 🔩 ProtoTech — Sistema de Gestão Empresarial
+# 🔩 ProtoTech — Sistema de Vendas de Eletrônicos e Prototipagem
 
 > Plataforma web corporativa full-stack para gestão de inventário de componentes eletrônicos, controle de vendas, gerenciamento de equipes e vitrine comercial para clientes.
 
