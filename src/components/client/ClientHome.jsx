@@ -1,91 +1,13 @@
 import { useState } from "react";
 import { 
-  Zap, Shield, Star, TrendingUp, Cpu, Warehouse, 
+  Zap, Shield, Star, TrendingUp, Cpu, 
   ArrowRight, Package, Plus, X, Send, Camera, 
   ExternalLink, Code, Layers, Sliders, CheckCircle 
 } from "lucide-react";
 import { T, fmt, useWindowSize } from "../../utils/helpers";
+import HeroBanner from "./HeroBanner";
 
-const renderHeroIllustration = () => {
-  return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        flex: "1 1 45%",
-        maxWidth: "500px",
-        pointerEvents: "none",
-      }}
-    >
-      <svg
-        className="hero-illustration animate-float"
-        viewBox="75 45 490 350"
-        xmlns="http://www.w3.org/2000/svg"
-        aria-hidden="true"
-        style={{ width: "100%", height: "auto", filter: "drop-shadow(0 10px 20px rgba(0,0,0,0.15))" }}
-      >
-        <style>
-          {`
-            @keyframes wavePulse {
-              0%, 100% { transform: scaleX(1); opacity: 0.6; }
-              50% { transform: scaleX(1.15); opacity: 1; }
-            }
-          `}
-        </style>
-        <g transform="translate(320 220)">
-          {/* Radial connector lines (dashed) and dots with Wave Animation */}
-          <g stroke="var(--color-cyan)" strokeWidth="2.5" strokeDasharray="6 8" fill="none">
-            {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => (
-              <g key={i} transform={`rotate(${angle})`}>
-                <g style={{ 
-                  animation: `wavePulse 2.4s ease-in-out infinite`, 
-                  animationDelay: `${i * 0.3}s`, 
-                  transformOrigin: "85px 0" 
-                }}>
-                  <line x1="85" y1="0" x2="160" y2="0" />
-                  <circle cx="160" cy="0" r="4.5" fill="var(--color-cyan)" stroke="none" />
-                </g>
-              </g>
-            ))}
-          </g>
 
-          {/* Minimalist 2D Gear Silhouette - Spinning */}
-          <g className="gear-spin">
-            <path
-              fillRule="evenodd"
-              d="M 72.1,-17.3 L 100.7,-16.0 L 100.7,16.0 L 72.1,17.3
-                 A 74,74 0 0,1 63.2,38.7 L 82.5,59.9 L 59.9,82.5 L 38.7,63.2
-                 A 74,74 0 0,1 17.3,72.1 L 16.0,100.7 L -16.0,100.7 L -17.3,72.1
-                 A 74,74 0 0,1 -38.7,63.2 L -59.9,82.5 L -82.5,59.9 L -63.2,38.7
-                 A 74,74 0 0,1 -72.1,17.3 L -100.7,16.0 L -100.7,-16.0 L -72.1,-17.3
-                 A 74,74 0 0,1 -63.2,-38.7 L -82.5,-59.9 L -59.9,-82.5 L -38.7,-63.2
-                 A 74,74 0 0,1 -17.3,-72.1 L -16.0,-100.7 L 16.0,-100.7 L 17.3,-72.1
-                 A 74,74 0 0,1 38.7,-63.2 L 59.9,-82.5 L 82.5,-59.9 L 63.2,-38.7
-                 A 74,74 0 0,1 72.1,-17.3 Z
-                 M 0,-48 A 48,48 0 1,0 0,48 A 48,48 0 1,0 0,-48 Z"
-              fill="var(--color-cyan)"
-            />
-          </g>
-          
-          {/* Text 'PR' */}
-          <text 
-            x="0" 
-            y="11" 
-            textAnchor="middle" 
-            fontSize="34" 
-            fontWeight="900" 
-            fill="var(--color-cyan)" 
-            fontFamily="Inter, sans-serif"
-            letterSpacing="2"
-          >
-            PR
-          </text>
-        </g>
-      </svg>
-    </div>
-  );
-};
 
 const renderProjectIllustration = (type) => {
   if (type === "telemetry") {
@@ -251,7 +173,7 @@ const renderInstagramPostIllustration = (type) => {
   }
 };
 
-const ClientHome = ({ setPage, addToCart, products = [] }) => {
+const ClientHome = ({ setPage, addToCart, products = [], cart = [], onLogout, theme, toggleTheme }) => {
   const { isMobile, isTablet } = useWindowSize();
   const [selectedProject, setSelectedProject] = useState(null);
   
@@ -531,168 +453,13 @@ Gostaria de validar a viabilidade técnica e agendar uma reunião técnica para 
       </style>
 
       {/* 1. Hero Section */}
-      <div
-        style={{
-          background: "var(--hero-bg)",
-          borderBottom: `1px solid var(--hero-border)`,
-          position: "relative",
-          overflow: "hidden",
-          width: "100%",
-          transition: "background 0.3s ease, border-color 0.3s ease",
-        }}
-      >
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background:
-              "radial-gradient(circle at 80% 30%, var(--hero-glow-1) 0%, transparent 60%), radial-gradient(circle at 10% 80%, var(--hero-glow-2) 0%, transparent 50%)",
-            pointerEvents: "none",
-          }}
-        />
-        {/* Glow effect on the left for luxury feel */}
-        <div
-          style={{
-            position: "absolute",
-            top: "20%",
-            left: "5%",
-            width: "300px",
-            height: "300px",
-            borderRadius: "50%",
-            background: "var(--hero-blur)",
-            filter: "blur(130px)",
-            pointerEvents: "none",
-            transition: "background 0.3s ease",
-          }}
-        />
-        
-        <div
-          style={{
-            maxWidth: 1200,
-            margin: "0 auto",
-            width: "100%",
-            padding: isMobile ? "48px 20px" : "80px 48px",
-            display: "flex",
-            flexDirection: isMobile ? "column" : "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: isMobile ? 40 : 48,
-            position: "relative",
-            zIndex: 2,
-          }}
-        >
-          <div style={{ flex: "1 1 55%", maxWidth: isMobile ? "100%" : 640, textAlign: isMobile ? "center" : "left" }}>
-            <div
-              className="fade-up"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 8,
-                background: "var(--color-cyanBg)",
-                border: `1px solid var(--hero-border)`,
-                borderRadius: 20,
-                padding: "6px 16px",
-                marginBottom: 24,
-                boxShadow: "0 4px 12px rgba(140, 82, 255, 0.05)",
-                transition: "all 0.3s ease"
-              }}
-            >
-              <Zap size={13} style={{ color: "var(--color-cyan)" }} className="chip-core" />
-              <span
-                style={{
-                  fontSize: 11,
-                  color: "var(--color-cyan)",
-                  fontWeight: 700,
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase"
-                }}
-              >
-                Engenharia de Hardware & IoT
-              </span>
-            </div>
-            
-            <h1
-              className="fade-up"
-              style={{
-                fontFamily: "'Space Grotesk', sans-serif",
-                fontSize: isMobile ? 32 : 54,
-                fontWeight: 700,
-                lineHeight: 1.1,
-                marginBottom: 20,
-                letterSpacing: "-0.03em",
-                color: "var(--hero-title-color)",
-                transition: "color 0.3s ease"
-              }}
-            >
-              Prototipagem de Elite
-              <br />
-              <span 
-                style={{ 
-                  background: "linear-gradient(90deg, var(--color-purple), var(--color-success))",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent"
-                }}
-              >
-                para o Amanhã
-              </span>
-            </h1>
-            
-            <p
-              className="fade-up"
-              style={{
-                color: "var(--hero-text-color)",
-                fontSize: isMobile ? 15 : 17,
-                marginBottom: 36,
-                lineHeight: 1.6,
-                maxWidth: 540,
-                textAlign: isMobile ? "center" : "justify",
-                transition: "color 0.3s ease"
-              }}
-            >
-              Desenvolvimento acelerado de hardware customizado, firmware otimizado e integração de sensores com qualidade industrial e design estético premium.
-            </p>
-            
-            <div 
-              className="fade-up" 
-              style={{ 
-                display: "flex", 
-                flexWrap: "wrap",
-                gap: 16, 
-                justifyContent: isMobile ? "center" : "flex-start" 
-              }}
-            >
-              <button
-                className="btn-p btn-shine"
-                style={{ 
-                  padding: isMobile ? "12px 24px" : "14px 32px", 
-                  fontSize: 14, 
-                  borderRadius: 10,
-                  boxShadow: "0 10px 25px rgba(124, 58, 237, 0.25)"
-                }}
-                onClick={() => setPage("catalogo")}
-              >
-                Ver Componentes <ArrowRight size={16} />
-              </button>
-              <button
-                className="btn-g"
-                style={{
-                  padding: isMobile ? "12px 22px" : "14px 28px",
-                  fontSize: 14,
-                  borderRadius: 10,
-                  background: "var(--secondary-cta-bg)",
-                  borderColor: "var(--hero-border)",
-                  color: "var(--secondary-cta-color)"
-                }}
-                onClick={() => document.getElementById("quote-simulator")?.scrollIntoView({ behavior: "smooth" })}
-              >
-                Solicitar Orçamento
-              </button>
-            </div>
-          </div>
-          
-          {!isMobile && renderHeroIllustration()}
-        </div>
-      </div>
+      <HeroBanner 
+        setPage={setPage} 
+        cart={cart} 
+        onLogout={onLogout} 
+        theme={theme} 
+        toggleTheme={toggleTheme} 
+      />
 
       {/* Chips Banner */}
       <div

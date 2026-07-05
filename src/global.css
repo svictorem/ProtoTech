@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 :root {
   --color-bg: #070914;
@@ -46,6 +46,31 @@
   --rgb-warning: 217,119,6;
   --rgb-danger: 220,38,38;
   --rgb-purple: 109,40,217;
+}
+
+/* Explicit dark theme — mirrors :root defaults for robustness */
+[data-theme="dark"] {
+  --color-bg: #070914;
+  --color-surface: #0c1526;
+  --color-surface2: #111d33;
+  --color-surface3: #162240;
+  --color-border: rgba(140,82,255,0.1);
+  --color-borderHover: rgba(140,82,255,0.3);
+  --color-cyan: #8c52ff;
+  --color-cyanBg: rgba(140,82,255,0.08);
+  --color-text: #dde8f5;
+  --color-muted: #5a7090;
+  --color-muted2: #8a9bb5;
+  --color-success: #00bf63;
+  --color-warning: #ffb800;
+  --color-danger: #ff4757;
+  --color-purple: #7c3aed;
+
+  --rgb-cyan: 140,82,255;
+  --rgb-success: 0,191,99;
+  --rgb-warning: 255,184,0;
+  --rgb-danger: 255,71,87;
+  --rgb-purple: 124,58,237;
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
@@ -190,3 +215,133 @@ input,select,textarea,button{font-family:inherit}
   animation: logoPulseRotate 2s ease-in-out infinite;
   filter: drop-shadow(0 0 10px var(--glow-color, rgba(255,255,255,0.45)));
 }
+
+/* --- HUD Holográfico e Telemetria (Hero Banner) --- */
+@keyframes hudRotateCW {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes hudRotateCCW {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-360deg); }
+}
+
+@keyframes hudPulseRadar {
+  0% { r: 15px; opacity: 0.8; stroke-width: 1.5px; }
+  100% { r: 90px; opacity: 0; stroke-width: 0.5px; }
+}
+
+@keyframes hudPulseRadar2 {
+  0% { r: 30px; opacity: 0.6; stroke-width: 1px; }
+  100% { r: 130px; opacity: 0; stroke-width: 0.3px; }
+}
+
+@keyframes hudDashFlow {
+  to { stroke-dashoffset: -40; }
+}
+
+@keyframes hudLedBlink {
+  0%, 100% { opacity: 0.4; filter: drop-shadow(0 0 2px rgba(var(--rgb-success), 0.4)); }
+  50% { opacity: 1; filter: drop-shadow(0 0 8px rgba(var(--rgb-success), 0.95)); }
+}
+
+@keyframes hudTextScan {
+  0%, 100% { opacity: 0.65; }
+  50% { opacity: 1; }
+}
+
+@keyframes hudParticleFloat {
+  0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.25; }
+  50% { transform: translateY(-8px) translateX(4px); opacity: 0.75; }
+}
+
+.hud-rotate-cw {
+  animation: hudRotateCW 22s linear infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+}
+
+.hud-rotate-cw-fast {
+  animation: hudRotateCW 12s linear infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+}
+
+.hud-rotate-ccw {
+  animation: hudRotateCCW 28s linear infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+}
+
+.hud-rotate-ccw-fast {
+  animation: hudRotateCCW 15s linear infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+}
+
+.hud-radar-pulse {
+  animation: hudPulseRadar 3s cubic-bezier(0.21, 0.61, 0.35, 1) infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+  will-change: transform, opacity, stroke-width;
+  transform: translate3d(0, 0, 0);
+}
+
+.hud-radar-pulse2 {
+  animation: hudPulseRadar2 4s cubic-bezier(0.21, 0.61, 0.35, 1) infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+  animation-delay: 1.5s;
+  will-change: transform, opacity, stroke-width;
+  transform: translate3d(0, 0, 0);
+}
+
+.hud-dash-flow {
+  stroke-dasharray: 6 10;
+  animation: hudDashFlow 1.5s linear infinite;
+}
+
+.hud-dash-flow-fast {
+  stroke-dasharray: 4 8;
+  animation: hudDashFlow 0.8s linear infinite;
+}
+
+.hud-led-blink {
+  animation: hudLedBlink 2.2s ease-in-out infinite;
+  will-change: opacity, filter;
+}
+
+.hud-text-scan {
+  animation: hudTextScan 2s ease-in-out infinite;
+  will-change: opacity;
+}
+
+.hud-particle-1 {
+  animation: hudParticleFloat 5s ease-in-out infinite;
+  will-change: transform, opacity;
+  transform: translate3d(0, 0, 0);
+}
+
+.hud-particle-2 {
+  animation: hudParticleFloat 6.5s ease-in-out infinite;
+  animation-delay: 1.5s;
+  will-change: transform, opacity;
+  transform: translate3d(0, 0, 0);
+}
+
+.hud-particle-3 {
+  animation: hudParticleFloat 4.2s ease-in-out infinite;
+  animation-delay: 3s;
+  will-change: transform, opacity;
+  transform: translate3d(0, 0, 0);
+}
+

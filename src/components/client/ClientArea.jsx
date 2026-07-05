@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Cpu, ShoppingCart, LogOut, Menu } from "lucide-react";
 import { T, useWindowSize } from "../../utils/helpers";
-import { ThemeToggle } from "../common/UIComponents";
 
 // Sub-components
 import ClientHome from "./ClientHome";
@@ -15,6 +14,16 @@ const ClientNav = ({ page, setPage, cart, onLogout, theme, toggleTheme }) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const cartCount = cart.reduce((s, i) => s + i.qty, 0);
+
+  // Always navigate to home page and scroll to the very top (HeroBanner)
+  const goHome = () => {
+    setPage("home");
+    setDrawerOpen(false);
+    setTimeout(() => {
+      const container = document.getElementById("client-home-container");
+      if (container) container.scrollTo({ top: 0, behavior: "smooth" });
+    }, 50);
+  };
 
   return (
     <nav
@@ -42,16 +51,7 @@ const ClientNav = ({ page, setPage, cart, onLogout, theme, toggleTheme }) => {
         }}
       >
         <div
-          onClick={() => {
-            if (page === "home") {
-              document.getElementById("client-home-container")?.scrollTo({
-                top: 0,
-                behavior: "smooth"
-              });
-            } else {
-              setPage("home");
-            }
-          }}
+          onClick={goHome}
           style={{
             display: "flex",
             alignItems: "center",
@@ -70,7 +70,7 @@ const ClientNav = ({ page, setPage, cart, onLogout, theme, toggleTheme }) => {
           <>
             <div style={{ display: "flex", gap: 4 }}>
               <button
-                onClick={() => setPage("home")}
+                onClick={goHome}
                 style={{
                   background: "none",
                   border: "none",
@@ -143,108 +143,162 @@ const ClientNav = ({ page, setPage, cart, onLogout, theme, toggleTheme }) => {
                 Meu Perfil
               </button>
             </div>
-            <div
-              style={{
-                marginLeft: "auto",
-                display: "flex",
-                gap: 10,
-                alignItems: "center",
-              }}
-            >
+            {/* Right actions — desktop: h-9 uniform buttons */}
+            <div style={{ marginLeft: "auto", display: "flex", gap: 8, alignItems: "center" }}>
+              {/* Cart */}
               <button
-                className="btn-g"
-                style={{ position: "relative" }}
                 onClick={() => setPage("carrinho")}
+                style={{
+                  position: "relative",
+                  height: 36,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 6,
+                  padding: "0 12px",
+                  borderRadius: 8,
+                  background: "var(--color-surface2)",
+                  border: "1px solid var(--color-border)",
+                  color: "var(--color-text)",
+                  fontSize: 13,
+                  fontWeight: 500,
+                  cursor: "pointer",
+                  whiteSpace: "nowrap",
+                  transition: "all .15s",
+                }}
+                onMouseEnter={e => e.currentTarget.style.borderColor = "var(--color-borderHover)"}
+                onMouseLeave={e => e.currentTarget.style.borderColor = "var(--color-border)"}
               >
-                <ShoppingCart size={15} /> Carrinho
+                <ShoppingCart size={15} />
+                <span>Carrinho</span>
                 {cartCount > 0 && (
-                  <span
-                    style={{
-                      position: "absolute",
-                      top: -6,
-                      right: -6,
-                      background: T.cyan,
-                      color: "#070914",
-                      borderRadius: "50%",
-                      width: 18,
-                      height: 18,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: 10,
-                      fontWeight: 700,
-                    }}
-                  >
+                  <span style={{
+                    position: "absolute", top: -5, right: -5,
+                    background: T.cyan, color: "#070914",
+                    borderRadius: "50%", width: 17, height: 17,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: 9, fontWeight: 700,
+                  }}>
                     {cartCount}
                   </span>
                 )}
               </button>
-              <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
+
+              {/* Theme toggle */}
               <button
-                className="btn-g"
-                onClick={onLogout}
-                style={{ padding: "8px 12px" }}
-                title="Sair"
+                onClick={toggleTheme}
+                title={theme === "light" ? "Mudar para escuro" : "Mudar para claro"}
+                style={{
+                  height: 36, width: 36,
+                  display: "inline-flex", alignItems: "center", justifyContent: "center",
+                  borderRadius: 8,
+                  background: "var(--color-surface2)",
+                  border: "1px solid var(--color-border)",
+                  color: "var(--color-muted2)",
+                  cursor: "pointer",
+                  transition: "all .15s",
+                  flexShrink: 0,
+                }}
+                onMouseEnter={e => e.currentTarget.style.borderColor = "var(--color-borderHover)"}
+                onMouseLeave={e => e.currentTarget.style.borderColor = "var(--color-border)"}
               >
-                <LogOut size={14} />
+                {theme === "light"
+                  ? <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                  : <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                }
+              </button>
+
+              {/* Logout */}
+              <button
+                onClick={onLogout}
+                title="Sair"
+                style={{
+                  height: 36, width: 36,
+                  display: "inline-flex", alignItems: "center", justifyContent: "center",
+                  borderRadius: 8,
+                  background: "var(--color-surface2)",
+                  border: "1px solid var(--color-border)",
+                  color: "var(--color-muted2)",
+                  cursor: "pointer",
+                  transition: "all .15s",
+                  flexShrink: 0,
+                }}
+                onMouseEnter={e => { e.currentTarget.style.color = "var(--color-danger)"; e.currentTarget.style.borderColor = "rgba(var(--rgb-danger),0.3)"; }}
+                onMouseLeave={e => { e.currentTarget.style.color = "var(--color-muted2)"; e.currentTarget.style.borderColor = "var(--color-border)"; }}
+              >
+                <LogOut size={15} />
               </button>
             </div>
           </>
         ) : (
-          <div
-            style={{
-              marginLeft: "auto",
-              display: "flex",
-              gap: 8,
-              alignItems: "center",
-            }}
-          >
+          /* Mobile right actions */
+          <div style={{ marginLeft: "auto", display: "flex", gap: 6, alignItems: "center" }}>
+            {/* Cart icon */}
             <button
-              className="btn-g"
+              onClick={() => setPage("carrinho")}
               style={{
                 position: "relative",
-                padding: "8px 10px",
-                minWidth: "auto",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                height: 36, width: 36,
+                display: "inline-flex", alignItems: "center", justifyContent: "center",
+                borderRadius: 8,
+                background: "var(--color-surface2)",
+                border: "1px solid var(--color-border)",
+                color: "var(--color-text)",
+                cursor: "pointer",
+                transition: "all .15s",
+                flexShrink: 0,
               }}
-              onClick={() => setPage("carrinho")}
             >
               <ShoppingCart size={16} />
               {cartCount > 0 && (
-                <span
-                  style={{
-                    position: "absolute",
-                    top: -5,
-                    right: -5,
-                    background: T.cyan,
-                    color: "#070914",
-                    borderRadius: "50%",
-                    width: 16,
-                    height: 16,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 9,
-                    fontWeight: 700,
-                  }}
-                >
+                <span style={{
+                  position: "absolute", top: -4, right: -4,
+                  background: T.cyan, color: "#070914",
+                  borderRadius: "50%", width: 15, height: 15,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 8, fontWeight: 700,
+                }}>
                   {cartCount}
                 </span>
               )}
             </button>
-            <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
+
+            {/* Theme toggle */}
             <button
-              className="btn-g"
+              onClick={toggleTheme}
+              title={theme === "light" ? "Mudar para escuro" : "Mudar para claro"}
               style={{
-                padding: "8px 10px",
-                minWidth: "auto",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                height: 36, width: 36,
+                display: "inline-flex", alignItems: "center", justifyContent: "center",
+                borderRadius: 8,
+                background: "var(--color-surface2)",
+                border: "1px solid var(--color-border)",
+                color: "var(--color-muted2)",
+                cursor: "pointer",
+                transition: "all .15s",
+                flexShrink: 0,
               }}
+            >
+              {theme === "light"
+                ? <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                : <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+              }
+            </button>
+
+            {/* Hamburger */}
+            <button
               onClick={() => setDrawerOpen(!drawerOpen)}
+              style={{
+                height: 36, width: 36,
+                display: "inline-flex", alignItems: "center", justifyContent: "center",
+                borderRadius: 8,
+                background: "var(--color-surface2)",
+                border: "1px solid var(--color-border)",
+                color: "var(--color-text)",
+                cursor: "pointer",
+                transition: "all .15s",
+                flexShrink: 0,
+              }}
             >
               <Menu size={16} />
             </button>
@@ -273,7 +327,7 @@ const ClientNav = ({ page, setPage, cart, onLogout, theme, toggleTheme }) => {
           }}
         >
           {[
-            { id: "home", l: "Início", action: () => setPage("home") },
+            { id: "home", l: "Início", action: goHome },
             {
               id: "sobre",
               l: "Sobre o Projeto",
@@ -346,7 +400,7 @@ const ClientNav = ({ page, setPage, cart, onLogout, theme, toggleTheme }) => {
   );
 };
 
-const ClientArea = ({ onLogout, theme, toggleTheme, products = [], loadProducts }) => {
+const ClientArea = ({ onLogout, theme, toggleTheme, products = [] }) => {
   const [page, setPage] = useState("home");
   const [cart, setCart] = useState([]);
 
@@ -364,19 +418,19 @@ const ClientArea = ({ onLogout, theme, toggleTheme, products = [], loadProducts 
         display: "flex",
         flexDirection: "column",
         height: "100vh",
-        background: theme === "light"
-          ? "linear-gradient(135deg, #cdffd8 0%, #94b9ff 100%)"
-          : "var(--color-bg)"
+        background: "var(--color-bg)",
       }}
     >
-      <ClientNav
-        page={page}
-        setPage={setPage}
-        cart={cart}
-        onLogout={onLogout}
-        theme={theme}
-        toggleTheme={toggleTheme}
-      />
+      {page !== "home" && (
+        <ClientNav
+          page={page}
+          setPage={setPage}
+          cart={cart}
+          onLogout={onLogout}
+          theme={theme}
+          toggleTheme={toggleTheme}
+        />
+      )}
       <div
         style={{
           flex: 1,
@@ -385,7 +439,17 @@ const ClientArea = ({ onLogout, theme, toggleTheme, products = [], loadProducts 
           overflow: "hidden",
         }}
       >
-        {page === "home" && <ClientHome setPage={setPage} addToCart={addToCart} products={products} />}
+        {page === "home" && (
+          <ClientHome
+            setPage={setPage}
+            addToCart={addToCart}
+            products={products}
+            cart={cart}
+            onLogout={onLogout}
+            theme={theme}
+            toggleTheme={toggleTheme}
+          />
+        )}
         {page === "catalogo" && <Catalogo addToCart={addToCart} products={products} />}
         {page === "carrinho" && <Carrinho cart={cart} setCart={setCart} setPage={setPage} />}
         {page === "perfil" && <Perfil />}

@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Cpu, Shield, User } from "lucide-react";
-import { T } from "../utils/helpers";
 
 const Login = ({ onLogin }) => {
   const [mode, setMode] = useState("admin");
@@ -241,7 +240,6 @@ const Login = ({ onLogin }) => {
             onClick={go}
             style={{
               width: "100%",
-              justifyContent: "center",
               padding: "11px",
               marginTop: 2,
               background: "linear-gradient(90deg, #7c3aed, #4f46e5)",

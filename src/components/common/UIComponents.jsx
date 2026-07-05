@@ -1,4 +1,3 @@
-import React from "react";
 import { Sun, Moon, Search, X } from "lucide-react";
 import { T, COLOR_RGB, initials } from "../../utils/helpers";
 

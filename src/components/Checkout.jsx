@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
   User, MapPin, CreditCard, CheckCircle,
-  ChevronLeft, ChevronRight, ShoppingBag,
+  ChevronLeft, ChevronRight,
   QrCode, Barcode, Lock, ArrowRight,
 } from "lucide-react";
 import { useToast } from "./ToastSystem";
@@ -362,7 +362,7 @@ function Step3({ data, setData }) {
           }}>
             <svg width="100%" height={60} viewBox="0 0 280 60">
               {Array.from({ length: 60 }).map((_, i) => {
-                const w = 1 + Math.floor(Math.random() * 3);
+                const w = 1 + ((i * 7) % 3);
                 const x = i * 4.5;
                 return <rect key={i} x={x} y={0} width={w} height={60} fill="#111" />;
               })}
