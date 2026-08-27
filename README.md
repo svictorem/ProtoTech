@@ -44,7 +44,7 @@ A interface foi construída com foco em design de alto nível, suportando **modo
 | **Funcionários** | Gestão de funcionários com cargos e salários base |
 | **Alertas** | Painel de alertas de estoque crítico gerados automaticamente por trigger MySQL |
 
-### 🧑‍💻 Área do Cliente
+### 🧑‍💻 Área do Cliente 
 
 | Módulo | Descrição |
 |---|---|
