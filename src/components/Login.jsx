@@ -1,21 +1,49 @@
 import { useState } from "react";
-import { Cpu, Shield, User } from "lucide-react";
+import { Cpu, Shield, User, UserPlus } from "lucide-react";
+import { API_URL } from "../utils/helpers";
 
-const Login = ({ onLogin }) => {
+const Login = ({ onLogin, onCadastro }) => {
   const [mode, setMode] = useState("admin");
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
   const [err, setErr] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const go = () => {
+  const go = async () => {
     if (mode === "admin") {
       if (email === "admin@prototech.com" && pass === "admin123") {
-        onLogin("admin");
-      } else setErr("Use admin@prototech.com / admin123");
+        onLogin("admin", "admin@prototech.com");
+      } else setErr("Credenciais inválidas. Tente novamente.");
     } else {
-      if (email && pass) {
-        onLogin("client");
-      } else setErr("Preencha e-mail e senha");
+      if (!email || !pass) {
+        setErr("Preencha e-mail e senha");
+        return;
+      }
+      setLoading(true);
+      setErr("");
+      try {
+        const res = await fetch(`${API_URL}/usuarios/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            login: email.trim().toLowerCase(),
+            senha: pass,
+          }),
+        });
+        const contentType = res.headers.get("content-type") || "";
+        if (!contentType.includes("application/json")) {
+          throw new Error("Erro ao conectar com a API. Verifique se o servidor está rodando.");
+        }
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || "E-mail ou senha inválidos");
+        }
+        onLogin("client", data.login);
+      } catch (e) {
+        setErr(e.message || "Erro ao fazer login.");
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -202,35 +230,6 @@ const Login = ({ onLogin }) => {
               onKeyDown={(e) => e.key === "Enter" && go()}
             />
           </div>
-          {mode === "admin" && (
-            <p
-              style={{
-                fontSize: 11,
-                color: "#64748b",
-                textAlign: "center",
-                lineHeight: 1.5,
-              }}
-            >
-              Demo:{" "}
-              <span
-                style={{
-                  color: "#7c3aed",
-                  fontFamily: "JetBrains Mono, monospace",
-                }}
-              >
-                admin@prototech.com
-              </span>{" "}
-              /{" "}
-              <span
-                style={{
-                  color: "#7c3aed",
-                  fontFamily: "JetBrains Mono, monospace",
-                }}
-              >
-                admin123
-              </span>
-            </p>
-          )}
           {err && (
             <p style={{ fontSize: 12, color: "#ef4444", textAlign: "center" }}>
               {err}
@@ -238,16 +237,17 @@ const Login = ({ onLogin }) => {
           )}
           <button
             onClick={go}
+            disabled={loading}
             style={{
               width: "100%",
               padding: "11px",
               marginTop: 2,
-              background: "linear-gradient(90deg, #7c3aed, #4f46e5)",
+              background: loading ? "#a78bfa" : "linear-gradient(90deg, #7c3aed, #4f46e5)",
               color: "#ffffff",
               border: "none",
               borderRadius: 8,
               fontWeight: 600,
-              cursor: "pointer",
+              cursor: loading ? "not-allowed" : "pointer",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -256,28 +256,46 @@ const Login = ({ onLogin }) => {
             }}
           >
             {mode === "admin" ? <Shield size={14} /> : <User size={14} />}
-            Entrar {mode === "admin" ? "como Admin" : "como Cliente"}
+            {loading ? "Entrando..." : `Entrar ${mode === "admin" ? "como Admin" : "como Cliente"}`}
           </button>
         </div>
 
         <div style={{ marginTop: 20, textAlign: "center" }}>
-          <span style={{ fontSize: 12, color: "#64748b" }}>Sem conta? </span>
-          <span
-            style={{
-              fontSize: 12,
-              color: "#7c3aed",
-              cursor: "pointer",
-              fontWeight: 600,
-            }}
-            onClick={() => {
-              // Preenche campos para facilidade
-              setEmail("cliente@demo.com");
-              setPass("cliente123");
-              setMode("client");
-            }}
-          >
-            Acesso Rápido Cliente
-          </span>
+          {mode === "client" ? (
+            <button
+              onClick={onCadastro}
+              style={{
+                width: "100%",
+                padding: "10px",
+                background: "transparent",
+                color: "#7c3aed",
+                border: "1px solid rgba(124,58,237,0.35)",
+                borderRadius: 8,
+                fontWeight: 600,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 7,
+                fontSize: 13,
+                fontFamily: "inherit",
+                transition: "all .15s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(124,58,237,0.06)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "transparent";
+              }}
+            >
+              <UserPlus size={14} />
+              Não tem conta? Cadastre-se agora
+            </button>
+          ) : (
+            <span style={{ fontSize: 12, color: "#94a3b8" }}>
+              Acesso restrito a administradores
+            </span>
+          )}
         </div>
       </div>
     </div>

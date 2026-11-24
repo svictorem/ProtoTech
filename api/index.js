@@ -245,6 +245,147 @@ app.get('/api/fornecedores', async (req, res) => {
     }
 });
 
+// ─── USUÁRIOS ROUTES ──────────────────────────────────────────────
+
+// POST - Autenticar usuário (cliente)
+app.post('/api/usuarios/login', async (req, res) => {
+    const { login, senha } = req.body;
+
+    if (!login || !senha) {
+        return res.status(400).json({ error: 'E-mail e senha são obrigatórios' });
+    }
+
+    try {
+        const [rows] = await pool.query(`
+            SELECT u.id_usuario, u.login, u.senha, u.id_cliente, c.nome_cliente
+            FROM Usuario u
+            LEFT JOIN Cliente c ON u.id_cliente = c.id_cliente
+            WHERE u.login = ?
+        `, [login.trim().toLowerCase()]);
+
+        if (rows.length === 0 || rows[0].senha !== senha) {
+            return res.status(401).json({ error: 'E-mail ou senha inválidos' });
+        }
+
+        const user = rows[0];
+        res.json({
+            id_usuario: user.id_usuario,
+            login: user.login,
+            id_cliente: user.id_cliente,
+            nome: user.nome_cliente || user.login
+        });
+    } catch (err) {
+        console.error('Erro ao autenticar usuário:', err.message);
+        res.status(500).json({ error: 'Erro ao autenticar usuário no banco de dados' });
+    }
+});
+
+// GET - Buscar perfil completo do cliente pelo login (email)
+app.get('/api/usuarios/perfil', async (req, res) => {
+    const { login } = req.query;
+    if (!login) {
+        return res.status(400).json({ error: 'Parâmetro login é obrigatório' });
+    }
+
+    try {
+        const [rows] = await pool.query(`
+            SELECT
+                u.id_usuario,
+                u.login,
+                c.id_cliente,
+                c.nome_cliente,
+                c.cpf,
+                c.email,
+                c.telefone,
+                c.data_cadastro
+            FROM Usuario u
+            LEFT JOIN Cliente c ON u.id_cliente = c.id_cliente
+            WHERE u.login = ?
+        `, [login.trim().toLowerCase()]);
+
+        if (rows.length === 0) {
+            return res.status(404).json({ error: 'Usuário não encontrado' });
+        }
+
+        const user = rows[0];
+
+        let pedidos = [];
+        if (user.id_cliente) {
+            const [vendas] = await pool.query(`
+                SELECT
+                    v.id_venda,
+                    n.numero_nf,
+                    n.valor_total,
+                    n.data_emissao,
+                    v.status_venda,
+                    (SELECT COUNT(*) FROM ItemNotaFiscal WHERE id_nota = n.id_nota) AS total_itens
+                FROM Venda v
+                JOIN NotaFiscal n ON v.id_nota = n.id_nota
+                WHERE v.id_cliente = ?
+                ORDER BY n.data_emissao DESC
+                LIMIT 10
+            `, [user.id_cliente]);
+            pedidos = vendas;
+        }
+
+        const totalPedidos = pedidos.length;
+        const totalGasto = pedidos.reduce((acc, p) => acc + parseFloat(p.valor_total || 0), 0);
+
+        res.json({
+            id_usuario: user.id_usuario,
+            login: user.login,
+            id_cliente: user.id_cliente,
+            nome: user.nome_cliente || user.login,
+            cpf: user.cpf || '',
+            email: user.email || user.login,
+            telefone: user.telefone || '',
+            data_cadastro: user.data_cadastro,
+            totalPedidos,
+            totalGasto,
+            pedidos,
+        });
+    } catch (err) {
+        console.error('Erro ao buscar perfil:', err.message);
+        res.status(500).json({ error: 'Erro ao buscar perfil do usuário' });
+    }
+});
+
+// POST - Registrar novo usuário (vinculado a um cliente)
+app.post('/api/usuarios/registro', async (req, res) => {
+    const { login, senha, id_cliente } = req.body;
+
+    if (!login || !senha || !id_cliente) {
+        return res.status(400).json({ error: 'Login, senha e id_cliente são obrigatórios' });
+    }
+
+    if (senha.length < 6) {
+        return res.status(400).json({ error: 'A senha deve ter no mínimo 6 caracteres' });
+    }
+
+    try {
+        // Verifica se login (email) já está em uso
+        const [existing] = await pool.query('SELECT id_usuario FROM Usuario WHERE login = ?', [login]);
+        if (existing.length > 0) {
+            return res.status(400).json({ error: 'Este e-mail já está cadastrado como usuário' });
+        }
+
+        // Insere o usuário vinculado ao cliente (sem hash por enquanto — pode adicionar bcrypt futuramente)
+        const query = 'INSERT INTO Usuario (login, senha, id_cliente) VALUES (?, ?, ?)';
+        const [result] = await pool.query(query, [login, senha, id_cliente]);
+
+        res.status(201).json({
+            message: 'Usuário criado com sucesso!',
+            id: result.insertId
+        });
+    } catch (err) {
+        console.error('Erro ao criar usuário:', err.message);
+        if (err.code === 'ER_DUP_ENTRY') {
+            return res.status(400).json({ error: 'Login já cadastrado para outro usuário' });
+        }
+        res.status(500).json({ error: 'Erro ao criar usuário no banco de dados' });
+    }
+});
+
 // ─── CLIENTES ROUTES ───────────────────────────────────────────────
 
 // 1. GET - Obter todos os clientes

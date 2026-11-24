@@ -2,13 +2,16 @@ import { useState, useEffect } from "react";
 import "./global.css";
 import { ToastProvider } from "./components/ToastSystem";
 import Login from "./components/Login";
+import Cadastro from "./components/Cadastro";
 import AdminArea from "./components/admin/AdminArea";
 import ClientArea from "./components/client/ClientArea";
 import { getProductImage, API_URL } from "./utils/helpers";
 
 export default function App() {
   const [session, setSession] = useState(() => localStorage.getItem("pt-session") || null);
+  const [clientLogin, setClientLogin] = useState(() => localStorage.getItem("pt-login") || null);
   const [theme, setTheme] = useState(() => localStorage.getItem("pt-theme") || "dark");
+  const [view, setView] = useState("login"); // "login" | "cadastro"
   const [products, setProducts] = useState([]);
   const [sales, setSales] = useState([]);
   const [topProducts, setTopProducts] = useState([]);
@@ -65,29 +68,16 @@ export default function App() {
       localStorage.setItem("pt-session", session);
     } else {
       localStorage.removeItem("pt-session");
+      localStorage.removeItem("pt-login");
+      setClientLogin(null);
     }
   }, [session]);
 
-  // Carrega produtos, vendas e top produtos inicialmente e ao focar/retornar à aba do navegador
+  // Carrega produtos, vendas e top produtos ao iniciar a aplicação
   useEffect(() => {
-    const loadAll = () => {
-      loadProducts();
-      loadSales();
-      loadTopProducts();
-    };
-
-    loadAll();
-
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible") {
-        loadAll();
-      }
-    };
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
+    loadProducts();
+    loadSales();
+    loadTopProducts();
   }, []);
 
   const toggleTheme = () => setTheme(prev => prev === "dark" ? "light" : "dark");
@@ -95,10 +85,28 @@ export default function App() {
   return (
     <ToastProvider>
       <div className="pt-root">
-        {!session && <Login onLogin={setSession} />}
+        {!session && view === "login" && (
+          <Login
+            onLogin={(role, email) => {
+              setSession(role);
+              if (role === "client" && email) {
+                setClientLogin(email);
+                localStorage.setItem("pt-login", email);
+              }
+              setView("login");
+            }}
+            onCadastro={() => setView("cadastro")}
+          />
+        )}
+        {!session && view === "cadastro" && (
+          <Cadastro
+            onBack={() => setView("login")}
+            onSuccess={() => setView("login")}
+          />
+        )}
         {session === "admin" && (
           <AdminArea
-            onLogout={() => { localStorage.removeItem("pt-session"); setSession(null); }}
+            onLogout={() => { localStorage.removeItem("pt-session"); localStorage.removeItem("pt-login"); setSession(null); setView("login"); }}
             theme={theme}
             toggleTheme={toggleTheme}
             products={products}
@@ -111,11 +119,12 @@ export default function App() {
         )}
         {session === "client" && (
           <ClientArea
-            onLogout={() => { localStorage.removeItem("pt-session"); setSession(null); }}
+            onLogout={() => { localStorage.removeItem("pt-session"); localStorage.removeItem("pt-login"); setSession(null); setView("login"); }}
             theme={theme}
             toggleTheme={toggleTheme}
             products={products}
             loadProducts={loadProducts}
+            clientLogin={clientLogin}
           />
         )}
       </div>

@@ -400,7 +400,7 @@ const ClientNav = ({ page, setPage, cart, onLogout, theme, toggleTheme }) => {
   );
 };
 
-const ClientArea = ({ onLogout, theme, toggleTheme, products = [] }) => {
+const ClientArea = ({ onLogout, theme, toggleTheme, products = [], clientLogin = null }) => {
   const [page, setPage] = useState("home");
   const [cart, setCart] = useState([]);
 
@@ -452,7 +452,7 @@ const ClientArea = ({ onLogout, theme, toggleTheme, products = [] }) => {
         )}
         {page === "catalogo" && <Catalogo addToCart={addToCart} products={products} />}
         {page === "carrinho" && <Carrinho cart={cart} setCart={setCart} setPage={setPage} />}
-        {page === "perfil" && <Perfil />}
+        {page === "perfil" && <Perfil loginEmail={clientLogin} />}
         {page === "checkout" && <Checkout cart={cart} setCart={setCart} setPage={setPage} />}
       </div>
     </div>
