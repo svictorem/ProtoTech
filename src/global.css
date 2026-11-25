@@ -73,8 +73,10 @@
   --rgb-purple: 124,58,237;
 }
 
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{background:var(--color-bg)}
+@layer base {
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--color-bg)}
+}
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:var(--color-surface)}
 ::-webkit-scrollbar-thumb{background:rgba(var(--rgb-cyan),0.2);border-radius:2px}

@@ -1,53 +1,34 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   User, MapPin, CreditCard, CheckCircle,
   ChevronLeft, ChevronRight,
-  QrCode, Barcode, Lock, ArrowRight,
+  QrCode, Barcode, Lock, ArrowRight, ShoppingBag,
 } from "lucide-react";
 import { useToast } from "./ToastSystem";
-
-const T = {
-  bg: "var(--color-bg)",
-  surface: "var(--color-surface)",
-  surface2: "var(--color-surface2)",
-  surface3: "var(--color-surface3)",
-  border: "var(--color-border)",
-  borderHover: "var(--color-borderHover)",
-  cyan: "var(--color-cyan)",
-  cyanBg: "var(--color-cyanBg)",
-  text: "var(--color-text)",
-  muted: "var(--color-muted)",
-  muted2: "var(--color-muted2)",
-  success: "var(--color-success)",
-  warning: "var(--color-warning)",
-  danger: "var(--color-danger)",
-  purple: "var(--color-purple)",
-};
-
-const fmt = (n) =>
-  new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(n);
+import { T, fmt, useWindowSize, API_URL } from "../utils/helpers";
 
 const STEPS = [
-  { id: 1, label: "Dados Pessoais", icon: User },
-  { id: 2, label: "Endereço",       icon: MapPin },
-  { id: 3, label: "Pagamento",      icon: CreditCard },
-  { id: 4, label: "Confirmação",    icon: CheckCircle },
+  { id: 1, label: "Dados", shortLabel: "Dados", icon: User },
+  { id: 2, label: "Endereço", shortLabel: "Entrega", icon: MapPin },
+  { id: 3, label: "Pagamento", shortLabel: "Pagam.", icon: CreditCard },
+  { id: 4, label: "Confirmação", shortLabel: "Confirmar", icon: CheckCircle },
 ];
 
 // ── Barra de Progresso ──────────────────────────────────────────────
-function StepBar({ current }) {
+function StepBar({ current, isMobile }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", marginBottom: 32, position: "relative" }}>
+    <div style={{ display: "flex", alignItems: "center", marginBottom: isMobile ? 22 : 32, position: "relative" }}>
       {STEPS.map((s, idx) => {
         const done = current > s.id;
         const active = current === s.id;
         const Icon = s.icon;
+        const circleSize = isMobile ? 34 : 40;
         return (
-          <div key={s.id} style={{ display: "flex", alignItems: "center", flex: idx < STEPS.length - 1 ? 1 : 0 }}>
+          <div key={s.id} style={{ display: "flex", alignItems: "center", flex: idx < STEPS.length - 1 ? 1 : 0, minWidth: 0 }}>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, flexShrink: 0 }}>
               <div
                 style={{
-                  width: 40, height: 40, borderRadius: "50%",
+                  width: circleSize, height: circleSize, borderRadius: "50%",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   background: done ? T.success : active ? T.cyan : T.surface2,
                   border: `2px solid ${done ? T.success : active ? T.cyan : T.border}`,
@@ -57,16 +38,16 @@ function StepBar({ current }) {
                 }}
               >
                 {done
-                  ? <CheckCircle size={18} color="#fff" />
-                  : <Icon size={18} color={active ? "#fff" : T.muted} />}
+                  ? <CheckCircle size={isMobile ? 16 : 18} color="#fff" />
+                  : <Icon size={isMobile ? 16 : 18} color={active ? "#fff" : T.muted} />}
               </div>
-              <span style={{ fontSize: 10, fontWeight: 600, color: active ? T.cyan : done ? T.success : T.muted, whiteSpace: "nowrap" }}>
-                {s.label}
+              <span style={{ fontSize: isMobile ? 10 : 11, fontWeight: 600, color: active ? T.cyan : done ? T.success : T.muted, whiteSpace: "nowrap" }}>
+                {isMobile ? s.shortLabel : s.label}
               </span>
             </div>
             {idx < STEPS.length - 1 && (
               <div style={{
-                flex: 1, height: 2, margin: "0 8px", marginBottom: 20,
+                flex: 1, height: 2, margin: isMobile ? "0 4px" : "0 8px", marginBottom: 20,
                 background: done ? T.success : T.border,
                 transition: "background 0.4s ease",
               }} />
@@ -87,8 +68,8 @@ function StepBar({ current }) {
 // ── Campo de Input ──────────────────────────────────────────────────
 function Field({ label, id, value, onChange, placeholder, type = "text", required }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-      <label htmlFor={id} style={{ fontSize: 12, fontWeight: 600, color: T.muted2, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 6, minWidth: 0 }}>
+      <label htmlFor={id} style={{ fontSize: 12, fontWeight: 600, color: T.muted2, textTransform: "uppercase", letterSpacing: "0.06em", textAlign: "left" }}>
         {label}{required && <span style={{ color: T.danger }}> *</span>}
       </label>
       <input
@@ -105,14 +86,14 @@ function Field({ label, id, value, onChange, placeholder, type = "text", require
 }
 
 // ── Etapa 1: Dados Pessoais ─────────────────────────────────────────
-function Step1({ data, setData }) {
+function Step1({ data, setData, isMobile }) {
   return (
-    <div className="fi" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+    <div className="fi" style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 14 }}>
       <div style={{ gridColumn: "1/-1" }}>
-        <Field label="Nome Completo" id="nome" required value={data.nome} onChange={v => setData(p => ({ ...p, nome: v }))} placeholder="Ex: Lucas Ferreira" />
+        <Field label="Nome Completo" id="nome" required value={data.nome} onChange={v => setData(p => ({ ...p, nome: v }))} placeholder="Seu nome completo" />
       </div>
       <Field label="E-mail" id="email" type="email" required value={data.email} onChange={v => setData(p => ({ ...p, email: v }))} placeholder="email@exemplo.com" />
-      <Field label="Telefone" id="tel" value={data.tel} onChange={v => setData(p => ({ ...p, tel: v }))} placeholder="(92) 99234-5678" />
+      <Field label="Telefone" id="tel" value={data.tel} onChange={v => setData(p => ({ ...p, tel: v }))} placeholder="(00) 00000-0000" />
       <Field label="CPF" id="cpf" required value={data.cpf} onChange={v => setData(p => ({ ...p, cpf: v }))} placeholder="000.000.000-00" />
       <Field label="Data de Nascimento" id="nasc" type="date" value={data.nasc} onChange={v => setData(p => ({ ...p, nasc: v }))} />
     </div>
@@ -120,7 +101,7 @@ function Step1({ data, setData }) {
 }
 
 // ── Etapa 2: Endereço ───────────────────────────────────────────────
-function Step2({ data, setData }) {
+function Step2({ data, setData, isMobile }) {
   const [loading, setLoading] = useState(false);
   const { addToast } = useToast();
   const fetchCep = () => {
@@ -157,15 +138,16 @@ function Step2({ data, setData }) {
       });
   };
   return (
-    <div className="fi" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+    <div className="fi" style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 14 }}>
       <div style={{ gridColumn: "1/-1", display: "flex", gap: 10 }}>
-        <div style={{ flex: 1 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
           <Field label="CEP" id="cep" required value={data.cep} onChange={v => setData(p => ({ ...p, cep: v }))} placeholder="69000-000" />
         </div>
         <button
+          type="button"
           onClick={fetchCep}
           className="btn-g"
-          style={{ alignSelf: "flex-end", padding: "8px 16px", fontSize: 13, opacity: loading ? 0.6 : 1 }}
+          style={{ alignSelf: "flex-end", padding: "8px 14px", fontSize: 13, opacity: loading ? 0.6 : 1, flexShrink: 0 }}
         >
           {loading ? "Buscando..." : "Buscar"}
         </button>
@@ -186,7 +168,7 @@ function Step2({ data, setData }) {
 function CreditCardVisual({ num, nome, validade, cvv, flipped }) {
   const displayNum = (num.padEnd(16, "•")).replace(/(.{4})/g, "$1 ").trim();
   return (
-    <div style={{ perspective: 600, width: 300, height: 175, margin: "0 auto 24px" }}>
+    <div style={{ perspective: 600, width: "100%", maxWidth: 300, height: 175, margin: "0 auto 20px" }}>
       <div style={{
         width: "100%", height: "100%", position: "relative",
         transformStyle: "preserve-3d",
@@ -196,26 +178,26 @@ function CreditCardVisual({ num, nome, validade, cvv, flipped }) {
         {/* Frente */}
         <div style={{
           position: "absolute", inset: 0, backfaceVisibility: "hidden",
-          borderRadius: 16, padding: "20px 24px",
+          borderRadius: 16, padding: "18px 20px",
           background: "linear-gradient(135deg, #4c1d95, #7c3aed, #8c52ff)",
           boxShadow: "0 20px 48px rgba(140,82,255,0.35)",
           display: "flex", flexDirection: "column", justifyContent: "space-between",
         }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <div style={{ width: 36, height: 26, background: "linear-gradient(135deg,#ffd700,#ffa500)", borderRadius: 4 }} />
+            <div style={{ width: 34, height: 24, background: "linear-gradient(135deg,#ffd700,#ffa500)", borderRadius: 4 }} />
             <span style={{ color: "rgba(255,255,255,0.7)", fontSize: 12, fontWeight: 600 }}>PROTOTECH</span>
           </div>
-          <div style={{ fontFamily: "JetBrains Mono, monospace", color: "#fff", fontSize: 17, letterSpacing: 2 }}>
+          <div style={{ fontFamily: "JetBrains Mono, monospace", color: "#fff", fontSize: 15, letterSpacing: 1.5, textAlign: "left" }}>
             {displayNum}
           </div>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
-            <div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", gap: 8 }}>
+            <div style={{ minWidth: 0, textAlign: "left" }}>
               <div style={{ fontSize: 9, color: "rgba(255,255,255,0.6)", marginBottom: 2 }}>TITULAR</div>
-              <div style={{ color: "#fff", fontSize: 13, fontWeight: 600 }}>{nome || "SEU NOME"}</div>
+              <div style={{ color: "#fff", fontSize: 12, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{nome || "SEU NOME"}</div>
             </div>
-            <div>
+            <div style={{ flexShrink: 0, textAlign: "right" }}>
               <div style={{ fontSize: 9, color: "rgba(255,255,255,0.6)", marginBottom: 2 }}>VALIDADE</div>
-              <div style={{ color: "#fff", fontSize: 13 }}>{validade || "MM/AA"}</div>
+              <div style={{ color: "#fff", fontSize: 12 }}>{validade || "MM/AA"}</div>
             </div>
           </div>
         </div>
@@ -244,7 +226,7 @@ function CreditCardVisual({ num, nome, validade, cvv, flipped }) {
 }
 
 // ── Etapa 3: Pagamento ──────────────────────────────────────────────
-function Step3({ data, setData }) {
+function Step3({ data, setData, isMobile }) {
   const [method, setMethod] = useState(data.method || "credit");
   const [flipped, setFlipped] = useState(false);
 
@@ -254,29 +236,30 @@ function Step3({ data, setData }) {
   };
 
   const methods = [
-    { id: "credit", label: "Cartão de Crédito", icon: CreditCard },
-    { id: "pix",    label: "Pix",               icon: QrCode },
-    { id: "boleto", label: "Boleto",             icon: Barcode },
+    { id: "credit", label: isMobile ? "Crédito" : "Cartão de Crédito", icon: CreditCard },
+    { id: "pix",    label: "Pix", icon: QrCode },
+    { id: "boleto", label: "Boleto", icon: Barcode },
   ];
 
   return (
     <div className="fi">
       {/* Seletores */}
-      <div style={{ display: "flex", gap: 10, marginBottom: 24 }}>
+      <div style={{ display: "flex", gap: 8, marginBottom: 22 }}>
         {methods.map(({ id, label, icon: Icon }) => (
           <button
+            type="button"
             key={id}
             onClick={() => sel(id)}
             style={{
-              flex: 1, padding: "12px 8px", borderRadius: 10, cursor: "pointer",
+              flex: 1, padding: isMobile ? "10px 6px" : "12px 8px", borderRadius: 10, cursor: "pointer",
               border: `2px solid ${method === id ? T.cyan : T.border}`,
               background: method === id ? T.cyanBg : T.surface2,
               color: method === id ? T.cyan : T.muted,
               display: "flex", flexDirection: "column", alignItems: "center", gap: 6,
-              fontWeight: 600, fontSize: 12, transition: "all .2s",
+              fontWeight: 600, fontSize: isMobile ? 11.5 : 12, transition: "all .2s",
             }}
           >
-            <Icon size={20} />
+            <Icon size={19} />
             {label}
           </button>
         ))}
@@ -284,7 +267,7 @@ function Step3({ data, setData }) {
 
       {/* Cartão de Crédito */}
       {method === "credit" && (
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 14 }}>
           <div style={{ gridColumn: "1/-1" }}>
             <CreditCardVisual
               num={data.cardNum || ""}
@@ -330,7 +313,7 @@ function Step3({ data, setData }) {
             <svg width={160} height={160} viewBox="0 0 160 160">
               {Array.from({ length: 10 }).map((_, r) =>
                 Array.from({ length: 10 }).map((_, c) => (
-                  Math.random() > 0.4 ? (
+                  ((r * 7 + c * 3) % 5 > 1) ? (
                     <rect key={`${r}-${c}`} x={c * 16} y={r * 16} width={14} height={14} rx={2} fill="#1e1b4b" />
                   ) : null
                 ))
@@ -376,7 +359,7 @@ function Step3({ data, setData }) {
           }}>
             34191.09008 63521.020002 60960.073010 8 10000012340
           </div>
-          <button className="btn-g" style={{ margin: "14px auto 0", fontSize: 12 }}>
+          <button type="button" className="btn-g" style={{ margin: "14px auto 0", fontSize: 12 }}>
             Copiar Código
           </button>
           <p style={{ fontSize: 12, color: T.muted, marginTop: 10 }}>
@@ -394,16 +377,16 @@ function Step4({ cart, personal, address, payment }) {
   const methodLabels = { credit: "Cartão de Crédito", pix: "Pix", boleto: "Boleto Bancário" };
 
   return (
-    <div className="fi" style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+    <div className="fi" style={{ display: "flex", flexDirection: "column", gap: 18, textAlign: "left" }}>
       {/* Itens */}
       <div className="card" style={{ padding: 16 }}>
         <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 12, color: T.cyan }}>
           🛒 Itens do Pedido
         </div>
         {cart.map(item => (
-          <div key={item.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: `1px solid ${T.border}` }}>
-            <div style={{ fontSize: 13, fontWeight: 500 }}>{item.name} <span style={{ color: T.muted }}>×{item.qty}</span></div>
-            <div style={{ fontFamily: "JetBrains Mono, monospace", color: T.cyan, fontSize: 13 }}>{fmt(item.price * item.qty)}</div>
+          <div key={item.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, padding: "8px 0", borderBottom: `1px solid ${T.border}` }}>
+            <div style={{ fontSize: 13, fontWeight: 500, minWidth: 0 }}>{item.name} <span style={{ color: T.muted }}>×{item.qty}</span></div>
+            <div style={{ fontFamily: "JetBrains Mono, monospace", color: T.cyan, fontSize: 13, flexShrink: 0 }}>{fmt(item.price * item.qty)}</div>
           </div>
         ))}
         <div style={{ display: "flex", justifyContent: "space-between", marginTop: 12, fontWeight: 700, fontSize: 15 }}>
@@ -435,21 +418,109 @@ function Step4({ cart, personal, address, payment }) {
 }
 
 // ── Checkout Principal ──────────────────────────────────────────────
-export default function Checkout({ cart, setCart, setPage }) {
+export default function Checkout({
+  cart,
+  setCart,
+  setPage,
+  clientProfile = null,
+  clientLogin = null,
+  loadProducts,
+}) {
   const { addToast } = useToast();
+  const { isMobile } = useWindowSize();
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
+  const pushedStepsRef = useRef(0);
+  const hasPrefilledRef = useRef(false);
 
   const [personal, setPersonal] = useState({
-    nome: "Lucas Ferreira", email: "lucas@email.com",
-    tel: "(92) 99234-5678", cpf: "000.000.000-00", nasc: "",
+    nome: "",
+    email: "",
+    tel: "",
+    cpf: "",
+    nasc: "",
   });
   const [address, setAddress] = useState({
     cep: "", rua: "", num: "", comp: "", bairro: "", cidade: "", estado: "",
   });
   const [payment, setPayment] = useState({ method: "credit", cardNum: "", cardNome: "", cardVal: "", cardCvv: "", parcelas: "1x sem juros" });
 
-  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+  // Preenche automaticamente os dados do usuário logado sem usar dados estáticos
+  useEffect(() => {
+    if (hasPrefilledRef.current) return;
+
+    const applyProfile = (profile) => {
+      if (!profile) return;
+      hasPrefilledRef.current = true;
+      setPersonal((prev) => ({
+        ...prev,
+        nome: prev.nome || profile.nome || "",
+        email: prev.email || profile.email || profile.login || "",
+        tel: prev.tel || profile.telefone || "",
+        cpf: prev.cpf || profile.cpf || "",
+      }));
+    };
+
+    if (clientProfile) {
+      applyProfile(clientProfile);
+      return;
+    }
+
+    const login = clientLogin || localStorage.getItem("pt-login");
+    if (!login) return;
+
+    let cancelled = false;
+    fetch(`${API_URL}/usuarios/perfil?login=${encodeURIComponent(login)}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!cancelled && data && !data.error) {
+          applyProfile(data);
+        }
+      })
+      .catch(() => {});
+
+    return () => {
+      cancelled = true;
+    };
+  }, [clientProfile, clientLogin]);
+
+  // Suporta botão Voltar do celular entre etapas do Checkout
+  useEffect(() => {
+    const onPopState = (e) => {
+      if (e.state?.page === "checkout") {
+        if (typeof e.state.step === "number") {
+          pushedStepsRef.current = Math.max(0, e.state.step - 1);
+          setStep(e.state.step);
+        } else {
+          pushedStepsRef.current = 0;
+          setStep(1);
+        }
+      }
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
+
+  const goNextStep = () => {
+    const next = Math.min(4, step + 1);
+    if (next !== step) {
+      pushedStepsRef.current += 1;
+      window.history.pushState({ page: "checkout", step: next }, "", `#checkout/etapa-${next}`);
+      setStep(next);
+    }
+  };
+
+  const goPrevStep = () => {
+    if (step === 1) {
+      setPage("carrinho");
+      return;
+    }
+    if (pushedStepsRef.current > 0) {
+      window.history.back();
+    } else {
+      setStep((s) => Math.max(1, s - 1));
+    }
+  };
 
   const validateStep = () => {
     if (step === 1) return personal.nome && personal.email && personal.cpf;
@@ -461,18 +532,26 @@ export default function Checkout({ cart, setCart, setPage }) {
   const handleConfirm = async () => {
     setSubmitting(true);
     try {
-      // 1. Busca todos os clientes cadastrados no banco de dados para verificar duplicidade por CPF
-      const clientsRes = await fetch("http://localhost:3000/api/clientes");
-      if (!clientsRes.ok) throw new Error("Erro ao buscar base de clientes no servidor");
-      const clientsList = await clientsRes.json();
-      
       const cleanCpf = personal.cpf.replace(/\D/g, "");
-      let targetClient = clientsList.find(c => c.cpf && c.cpf.replace(/\D/g, "") === cleanCpf);
-      let id_cliente = targetClient ? targetClient.id_cliente : null;
-      
-      // 2. Se o cliente não existir no banco de dados, cadastra um novo de forma automática
+      const profileCpf = (clientProfile?.cpf || "").replace(/\D/g, "");
+      let id_cliente =
+        clientProfile?.id_cliente && profileCpf && cleanCpf === profileCpf
+          ? clientProfile.id_cliente
+          : null;
+
+      // 1. Busca clientes cadastrados para verificar correspondência por CPF caso necessário
       if (!id_cliente) {
-        const createRes = await fetch("http://localhost:3000/api/clientes", {
+        const clientsRes = await fetch(`${API_URL}/clientes`);
+        if (!clientsRes.ok) throw new Error("Erro ao buscar base de clientes no servidor");
+        const clientsList = await clientsRes.json();
+
+        const targetClient = clientsList.find(c => c.cpf && c.cpf.replace(/\D/g, "") === cleanCpf);
+        id_cliente = targetClient ? targetClient.id_cliente : null;
+      }
+
+      // 2. Se o cliente não existir no banco de dados, cadastra um novo
+      if (!id_cliente) {
+        const createRes = await fetch(`${API_URL}/clientes`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -489,16 +568,16 @@ export default function Checkout({ cart, setCart, setPage }) {
         const createData = await createRes.json();
         id_cliente = createData.id;
       }
-      
+
       // 3. Mapeia os itens do carrinho para o formato esperado pelo endpoint de Vendas da API
       const apiItems = cart.map(item => ({
         id_produto: item.id,
         quantidade: item.qty,
         preco_unitario: item.price
       }));
-      
+
       // 4. Registra a Venda no banco (transacional com baixa automática e geração de Nota Fiscal)
-      const saleRes = await fetch("http://localhost:3000/api/vendas", {
+      const saleRes = await fetch(`${API_URL}/vendas`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -506,26 +585,27 @@ export default function Checkout({ cart, setCart, setPage }) {
           items: apiItems
         })
       });
-      
+
       if (!saleRes.ok) {
         const errData = await saleRes.json();
         throw new Error(errData.error || "Erro ao registrar venda");
       }
-      
+
       const saleData = await saleRes.json();
-      addToast({ 
-        type: "success", 
-        message: `🎉 Pedido confirmado com sucesso! Nota Fiscal gerada: ${saleData.numero_nf || ""}`, 
-        duration: 6000 
+      addToast({
+        type: "success",
+        message: `🎉 Pedido confirmado com sucesso! Nota Fiscal gerada: ${saleData.numero_nf || ""}`,
+        duration: 6000
       });
       setCart([]);
+      if (loadProducts) loadProducts();
       setPage("home");
     } catch (err) {
       console.error("Erro no checkout:", err);
-      addToast({ 
-        type: "error", 
-        message: err.message || "Erro de conexão ao processar compra!", 
-        duration: 5000 
+      addToast({
+        type: "error",
+        message: err.message || "Erro de conexão ao processar compra!",
+        duration: 5000
       });
     } finally {
       setSubmitting(false);
@@ -533,6 +613,23 @@ export default function Checkout({ cart, setCart, setPage }) {
   };
 
   const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+
+  if (cart.length === 0) {
+    return (
+      <div style={{ padding: isMobile ? "16px 12px" : "28px 32px", overflowY: "auto", flex: 1 }}>
+        <div className="card" style={{ maxWidth: 520, margin: "24px auto", padding: isMobile ? "36px 20px" : "48px 32px", textAlign: "center" }}>
+          <ShoppingBag size={46} style={{ color: T.muted, margin: "0 auto 14px", display: "block" }} />
+          <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>Nenhum item para finalizar</h3>
+          <p style={{ color: T.muted2, fontSize: 13.5, marginBottom: 20 }}>
+            Adicione produtos ao carrinho antes de prosseguir com o checkout.
+          </p>
+          <button className="btn-p" style={{ margin: "0 auto" }} onClick={() => setPage("catalogo")}>
+            Explorar Catálogo
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ padding: isMobile ? "16px 12px" : "28px 32px", overflowY: "auto", flex: 1 }}>
@@ -546,16 +643,17 @@ export default function Checkout({ cart, setCart, setPage }) {
       <div style={{ maxWidth: 680, margin: "0 auto", width: "100%" }}>
 
         {/* Cabeçalho */}
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 28 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: isMobile ? 20 : 28 }}>
           <button
             className="btn-g"
             style={{ padding: "8px 10px", display: "flex" }}
-            onClick={() => step === 1 ? setPage("carrinho") : setStep(s => s - 1)}
+            onClick={goPrevStep}
+            aria-label="Voltar etapa"
           >
             <ChevronLeft size={16} />
           </button>
-          <div>
-            <h2 style={{ fontSize: isMobile ? 20 : 22, fontWeight: 700 }}>Checkout</h2>
+          <div style={{ textAlign: "left" }}>
+            <h2 style={{ fontSize: isMobile ? 19 : 22, fontWeight: 700 }}>Checkout</h2>
             <p style={{ fontSize: 12, color: "var(--color-muted2)", marginTop: 2 }}>
               Etapa {step} de {STEPS.length}
             </p>
@@ -566,13 +664,13 @@ export default function Checkout({ cart, setCart, setPage }) {
         </div>
 
         {/* Progress */}
-        <StepBar current={step} />
+        <StepBar current={step} isMobile={isMobile} />
 
         {/* Card do formulário */}
-        <div className="card" style={{ padding: isMobile ? 18 : 28, marginBottom: 20 }}>
-          {step === 1 && <Step1 data={personal} setData={setPersonal} />}
-          {step === 2 && <Step2 data={address}  setData={setAddress} />}
-          {step === 3 && <Step3 data={payment}  setData={setPayment} />}
+        <div className="card" style={{ padding: isMobile ? 16 : 28, marginBottom: 20 }}>
+          {step === 1 && <Step1 data={personal} setData={setPersonal} isMobile={isMobile} />}
+          {step === 2 && <Step2 data={address} setData={setAddress} isMobile={isMobile} />}
+          {step === 3 && <Step3 data={payment} setData={setPayment} isMobile={isMobile} />}
           {step === 4 && <Step4 cart={cart} personal={personal} address={address} payment={payment} />}
         </div>
 
@@ -589,7 +687,7 @@ export default function Checkout({ cart, setCart, setPage }) {
               className="btn-p"
               style={{ flex: 1, justifyContent: "center", padding: "12px", fontSize: 14, opacity: validateStep() ? 1 : 0.5 }}
               disabled={!validateStep()}
-              onClick={() => setStep(s => s + 1)}
+              onClick={goNextStep}
             >
               Próxima Etapa <ChevronRight size={16} />
             </button>

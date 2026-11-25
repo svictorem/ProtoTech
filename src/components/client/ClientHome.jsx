@@ -173,7 +173,17 @@ const renderInstagramPostIllustration = (type) => {
   }
 };
 
-const ClientHome = ({ setPage, addToCart, products = [], cart = [], onLogout, theme, toggleTheme }) => {
+const ClientHome = ({
+  setPage,
+  addToCart,
+  products = [],
+  cart = [],
+  onLogout,
+  theme,
+  toggleTheme,
+  clientProfile = null,
+  clientLogin = null,
+}) => {
   const { isMobile, isTablet } = useWindowSize();
   const [selectedProject, setSelectedProject] = useState(null);
   
@@ -363,7 +373,7 @@ Gostaria de validar a viabilidade técnica e agendar uma reunião técnica para 
   ];
 
   return (
-    <div id="client-home-container" style={{ overflowY: "auto", flex: 1 }}>
+    <div id="client-home-container" style={{ overflowY: "auto", overflowX: "hidden", flex: 1 }}>
       
       {/* Styles Injected for Ticker & Portfolio Zoom */}
       <style>
@@ -458,7 +468,9 @@ Gostaria de validar a viabilidade técnica e agendar uma reunião técnica para 
         cart={cart} 
         onLogout={onLogout} 
         theme={theme} 
-        toggleTheme={toggleTheme} 
+        toggleTheme={toggleTheme}
+        clientProfile={clientProfile}
+        clientLogin={clientLogin}
       />
 
       {/* Chips Banner */}
@@ -537,7 +549,7 @@ Gostaria de validar a viabilidade técnica e agendar uma reunião técnica para 
             style={{
               display: "grid",
               gridTemplateColumns: isMobile 
-                ? "repeat(auto-fill, minmax(145px, 1fr))" 
+                ? "repeat(auto-fill, minmax(140px, 1fr))" 
                 : isTablet 
                   ? "repeat(auto-fill, minmax(200px, 1fr))" 
                   : "repeat(5, 1fr)",
@@ -1219,7 +1231,7 @@ Gostaria de validar a viabilidade técnica e agendar uma reunião técnica para 
             style={{
               display: "grid",
               gridTemplateColumns: isMobile ? "1fr" : "1.2fr 1fr",
-              gap: 32,
+              gap: isMobile ? 20 : 32,
               alignItems: "stretch"
             }}
           >
@@ -1227,10 +1239,11 @@ Gostaria de validar a viabilidade técnica e agendar uma reunião técnica para 
             <div 
               className="card"
               style={{
-                padding: isMobile ? "24px" : "32px",
+                padding: isMobile ? "20px 16px" : "32px",
                 background: T.bg,
                 border: `1px solid ${T.border}`,
-                textAlign: "left"
+                textAlign: "left",
+                minWidth: 0
               }}
             >
               <form onSubmit={handleQuoteSubmit} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
@@ -1526,9 +1539,10 @@ Gostaria de validar a viabilidade técnica e agendar uma reunião técnica para 
             style={{
               width: "100%",
               maxWidth: 720,
+              maxHeight: "90dvh",
+              overflowY: "auto",
               background: T.bg,
               border: `1px solid ${T.border}`,
-              overflow: "hidden",
               boxShadow: "0 24px 64px rgba(0,0,0,0.6)",
               animation: "fi 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)"
             }}
