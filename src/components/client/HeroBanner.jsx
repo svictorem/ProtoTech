@@ -1,8 +1,17 @@
 import { useState, useEffect } from "react";
 import { Zap, ArrowRight, Cpu, ShoppingCart, LogOut, Menu, Sun, Moon } from "lucide-react";
 import { useWindowSize } from "../../utils/helpers";
+import MobileDrawer from "./MobileDrawer";
 
-export default function HeroBanner({ setPage, cart = [], onLogout, theme, toggleTheme }) {
+export default function HeroBanner({
+  setPage,
+  cart = [],
+  onLogout,
+  theme,
+  toggleTheme,
+  clientProfile = null,
+  clientLogin = null,
+}) {
   const { isMobile } = useWindowSize();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -49,8 +58,8 @@ export default function HeroBanner({ setPage, cart = [], onLogout, theme, toggle
 
   return (
     <section className="w-full relative overflow-x-hidden flex flex-col bg-white text-slate-900 dark:bg-gradient-to-b dark:from-[#050714] dark:via-[#091326] dark:to-[#231a11] dark:text-white transition-colors duration-300">
-      {/* Spacer that matches the fixed nav height so content doesn't hide behind it */}
-      <div className="h-screen w-full relative flex flex-col">
+      {/* Flexible viewport wrapper so mobile never clips or overlaps sections */}
+      <div className="min-h-[100dvh] lg:min-h-screen w-full relative flex flex-col">
       {/* Background Left-Side Circuit Board Tracks (faint schematic layout) */}
       <div className="absolute left-0 top-[18%] w-1/3 h-2/3 pointer-events-none opacity-20 dark:opacity-35 select-none z-0">
         <svg className="w-full h-full" viewBox="0 0 300 500" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -69,7 +78,7 @@ export default function HeroBanner({ setPage, cart = [], onLogout, theme, toggle
       <div className="absolute inset-0 dark:bg-[#050714]/30 mix-blend-multiply pointer-events-none" />
       
       {/* Soft Base Fade to seamlessly blend with the next section */}
-      <div className="absolute bottom-0 left-0 right-0 h-36 bg-gradient-to-t from-[var(--color-bg)] to-transparent pointer-events-none z-10" />
+      <div className="absolute bottom-0 left-0 right-0 h-28 sm:h-36 bg-gradient-to-t from-[var(--color-bg)] to-transparent pointer-events-none z-10" />
 
       {/* 1. Header (Navbar) - FIXED: stays visible when scrolling */}
       <nav
@@ -84,11 +93,11 @@ export default function HeroBanner({ setPage, cart = [], onLogout, theme, toggle
           WebkitBackdropFilter: "blur(16px)",
         }}
       >
-        <div className="max-w-[1200px] mx-auto w-full h-full px-8 md:px-12 flex items-center justify-between">
+        <div className="max-w-[1200px] mx-auto w-full h-full px-4 sm:px-6 md:px-12 flex items-center justify-between gap-3">
           {/* Logo */}
           <div 
             onClick={goHome} 
-            className="flex items-center gap-2.5 cursor-pointer select-none group"
+            className="flex items-center gap-2 cursor-pointer select-none group shrink-0"
           >
             <Cpu size={20} className="text-[#8c52ff]" />
             <span className="font-bold text-lg tracking-tight text-slate-900 dark:text-white"
@@ -131,18 +140,19 @@ export default function HeroBanner({ setPage, cart = [], onLogout, theme, toggle
             </div>
           )}
 
-          {/* Right Action Icons — pinned to the right, all buttons share h-9 for perfect alignment */}
-          <div className="ml-auto flex items-center gap-2">
+          {/* Right Action Icons — pinned to the right, all icon buttons share h-9 w-9 for uniform square alignment */}
+          <div className="ml-auto flex items-center gap-2 shrink-0">
             {/* Cart */}
             <button
               onClick={() => setPage("carrinho")}
-              className="relative h-9 inline-flex items-center justify-center gap-1.5 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 transition-all cursor-pointer text-slate-700 dark:text-white text-sm font-medium whitespace-nowrap"
+              aria-label="Carrinho"
+              className={`relative h-9 ${isMobile ? "w-9" : "px-3"} shrink-0 inline-flex items-center justify-center gap-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 transition-all cursor-pointer text-slate-700 dark:text-white text-sm font-medium whitespace-nowrap`}
               style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" }}
             >
-              <ShoppingCart size={15} />
+              <ShoppingCart size={16} />
               {!isMobile && <span>Carrinho</span>}
               {cartCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 bg-[#8c52ff] text-white dark:text-black rounded-full w-4.5 h-4.5 w-[18px] h-[18px] flex items-center justify-center text-[9px] font-bold">
+                <span className="absolute -top-1.5 -right-1.5 bg-[#8c52ff] text-white rounded-full min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-bold leading-none shadow-sm">
                   {cartCount}
                 </span>
               )}
@@ -151,28 +161,30 @@ export default function HeroBanner({ setPage, cart = [], onLogout, theme, toggle
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
-              className="h-9 w-9 inline-flex items-center justify-center rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 transition-all cursor-pointer text-slate-600 dark:text-slate-400"
+              aria-label={theme === "light" ? "Mudar para escuro" : "Mudar para claro"}
+              className="h-9 w-9 shrink-0 inline-flex items-center justify-center rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 transition-all cursor-pointer text-slate-600 dark:text-slate-400"
               title={theme === "light" ? "Mudar para escuro" : "Mudar para claro"}
             >
-              {theme === "light" ? <Moon size={15} /> : <Sun size={15} />}
+              {theme === "light" ? <Moon size={16} /> : <Sun size={16} />}
             </button>
 
             {/* Logout — desktop only */}
             {!isMobile && (
               <button
                 onClick={onLogout}
-                className="h-9 w-9 inline-flex items-center justify-center rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 transition-all cursor-pointer text-slate-500 dark:text-slate-400 hover:text-red-500 dark:hover:text-red-400"
+                className="h-9 w-9 shrink-0 inline-flex items-center justify-center rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 transition-all cursor-pointer text-slate-500 dark:text-slate-400 hover:text-red-500 dark:hover:text-red-400"
                 title="Sair"
               >
-                <LogOut size={15} />
+                <LogOut size={16} />
               </button>
             )}
 
             {/* Mobile hamburger */}
             {isMobile && (
               <button
-                onClick={() => setDrawerOpen(!drawerOpen)}
-                className="h-9 w-9 inline-flex items-center justify-center rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 transition-all cursor-pointer text-slate-800 dark:text-white"
+                onClick={() => setDrawerOpen(true)}
+                aria-label="Abrir menu"
+                className="h-9 w-9 shrink-0 inline-flex items-center justify-center rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 transition-all cursor-pointer text-slate-800 dark:text-white"
               >
                 <Menu size={16} />
               </button>
@@ -184,62 +196,39 @@ export default function HeroBanner({ setPage, cart = [], onLogout, theme, toggle
       {/* Spacer to compensate for harmonized fixed navbar height (58px) */}
       <div className="h-[58px] shrink-0" />
 
-      {/* Mobile Drawer Menu */}
-      {isMobile && drawerOpen && (
-        <div className="fixed top-[58px] left-0 w-full h-[calc(100vh-58px)] bg-white dark:bg-[#050714]/98 backdrop-blur-xl z-40 flex flex-col p-6 gap-4 animate-in fade-in duration-200 border-t border-slate-200 dark:border-white/5 text-slate-900 dark:text-white">
-          <button 
-            onClick={() => { setPage("home"); setDrawerOpen(false); }} 
-            className="w-full py-4 px-5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 rounded-xl text-left font-semibold cursor-pointer"
-            style={{ color: '#8c52ff', fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" }}
-          >
-            Início
-          </button>
-          <button 
-            onClick={() => { scrollToSection("sobre-projeto"); setDrawerOpen(false); }} 
-            className="w-full py-4 px-5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 rounded-xl text-left font-semibold cursor-pointer text-slate-700 dark:text-gray-300"
-            style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" }}
-          >
-            Sobre
-          </button>
-          <button 
-            onClick={() => { setPage("catalogo"); setDrawerOpen(false); }} 
-            className="w-full py-4 px-5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 rounded-xl text-left font-semibold cursor-pointer text-slate-700 dark:text-gray-300"
-            style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" }}
-          >
-            Catálogo
-          </button>
-          <button 
-            onClick={() => { setPage("perfil"); setDrawerOpen(false); }} 
-            className="w-full py-4 px-5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 rounded-xl text-left font-semibold cursor-pointer text-slate-700 dark:text-gray-300"
-            style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" }}
-          >
-            Meu Perfil
-          </button>
-          <button 
-            onClick={() => { onLogout(); setDrawerOpen(false); }} 
-            className="w-full py-4 px-5 bg-red-500/10 border border-red-500/20 rounded-xl text-left font-semibold mt-auto flex items-center gap-2 cursor-pointer text-red-500 dark:text-red-400"
-            style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" }}
-          >
-            <LogOut size={16} /> Sair da Conta
-          </button>
-        </div>
+      {/* Modern Mobile Slide-Over Drawer */}
+      {isMobile && (
+        <MobileDrawer
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+          page="home"
+          onGoHome={goHome}
+          onGoAbout={() => scrollToSection("sobre-projeto")}
+          onNavigate={setPage}
+          cartCount={cartCount}
+          theme={theme}
+          toggleTheme={toggleTheme}
+          onLogout={onLogout}
+          clientProfile={clientProfile}
+          clientLogin={clientLogin}
+        />
       )}
 
       {/* 2. Main Content Grid (Aligned with Logo and limited to 1200px max-width) */}
-      <div className="flex-1 w-full flex items-center justify-center relative z-20 py-8 lg:py-0">
-        <div className="max-w-[1200px] mx-auto w-full px-8 md:px-12 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div className="flex-1 w-full flex items-center justify-center relative z-20 pt-6 pb-10 sm:py-10 lg:py-0">
+        <div className="max-w-[1200px] mx-auto w-full px-4 sm:px-6 md:px-12 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           
           {/* Left Column: Copy & Actions */}
-          <div className="text-center lg:text-left flex flex-col items-center lg:items-start justify-center">
+          <div className="text-center lg:text-left flex flex-col items-center lg:items-start justify-center min-w-0">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#8c52ff]/10 dark:bg-[#8c52ff]/15 border border-[#8c52ff]/30 text-[11px] font-bold tracking-wider uppercase mb-6 shadow-sm hover:scale-[1.02] transition-transform cursor-default !text-[#8c52ff] dark:!text-[#c4b5fd]"
+            <div className="inline-flex items-center gap-2 px-3.5 sm:px-4 py-1.5 rounded-full bg-[#8c52ff]/10 dark:bg-[#8c52ff]/15 border border-[#8c52ff]/30 text-[10px] sm:text-[11px] font-bold tracking-wider uppercase mb-4 sm:mb-6 shadow-sm hover:scale-[1.02] transition-transform cursor-default !text-[#8c52ff] dark:!text-[#c4b5fd]"
                  style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" }}>
-              <Zap size={13} className="animate-pulse text-[#8c52ff] dark:text-[#c4b5fd]" />
+              <Zap size={13} className="animate-pulse text-[#8c52ff] dark:text-[#c4b5fd] shrink-0" />
               <span>Engenharia de Hardware & IoT</span>
             </div>
 
             {/* Title */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight !text-slate-900 dark:!text-white leading-[1.08] mb-6 max-w-xl"
+            <h1 className="text-[30px] sm:text-5xl lg:text-6xl font-extrabold tracking-tight !text-slate-900 dark:!text-white leading-[1.1] mb-4 sm:mb-6 max-w-xl"
                 style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" }}>
               Prototipagem de Elite
               <br />
@@ -249,18 +238,18 @@ export default function HeroBanner({ setPage, cart = [], onLogout, theme, toggle
             </h1>
 
             {/* Subtitle */}
-            <p className="text-base sm:text-lg max-w-md leading-relaxed font-normal !text-slate-600 dark:!text-slate-300"
+            <p className="text-sm sm:text-lg max-w-md leading-relaxed font-normal !text-slate-600 dark:!text-slate-300 px-1 sm:px-0"
                style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" }}>
               Hardware customizado, firmware otimizado e integração IoT de nível industrial com máxima precisão e confiabilidade.
             </p>
 
             {/* Action CTAs */}
-            <div className="mt-8 flex flex-row flex-wrap gap-4 items-center lg:justify-start justify-center w-full">
+            <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4 items-center lg:justify-start justify-center w-full">
 
               {/* PRIMÁRIO: Solicitar Orçamento */}
               <button
                 onClick={() => scrollToSection("quote-simulator")}
-                className="group h-12 inline-flex items-center justify-center gap-2.5 px-7 whitespace-nowrap rounded-full font-bold text-sm text-white cursor-pointer border-none transition-all duration-300 hover:-translate-y-0.5 shadow-[0_4px_20px_rgba(140,82,255,0.38)] hover:shadow-[0_8px_30px_rgba(140,82,255,0.6)]"
+                className="group w-full sm:w-auto max-w-[290px] sm:max-w-none h-11 sm:h-12 inline-flex items-center justify-center gap-2.5 px-6 sm:px-7 whitespace-nowrap rounded-full font-bold text-sm text-white cursor-pointer border-none transition-all duration-300 hover:-translate-y-0.5 shadow-[0_4px_20px_rgba(140,82,255,0.38)] hover:shadow-[0_8px_30px_rgba(140,82,255,0.6)]"
                 style={{
                   fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif",
                   background: "linear-gradient(135deg, #7c3aed 0%, #8c52ff 50%, #6d28d9 100%)",
@@ -273,7 +262,7 @@ export default function HeroBanner({ setPage, cart = [], onLogout, theme, toggle
               {/* SECUNDÁRIO: Ver Componentes */}
               <button
                 onClick={() => setPage("catalogo")}
-                className="h-12 inline-flex items-center justify-center gap-2 px-7 whitespace-nowrap rounded-full font-semibold text-sm cursor-pointer transition-all duration-300 hover:-translate-y-0.5 !text-slate-800 dark:!text-slate-100 border border-[#8c52ff]/40 hover:border-[#8c52ff] hover:bg-[#8c52ff]/10"
+                className="w-full sm:w-auto max-w-[290px] sm:max-w-none h-11 sm:h-12 inline-flex items-center justify-center gap-2 px-6 sm:px-7 whitespace-nowrap rounded-full font-semibold text-sm cursor-pointer transition-all duration-300 hover:-translate-y-0.5 !text-slate-800 dark:!text-slate-100 border border-[#8c52ff]/40 hover:border-[#8c52ff] hover:bg-[#8c52ff]/10"
                 style={{
                   fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif",
                   background: "transparent",
@@ -286,8 +275,8 @@ export default function HeroBanner({ setPage, cart = [], onLogout, theme, toggle
           </div>
 
           {/* Right Column: Refined IoT HUD Diagram */}
-          <div className="flex items-center justify-center lg:justify-end w-full">
-            <div className="w-full aspect-square max-w-[340px] sm:max-w-[420px] lg:max-w-[480px] relative transition-transform duration-500 hover:scale-[1.02]">
+          <div className="flex items-center justify-center lg:justify-end w-full min-w-0">
+            <div className="w-full aspect-square max-w-[260px] sm:max-w-[380px] lg:max-w-[480px] relative transition-transform duration-500 hover:scale-[1.02]">
               
               {/* SVG HUD Diagram */}
               <svg

@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/ProtoTech/', // 👈 ADICIONE ISSO AQUI (Substitua pelo nome real do repositório no GitHub)
+  base: './', // 👈 ADICIONE ISSO AQUI (Substitua pelo nome real do repositório no GitHub)
   plugins: [react(), tailwindcss()],
   build: {
     rollupOptions: {

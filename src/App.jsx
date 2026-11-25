@@ -11,7 +11,10 @@ export default function App() {
   const [session, setSession] = useState(() => localStorage.getItem("pt-session") || null);
   const [clientLogin, setClientLogin] = useState(() => localStorage.getItem("pt-login") || null);
   const [theme, setTheme] = useState(() => localStorage.getItem("pt-theme") || "dark");
-  const [view, setView] = useState("login"); // "login" | "cadastro"
+  const [view, setViewState] = useState(() => {
+    if (typeof window !== "undefined" && window.location.hash === "#cadastro") return "cadastro";
+    return "login";
+  }); // "login" | "cadastro"
   const [products, setProducts] = useState([]);
   const [sales, setSales] = useState([]);
   const [topProducts, setTopProducts] = useState([]);
@@ -69,7 +72,6 @@ export default function App() {
     } else {
       localStorage.removeItem("pt-session");
       localStorage.removeItem("pt-login");
-      setClientLogin(null);
     }
   }, [session]);
 
@@ -82,31 +84,63 @@ export default function App() {
 
   const toggleTheme = () => setTheme(prev => prev === "dark" ? "light" : "dark");
 
+  const navigateAuthView = (nextView) => {
+    setViewState(nextView);
+    if (!session && typeof window !== "undefined") {
+      window.history.pushState({ view: nextView }, "", `#${nextView}`);
+    }
+  };
+
+  useEffect(() => {
+    if (session) return;
+    const onPopAuth = (e) => {
+      const target = e?.state?.view || (window.location.hash === "#cadastro" ? "cadastro" : "login");
+      setViewState(target === "cadastro" ? "cadastro" : "login");
+    };
+    if (!window.location.hash || (window.location.hash !== "#login" && window.location.hash !== "#cadastro")) {
+      window.history.replaceState({ view }, "", `#${view}`);
+    }
+    window.addEventListener("popstate", onPopAuth);
+    return () => window.removeEventListener("popstate", onPopAuth);
+  }, [session, view]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("pt-session");
+    localStorage.removeItem("pt-login");
+    localStorage.removeItem("pt-client-page");
+    setClientLogin(null);
+    setSession(null);
+    setViewState("login");
+    window.history.replaceState({ view: "login" }, "", "#login");
+  };
+
   return (
     <ToastProvider>
       <div className="pt-root">
         {!session && view === "login" && (
           <Login
             onLogin={(role, email) => {
+              localStorage.removeItem("pt-client-page");
               setSession(role);
               if (role === "client" && email) {
                 setClientLogin(email);
                 localStorage.setItem("pt-login", email);
+                window.history.replaceState({ page: "home" }, "", "#home");
               }
-              setView("login");
+              setViewState("login");
             }}
-            onCadastro={() => setView("cadastro")}
+            onCadastro={() => navigateAuthView("cadastro")}
           />
         )}
         {!session && view === "cadastro" && (
           <Cadastro
-            onBack={() => setView("login")}
-            onSuccess={() => setView("login")}
+            onBack={() => navigateAuthView("login")}
+            onSuccess={() => navigateAuthView("login")}
           />
         )}
         {session === "admin" && (
           <AdminArea
-            onLogout={() => { localStorage.removeItem("pt-session"); localStorage.removeItem("pt-login"); setSession(null); setView("login"); }}
+            onLogout={handleLogout}
             theme={theme}
             toggleTheme={toggleTheme}
             products={products}
@@ -119,7 +153,7 @@ export default function App() {
         )}
         {session === "client" && (
           <ClientArea
-            onLogout={() => { localStorage.removeItem("pt-session"); localStorage.removeItem("pt-login"); setSession(null); setView("login"); }}
+            onLogout={handleLogout}
             theme={theme}
             toggleTheme={toggleTheme}
             products={products}
