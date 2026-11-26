@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { Cpu, ShoppingCart, LogOut, Menu, Sun, Moon } from "lucide-react";
+import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Cpu, ShoppingCart, LogOut, LogIn, Menu, Sun, Moon } from "lucide-react";
 import { T, useWindowSize, API_URL } from "../../utils/helpers";
 
 // Sub-components
@@ -10,19 +11,38 @@ import Perfil from "./Perfil";
 import Checkout from "../Checkout";
 import MobileDrawer from "./MobileDrawer";
 
-const VALID_PAGES = ["home", "catalogo", "carrinho", "perfil", "checkout"];
+const PAGE_TO_PATH = {
+  home: "/",
+  catalogo: "/catalogo",
+  carrinho: "/carrinho",
+  perfil: "/perfil",
+  checkout: "/checkout",
+};
 
-const getPageFromHash = () => {
-  if (typeof window === "undefined") return null;
-  const raw = window.location.hash.replace(/^#\/?/, "").split("/")[0].split("?")[0];
-  return VALID_PAGES.includes(raw) ? raw : null;
+const getPageFromPath = (pathname) => {
+  if (pathname === "/catalogo") return "catalogo";
+  if (pathname === "/carrinho") return "carrinho";
+  if (pathname === "/perfil") return "perfil";
+  if (pathname.startsWith("/checkout")) return "checkout";
+  return "home";
+};
+
+const readStoredCart = (key) => {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
 };
 
 const ClientNav = ({
   page,
   setPage,
   cart,
+  isAuthenticated,
   onLogout,
+  onGoLogin,
   theme,
   toggleTheme,
   clientProfile,
@@ -239,35 +259,65 @@ const ClientNav = ({
                 {theme === "light" ? <Moon size={15} /> : <Sun size={15} />}
               </button>
 
-              {/* Logout */}
-              <button
-                onClick={onLogout}
-                title="Sair"
-                style={{
-                  height: 36,
-                  width: 36,
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderRadius: 8,
-                  background: "var(--color-surface2)",
-                  border: "1px solid var(--color-border)",
-                  color: "var(--color-muted2)",
-                  cursor: "pointer",
-                  transition: "all .15s",
-                  flexShrink: 0,
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = "var(--color-danger)";
-                  e.currentTarget.style.borderColor = "rgba(var(--rgb-danger),0.3)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = "var(--color-muted2)";
-                  e.currentTarget.style.borderColor = "var(--color-border)";
-                }}
-              >
-                <LogOut size={15} />
-              </button>
+              {/* Auth action */}
+              {isAuthenticated ? (
+                <button
+                  onClick={onLogout}
+                  title="Sair"
+                  style={{
+                    height: 36,
+                    width: 36,
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: 8,
+                    background: "var(--color-surface2)",
+                    border: "1px solid var(--color-border)",
+                    color: "var(--color-muted2)",
+                    cursor: "pointer",
+                    transition: "all .15s",
+                    flexShrink: 0,
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = "var(--color-danger)";
+                    e.currentTarget.style.borderColor = "rgba(var(--rgb-danger),0.3)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = "var(--color-muted2)";
+                    e.currentTarget.style.borderColor = "var(--color-border)";
+                  }}
+                >
+                  <LogOut size={15} />
+                </button>
+              ) : (
+                <button
+                  onClick={() => onGoLogin?.()}
+                  title="Fazer Login"
+                  style={{
+                    height: 36,
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 6,
+                    padding: "0 12px",
+                    borderRadius: 8,
+                    background: "var(--color-cyanBg)",
+                    border: "1px solid rgba(var(--rgb-cyan),0.3)",
+                    color: "var(--color-cyan)",
+                    fontSize: 13,
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    whiteSpace: "nowrap",
+                    transition: "all .15s",
+                    flexShrink: 0,
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = "var(--color-cyan)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(var(--rgb-cyan),0.3)")}
+                >
+                  <LogIn size={15} />
+                  <span>Entrar</span>
+                </button>
+              )}
             </div>
           </>
         ) : (
@@ -379,7 +429,9 @@ const ClientNav = ({
           cartCount={cartCount}
           theme={theme}
           toggleTheme={toggleTheme}
+          isAuthenticated={isAuthenticated}
           onLogout={onLogout}
+          onGoLogin={onGoLogin}
           clientProfile={clientProfile}
           clientLogin={clientLogin}
         />
@@ -388,36 +440,26 @@ const ClientNav = ({
   );
 };
 
-const ClientArea = ({
+const ClientAreaInner = ({
+  cartStorageKey,
+  session,
   onLogout,
+  onGoLogin,
+  onGoAdmin,
   theme,
   toggleTheme,
   products = [],
   loadProducts,
-  clientLogin = null,
+  effectiveLogin = null,
 }) => {
-  const effectiveLogin = clientLogin || (typeof window !== "undefined" ? localStorage.getItem("pt-login") : null);
-  const cartStorageKey = `pt-cart-${effectiveLogin || "guest"}`;
+  const location = useLocation();
+  const routerNavigate = useNavigate();
+  const page = getPageFromPath(location.pathname);
 
-  const [page, setPageState] = useState(() => {
-    const fromHash = getPageFromHash();
-    if (fromHash) return fromHash;
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("pt-client-page");
-      if (VALID_PAGES.includes(saved)) return saved;
-    }
-    return "home";
-  });
+  const isAuthenticated = Boolean(session);
+  const isClientAuthenticated = session === "client" && Boolean(effectiveLogin);
 
-  const [cart, setCart] = useState(() => {
-    try {
-      const raw = localStorage.getItem(cartStorageKey);
-      return raw ? JSON.parse(raw) : [];
-    } catch {
-      return [];
-    }
-  });
-
+  const [cart, setCart] = useState(() => readStoredCart(cartStorageKey));
   const [clientProfile, setClientProfile] = useState(null);
 
   // Persiste o carrinho no localStorage para sobreviver recarregamentos
@@ -429,9 +471,9 @@ const ClientArea = ({
     }
   }, [cart, cartStorageKey]);
 
-  // Carrega dados do usuário logado para o menu e pré-preenchimento do checkout
+  // Carrega dados do cliente somente quando estiver logado como cliente
   useEffect(() => {
-    if (!effectiveLogin) return;
+    if (!isClientAuthenticated) return;
     let cancelled = false;
     fetch(`${API_URL}/usuarios/perfil?login=${encodeURIComponent(effectiveLogin)}`)
       .then((res) => (res.ok ? res.json() : null))
@@ -444,47 +486,19 @@ const ClientArea = ({
     return () => {
       cancelled = true;
     };
-  }, [effectiveLogin]);
+  }, [isClientAuthenticated, effectiveLogin]);
 
-  const activeProfile = effectiveLogin ? clientProfile : null;
+  const activeProfile = isClientAuthenticated ? clientProfile : null;
 
-  // Inicializa o histórico do navegador para suportar botão voltar e reload na mesma página
-  useEffect(() => {
-    const currentHash = getPageFromHash();
-    const saved = typeof window !== "undefined" ? localStorage.getItem("pt-client-page") : null;
-    const initial = currentHash || (VALID_PAGES.includes(saved) ? saved : "home");
-    if (!currentHash) {
-      window.history.replaceState({ page: initial }, "", `#${initial}`);
-    } else if (!window.history.state?.page) {
-      window.history.replaceState({ page: currentHash }, "", window.location.hash);
-    }
-    localStorage.setItem("pt-client-page", initial);
-  }, []);
-
-  // Sincroniza estado ao apertar botão Voltar / Avançar no celular ou navegador
-  useEffect(() => {
-    const syncFromLocation = (e) => {
-      const statePage = e?.state?.page;
-      const hashPage = getPageFromHash();
-      const target = VALID_PAGES.includes(statePage) ? statePage : hashPage || "home";
-      localStorage.setItem("pt-client-page", target);
-      setPageState(target);
-    };
-    window.addEventListener("popstate", syncFromLocation);
-    window.addEventListener("hashchange", syncFromLocation);
-    return () => {
-      window.removeEventListener("popstate", syncFromLocation);
-      window.removeEventListener("hashchange", syncFromLocation);
-    };
-  }, []);
-
-  const navigate = useCallback((nextPage) => {
-    if (!VALID_PAGES.includes(nextPage)) return;
-    localStorage.setItem("pt-client-page", nextPage);
-    if (page === nextPage) return;
-    window.history.pushState({ page: nextPage }, "", `#${nextPage}`);
-    setPageState(nextPage);
-  }, [page]);
+  const navigate = useCallback(
+    (nextPage) => {
+      const targetPath = PAGE_TO_PATH[nextPage];
+      if (!targetPath) return;
+      if (location.pathname === targetPath) return;
+      routerNavigate(targetPath);
+    },
+    [location.pathname, routerNavigate]
+  );
 
   const addToCart = (p) =>
     setCart((c) => {
@@ -508,11 +522,13 @@ const ClientArea = ({
           page={page}
           setPage={navigate}
           cart={cart}
+          isAuthenticated={isAuthenticated}
           onLogout={onLogout}
+          onGoLogin={() => onGoLogin?.(location.pathname)}
           theme={theme}
           toggleTheme={toggleTheme}
           clientProfile={activeProfile}
-          clientLogin={effectiveLogin}
+          clientLogin={isClientAuthenticated ? effectiveLogin : null}
         />
       )}
       <div
@@ -523,34 +539,121 @@ const ClientArea = ({
           overflow: "hidden",
         }}
       >
-        {page === "home" && (
-          <ClientHome
-            setPage={navigate}
-            addToCart={addToCart}
-            products={products}
-            cart={cart}
-            onLogout={onLogout}
-            theme={theme}
-            toggleTheme={toggleTheme}
-            clientProfile={activeProfile}
-            clientLogin={effectiveLogin}
+        <Routes>
+          <Route
+            index
+            element={
+              <ClientHome
+                setPage={navigate}
+                addToCart={addToCart}
+                products={products}
+                cart={cart}
+                isAuthenticated={isAuthenticated}
+                onLogout={onLogout}
+                onGoLogin={() => onGoLogin?.("/")}
+                theme={theme}
+                toggleTheme={toggleTheme}
+                clientProfile={activeProfile}
+                clientLogin={isClientAuthenticated ? effectiveLogin : null}
+              />
+            }
           />
-        )}
-        {page === "catalogo" && <Catalogo addToCart={addToCart} products={products} />}
-        {page === "carrinho" && <Carrinho cart={cart} setCart={setCart} setPage={navigate} />}
-        {page === "perfil" && <Perfil loginEmail={effectiveLogin} />}
-        {page === "checkout" && (
-          <Checkout
-            cart={cart}
-            setCart={setCart}
-            setPage={navigate}
-            clientProfile={activeProfile}
-            clientLogin={effectiveLogin}
-            loadProducts={loadProducts}
+          <Route
+            path="catalogo"
+            element={<Catalogo addToCart={addToCart} products={products} />}
           />
-        )}
+          <Route
+            path="carrinho"
+            element={
+              <Carrinho
+                cart={cart}
+                setCart={setCart}
+                setPage={navigate}
+                isClientAuthenticated={isClientAuthenticated}
+                onRequireLogin={() => onGoLogin?.("/checkout")}
+              />
+            }
+          />
+          <Route
+            path="perfil"
+            element={
+              <Perfil
+                loginEmail={isClientAuthenticated ? effectiveLogin : null}
+                session={session}
+                onGoLogin={() => onGoLogin?.("/perfil")}
+                onGoCadastro={() => routerNavigate("/cadastro")}
+                onLogout={onLogout}
+                onGoAdmin={onGoAdmin}
+              />
+            }
+          />
+          <Route
+            path="checkout"
+            element={
+              <Checkout
+                cart={cart}
+                setCart={setCart}
+                setPage={navigate}
+                clientProfile={activeProfile}
+                clientLogin={isClientAuthenticated ? effectiveLogin : null}
+                isClientAuthenticated={isClientAuthenticated}
+                onRequireLogin={() => onGoLogin?.("/checkout")}
+                loadProducts={loadProducts}
+              />
+            }
+          />
+          <Route
+            path="checkout/:etapa"
+            element={
+              <Checkout
+                cart={cart}
+                setCart={setCart}
+                setPage={navigate}
+                clientProfile={activeProfile}
+                clientLogin={isClientAuthenticated ? effectiveLogin : null}
+                isClientAuthenticated={isClientAuthenticated}
+                onRequireLogin={() => onGoLogin?.("/checkout")}
+                loadProducts={loadProducts}
+              />
+            }
+          />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </div>
     </div>
+  );
+};
+
+const ClientArea = ({
+  session = null,
+  onLogout,
+  onGoLogin,
+  onGoAdmin,
+  theme,
+  toggleTheme,
+  products = [],
+  loadProducts,
+  clientLogin = null,
+}) => {
+  const effectiveLogin =
+    clientLogin || (typeof window !== "undefined" ? localStorage.getItem("pt-login") : null);
+  const isClientAuthenticated = session === "client" && Boolean(effectiveLogin);
+  const cartStorageKey = `pt-cart-${isClientAuthenticated ? effectiveLogin : "guest"}`;
+
+  return (
+    <ClientAreaInner
+      key={cartStorageKey}
+      cartStorageKey={cartStorageKey}
+      session={session}
+      onLogout={onLogout}
+      onGoLogin={onGoLogin}
+      onGoAdmin={onGoAdmin}
+      theme={theme}
+      toggleTheme={toggleTheme}
+      products={products}
+      loadProducts={loadProducts}
+      effectiveLogin={effectiveLogin}
+    />
   );
 };
 

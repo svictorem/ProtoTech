@@ -1,12 +1,33 @@
 import { ShoppingCart, ShoppingBag, Package, X, ArrowRight } from "lucide-react";
 import { T, fmt, useWindowSize } from "../../utils/helpers";
+import { useToast } from "../ToastSystem";
 
-const Carrinho = ({ cart, setCart, setPage }) => {
+const Carrinho = ({
+  cart,
+  setCart,
+  setPage,
+  isClientAuthenticated = false,
+  onRequireLogin,
+}) => {
   const { isMobile } = useWindowSize();
+  const { addToast } = useToast();
   const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
   const upd = (id, qty) => {
     if (qty < 1) return setCart((c) => c.filter((i) => i.id !== id));
     setCart((c) => c.map((i) => (i.id === id ? { ...i, qty } : i)));
+  };
+
+  const handleCheckout = () => {
+    if (!isClientAuthenticated) {
+      addToast({
+        type: "info",
+        message: "Faça login na sua conta para finalizar o pedido.",
+        duration: 4000,
+      });
+      onRequireLogin?.();
+      return;
+    }
+    setPage("checkout");
   };
 
   return (
@@ -276,7 +297,7 @@ const Carrinho = ({ cart, setCart, setPage }) => {
                   padding: "12px",
                   marginTop: 18,
                 }}
-                onClick={() => setPage("checkout")}
+                onClick={handleCheckout}
               >
                 Finalizar Pedido <ArrowRight size={15} />
               </button>

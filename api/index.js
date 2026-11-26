@@ -247,7 +247,7 @@ app.get('/api/fornecedores', async (req, res) => {
 
 // ─── USUÁRIOS ROUTES ──────────────────────────────────────────────
 
-// POST - Autenticar usuário (cliente)
+// POST - Autenticar usuário unificado (admin ou cliente)
 app.post('/api/usuarios/login', async (req, res) => {
     const { login, senha } = req.body;
 
@@ -255,25 +255,61 @@ app.post('/api/usuarios/login', async (req, res) => {
         return res.status(400).json({ error: 'E-mail e senha são obrigatórios' });
     }
 
+    const normalizedLogin = login.trim().toLowerCase();
+
     try {
         const [rows] = await pool.query(`
-            SELECT u.id_usuario, u.login, u.senha, u.id_cliente, c.nome_cliente
+            SELECT
+                u.id_usuario,
+                u.login,
+                u.senha,
+                u.id_cliente,
+                u.id_funcionario,
+                c.nome_cliente,
+                f.nome_funcionario,
+                a.id_admin
             FROM Usuario u
             LEFT JOIN Cliente c ON u.id_cliente = c.id_cliente
-            WHERE u.login = ?
-        `, [login.trim().toLowerCase()]);
+            LEFT JOIN Funcionario f ON u.id_funcionario = f.id_funcionario
+            LEFT JOIN Administrador a ON f.id_funcionario = a.id_funcionario
+            WHERE LOWER(u.login) = ?
+        `, [normalizedLogin]);
 
-        if (rows.length === 0 || rows[0].senha !== senha) {
-            return res.status(401).json({ error: 'E-mail ou senha inválidos' });
+        if (rows.length > 0) {
+            const user = rows[0];
+            if (user.senha !== senha) {
+                return res.status(401).json({ error: 'E-mail ou senha inválidos' });
+            }
+
+            const isAdmin = Boolean(
+                user.id_admin ||
+                user.id_funcionario ||
+                normalizedLogin === 'admin@prototech.com'
+            );
+
+            return res.json({
+                id_usuario: user.id_usuario,
+                login: user.login,
+                role: isAdmin ? 'admin' : 'client',
+                id_cliente: user.id_cliente,
+                nome: isAdmin
+                    ? (user.nome_funcionario || 'Administrador')
+                    : (user.nome_cliente || user.login)
+            });
         }
 
-        const user = rows[0];
-        res.json({
-            id_usuario: user.id_usuario,
-            login: user.login,
-            id_cliente: user.id_cliente,
-            nome: user.nome_cliente || user.login
-        });
+        // Credencial padrão de administrador quando não cadastrada na tabela Usuario
+        if (normalizedLogin === 'admin@prototech.com' && senha === 'admin123') {
+            return res.json({
+                id_usuario: 0,
+                login: 'admin@prototech.com',
+                role: 'admin',
+                id_cliente: null,
+                nome: 'Administrador'
+            });
+        }
+
+        return res.status(401).json({ error: 'E-mail ou senha inválidos' });
     } catch (err) {
         console.error('Erro ao autenticar usuário:', err.message);
         res.status(500).json({ error: 'Erro ao autenticar usuário no banco de dados' });
@@ -358,20 +394,26 @@ app.post('/api/usuarios/registro', async (req, res) => {
         return res.status(400).json({ error: 'Login, senha e id_cliente são obrigatórios' });
     }
 
+    const normalizedLogin = login.trim().toLowerCase();
+
+    if (normalizedLogin === 'admin@prototech.com') {
+        return res.status(400).json({ error: 'Este e-mail é reservado para administração' });
+    }
+
     if (senha.length < 6) {
         return res.status(400).json({ error: 'A senha deve ter no mínimo 6 caracteres' });
     }
 
     try {
         // Verifica se login (email) já está em uso
-        const [existing] = await pool.query('SELECT id_usuario FROM Usuario WHERE login = ?', [login]);
+        const [existing] = await pool.query('SELECT id_usuario FROM Usuario WHERE LOWER(login) = ?', [normalizedLogin]);
         if (existing.length > 0) {
             return res.status(400).json({ error: 'Este e-mail já está cadastrado como usuário' });
         }
 
         // Insere o usuário vinculado ao cliente (sem hash por enquanto — pode adicionar bcrypt futuramente)
         const query = 'INSERT INTO Usuario (login, senha, id_cliente) VALUES (?, ?, ?)';
-        const [result] = await pool.query(query, [login, senha, id_cliente]);
+        const [result] = await pool.query(query, [normalizedLogin, senha, id_cliente]);
 
         res.status(201).json({
             message: 'Usuário criado com sucesso!',

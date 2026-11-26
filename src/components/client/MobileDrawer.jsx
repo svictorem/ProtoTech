@@ -10,6 +10,7 @@ import {
   Sun,
   Moon,
   LogOut,
+  LogIn,
   ChevronRight,
 } from "lucide-react";
 import { T, initials } from "../../utils/helpers";
@@ -24,7 +25,9 @@ export default function MobileDrawer({
   cartCount = 0,
   theme,
   toggleTheme,
+  isAuthenticated = false,
   onLogout,
+  onGoLogin,
   clientProfile = null,
   clientLogin = null,
 }) {
@@ -40,9 +43,13 @@ export default function MobileDrawer({
   if (!open) return null;
 
   const isDark = theme !== "light";
-  const displayName = clientProfile?.nome || clientLogin?.split("@")[0] || "Cliente ProtoTech";
-  const displayEmail = clientProfile?.email || clientLogin || "Área do Cliente";
-  const avatarText = initials(displayName).toUpperCase() || "PT";
+  const displayName = isAuthenticated
+    ? clientProfile?.nome || clientLogin?.split("@")[0] || "Cliente ProtoTech"
+    : "Visitante";
+  const displayEmail = isAuthenticated
+    ? clientProfile?.email || clientLogin || "Área do Cliente"
+    : "Entre para acessar seus pedidos";
+  const avatarText = isAuthenticated ? initials(displayName).toUpperCase() || "PT" : "PT";
 
   const navItems = [
     {
@@ -475,7 +482,7 @@ export default function MobileDrawer({
           </div>
         </div>
 
-        {/* Bottom Logout */}
+        {/* Bottom Auth Action */}
         <div
           style={{
             padding: "12px 16px 20px",
@@ -483,30 +490,58 @@ export default function MobileDrawer({
             flexShrink: 0,
           }}
         >
-          <button
-            onClick={() => {
-              onClose();
-              onLogout();
-            }}
-            style={{
-              width: "100%",
-              padding: "12px 14px",
-              borderRadius: 12,
-              background: "rgba(255, 71, 87, 0.1)",
-              border: "1px solid rgba(255, 71, 87, 0.25)",
-              color: T.danger,
-              fontSize: 14,
-              fontWeight: 600,
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 8,
-            }}
-          >
-            <LogOut size={16} />
-            Sair da Conta
-          </button>
+          {isAuthenticated ? (
+            <button
+              onClick={() => {
+                onClose();
+                onLogout();
+              }}
+              style={{
+                width: "100%",
+                padding: "12px 14px",
+                borderRadius: 12,
+                background: "rgba(255, 71, 87, 0.1)",
+                border: "1px solid rgba(255, 71, 87, 0.25)",
+                color: T.danger,
+                fontSize: 14,
+                fontWeight: 600,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 8,
+              }}
+            >
+              <LogOut size={16} />
+              Sair da Conta
+            </button>
+          ) : (
+            <button
+              onClick={() => {
+                onClose();
+                onGoLogin?.();
+              }}
+              style={{
+                width: "100%",
+                padding: "12px 14px",
+                borderRadius: 12,
+                background: "linear-gradient(90deg, #7c3aed, #8c52ff)",
+                border: "none",
+                color: "#ffffff",
+                fontSize: 14,
+                fontWeight: 600,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 8,
+                boxShadow: "0 4px 14px rgba(124, 58, 237, 0.35)",
+              }}
+            >
+              <LogIn size={16} />
+              Fazer Login
+            </button>
+          )}
         </div>
       </aside>
     </div>

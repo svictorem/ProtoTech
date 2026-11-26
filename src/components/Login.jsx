@@ -1,49 +1,70 @@
 import { useState } from "react";
-import { Cpu, Shield, User, UserPlus } from "lucide-react";
+import { Cpu, LogIn, UserPlus, ArrowLeft } from "lucide-react";
 import { API_URL } from "../utils/helpers";
 
-const Login = ({ onLogin, onCadastro }) => {
-  const [mode, setMode] = useState("admin");
+const Login = ({ onLogin, onCadastro, onBackToStore }) => {
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const go = async () => {
-    if (mode === "admin") {
-      if (email === "admin@prototech.com" && pass === "admin123") {
-        onLogin("admin", "admin@prototech.com");
-      } else setErr("Credenciais inválidas. Tente novamente.");
-    } else {
-      if (!email || !pass) {
-        setErr("Preencha e-mail e senha");
+  const go = async (e) => {
+    if (e) e.preventDefault();
+    const normalizedEmail = email.trim().toLowerCase();
+
+    if (!normalizedEmail || !pass) {
+      setErr("Preencha e-mail e senha.");
+      return;
+    }
+
+    setLoading(true);
+    setErr("");
+
+    try {
+      const res = await fetch(`${API_URL}/usuarios/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          login: normalizedEmail,
+          senha: pass,
+        }),
+      });
+
+      const contentType = res.headers.get("content-type") || "";
+      if (!contentType.includes("application/json")) {
+        throw new Error("Erro ao conectar com a API. Verifique se o servidor está rodando.");
+      }
+
+      const data = await res.json();
+      if (!res.ok) {
+        if (normalizedEmail === "admin@prototech.com" && pass === "admin123") {
+          onLogin("admin", "admin@prototech.com", {
+            login: "admin@prototech.com",
+            role: "admin",
+            nome: "Administrador",
+          });
+          return;
+        }
+        throw new Error(data.error || "E-mail ou senha inválidos");
+      }
+
+      const role = data.role === "admin" || data.login?.toLowerCase() === "admin@prototech.com"
+        ? "admin"
+        : "client";
+      onLogin(role, data.login || normalizedEmail, data);
+    } catch (error) {
+      // Fallback para o admin padrão caso a API não esteja acessível ou ainda não tenha sido reiniciada
+      if (normalizedEmail === "admin@prototech.com" && pass === "admin123") {
+        onLogin("admin", "admin@prototech.com", {
+          login: "admin@prototech.com",
+          role: "admin",
+          nome: "Administrador",
+        });
         return;
       }
-      setLoading(true);
-      setErr("");
-      try {
-        const res = await fetch(`${API_URL}/usuarios/login`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            login: email.trim().toLowerCase(),
-            senha: pass,
-          }),
-        });
-        const contentType = res.headers.get("content-type") || "";
-        if (!contentType.includes("application/json")) {
-          throw new Error("Erro ao conectar com a API. Verifique se o servidor está rodando.");
-        }
-        const data = await res.json();
-        if (!res.ok) {
-          throw new Error(data.error || "E-mail ou senha inválidos");
-        }
-        onLogin("client", data.login);
-      } catch (e) {
-        setErr(e.message || "Erro ao fazer login.");
-      } finally {
-        setLoading(false);
-      }
+      setErr(error.message || "Erro ao fazer login.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -58,6 +79,7 @@ const Login = ({ onLogin, onCadastro }) => {
         position: "relative",
         overflow: "hidden",
         width: "100%",
+        padding: "24px 16px",
       }}
     >
       <div
@@ -81,16 +103,45 @@ const Login = ({ onLogin, onCadastro }) => {
       <div
         className="fi"
         style={{
-          width: 400,
-          padding: "40px 36px",
+          width: "100%",
+          maxWidth: 400,
+          padding: "32px 32px 28px",
           position: "relative",
           background: "#f8fafc",
           border: "1px solid rgba(0, 0, 0, 0.06)",
           borderRadius: 16,
-          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.22), 0 0 1px 1px rgba(0, 0, 0, 0.05)"
+          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.22), 0 0 1px 1px rgba(0, 0, 0, 0.05)",
         }}
       >
-        <div style={{ textAlign: "center", marginBottom: 32 }}>
+        <button
+          type="button"
+          onClick={onBackToStore}
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 6,
+            background: "transparent",
+            border: "none",
+            padding: "4px 2px",
+            marginBottom: 14,
+            color: "#64748b",
+            fontSize: 12.5,
+            fontWeight: 500,
+            cursor: "pointer",
+            transition: "color .15s",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = "#7c3aed";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = "#64748b";
+          }}
+        >
+          <ArrowLeft size={14} />
+          Voltar para a loja
+        </button>
+
+        <div style={{ textAlign: "center", marginBottom: 24 }}>
           <div
             style={{
               display: "flex",
@@ -126,43 +177,22 @@ const Login = ({ onLogin, onCadastro }) => {
           </p>
         </div>
 
-        <div
+        <h1
           style={{
-            display: "flex",
-            background: "#e2e8f0",
-            borderRadius: 8,
-            padding: 3,
-            marginBottom: 24,
+            fontSize: 20,
+            fontWeight: 700,
+            color: "#0f172a",
+            marginBottom: 18,
+            textAlign: "center",
           }}
         >
-          {["admin", "client"].map((m) => (
-            <button
-              key={m}
-              onClick={() => {
-                setMode(m);
-                setErr("");
-              }}
-              style={{
-                flex: 1,
-                padding: "8px",
-                borderRadius: 6,
-                border: "none",
-                background: mode === m ? "#7c3aed" : "transparent",
-                color: mode === m ? "#ffffff" : "#475569",
-                fontWeight: 600,
-                fontSize: 13,
-                cursor: "pointer",
-                transition: "all .15s",
-              }}
-            >
-              {m === "admin" ? "Administrador" : "Cliente"}
-            </button>
-          ))}
-        </div>
+          Login
+        </h1>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+        <form onSubmit={go} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           <div>
             <label
+              htmlFor="login-email"
               style={{
                 fontSize: 12,
                 color: "#475569",
@@ -174,11 +204,12 @@ const Login = ({ onLogin, onCadastro }) => {
               E-mail
             </label>
             <input
+              id="login-email"
               style={{
                 background: "#ffffff",
                 border: "1px solid #cbd5e1",
                 borderRadius: 8,
-                padding: "8px 12px",
+                padding: "9px 12px",
                 color: "#0f172a",
                 fontSize: 14,
                 width: "100%",
@@ -190,14 +221,14 @@ const Login = ({ onLogin, onCadastro }) => {
                 setEmail(e.target.value);
                 setErr("");
               }}
-              placeholder={
-                mode === "admin" ? "admin@prototech.com" : "seu@email.com"
-              }
+              placeholder="seu@email.com"
               type="email"
+              autoComplete="email"
             />
           </div>
           <div>
             <label
+              htmlFor="login-password"
               style={{
                 fontSize: 12,
                 color: "#475569",
@@ -209,11 +240,12 @@ const Login = ({ onLogin, onCadastro }) => {
               Senha
             </label>
             <input
+              id="login-password"
               style={{
                 background: "#ffffff",
                 border: "1px solid #cbd5e1",
                 borderRadius: 8,
-                padding: "8px 12px",
+                padding: "9px 12px",
                 color: "#0f172a",
                 fontSize: 14,
                 width: "100%",
@@ -227,7 +259,7 @@ const Login = ({ onLogin, onCadastro }) => {
               }}
               placeholder="••••••••"
               type="password"
-              onKeyDown={(e) => e.key === "Enter" && go()}
+              autoComplete="current-password"
             />
           </div>
           {err && (
@@ -236,7 +268,7 @@ const Login = ({ onLogin, onCadastro }) => {
             </p>
           )}
           <button
-            onClick={go}
+            type="submit"
             disabled={loading}
             style={{
               width: "100%",
@@ -252,50 +284,46 @@ const Login = ({ onLogin, onCadastro }) => {
               alignItems: "center",
               justifyContent: "center",
               gap: 8,
-              boxShadow: "0 4px 12px rgba(124, 58, 237, 0.25)"
+              fontSize: 14,
+              boxShadow: "0 4px 12px rgba(124, 58, 237, 0.25)",
             }}
           >
-            {mode === "admin" ? <Shield size={14} /> : <User size={14} />}
-            {loading ? "Entrando..." : `Entrar ${mode === "admin" ? "como Admin" : "como Cliente"}`}
+            <LogIn size={15} />
+            {loading ? "Entrando..." : "Entrar"}
           </button>
-        </div>
+        </form>
 
-        <div style={{ marginTop: 20, textAlign: "center" }}>
-          {mode === "client" ? (
-            <button
-              onClick={onCadastro}
-              style={{
-                width: "100%",
-                padding: "10px",
-                background: "transparent",
-                color: "#7c3aed",
-                border: "1px solid rgba(124,58,237,0.35)",
-                borderRadius: 8,
-                fontWeight: 600,
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 7,
-                fontSize: 13,
-                fontFamily: "inherit",
-                transition: "all .15s",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(124,58,237,0.06)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "transparent";
-              }}
-            >
-              <UserPlus size={14} />
-              Não tem conta? Cadastre-se agora
-            </button>
-          ) : (
-            <span style={{ fontSize: 12, color: "#94a3b8" }}>
-              Acesso restrito a administradores
-            </span>
-          )}
+        <div style={{ marginTop: 18, textAlign: "center" }}>
+          <button
+            type="button"
+            onClick={onCadastro}
+            style={{
+              width: "100%",
+              padding: "10px",
+              background: "transparent",
+              color: "#7c3aed",
+              border: "1px solid rgba(124,58,237,0.35)",
+              borderRadius: 8,
+              fontWeight: 600,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 7,
+              fontSize: 13,
+              fontFamily: "inherit",
+              transition: "all .15s",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "rgba(124,58,237,0.06)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "transparent";
+            }}
+          >
+            <UserPlus size={14} />
+            Não tem conta? Cadastre-se agora
+          </button>
         </div>
       </div>
     </div>

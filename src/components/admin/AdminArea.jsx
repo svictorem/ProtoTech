@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   Package,
@@ -12,7 +13,7 @@ import {
   LogOut,
   Zap,
 } from "lucide-react";
-import { T } from "../../utils/helpers";
+import { T, useWindowSize } from "../../utils/helpers";
 import { ThemeToggle, Avatar } from "../common/UIComponents";
 
 // Sub-components
@@ -23,6 +24,27 @@ import Vendas from "./Vendas";
 import Clientes from "./Clientes";
 import Funcionarios from "./Funcionarios";
 import Alertas from "./Alertas";
+
+const ADMIN_PAGE_PATHS = {
+  dashboard: "/admin",
+  produtos: "/admin/produtos",
+  estoque: "/admin/estoque",
+  vendas: "/admin/vendas",
+  clientes: "/admin/clientes",
+  funcs: "/admin/funcionarios",
+  alertas: "/admin/alertas",
+};
+
+const getAdminPageFromPath = (pathname) => {
+  const sub = pathname.replace(/^\/admin\/?/, "").split("/")[0];
+  if (sub === "produtos") return "produtos";
+  if (sub === "estoque") return "estoque";
+  if (sub === "vendas") return "vendas";
+  if (sub === "clientes") return "clientes";
+  if (sub === "funcionarios" || sub === "funcs") return "funcs";
+  if (sub === "alertas") return "alertas";
+  return "dashboard";
+};
 
 const Sidebar = ({ page, setPage, onLogout, collapsed, toggle, alertsCount = 0 }) => {
   const NAV = [
@@ -140,7 +162,7 @@ const PAGE_TITLES = {
   alertas: "Alertas de Estoque",
 };
 
-const TopBar = ({ page, theme, toggleTheme, onRefresh }) => (
+const TopBar = ({ page, theme, toggleTheme, onRefresh, isMobile }) => (
   <div
     style={{
       height: 54,
@@ -148,21 +170,21 @@ const TopBar = ({ page, theme, toggleTheme, onRefresh }) => (
       borderBottom: `1px solid ${T.border}`,
       display: "flex",
       alignItems: "center",
-      paddingInline: 22,
-      gap: 14,
+      paddingInline: isMobile ? 12 : 22,
+      gap: isMobile ? 8 : 14,
       flexShrink: 0,
     }}
   >
-    <h1 style={{ fontSize: 15, fontWeight: 600, flex: 1 }}>
+    <h1 style={{ fontSize: isMobile ? 14 : 15, fontWeight: 600, flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
       {PAGE_TITLES[page]}
     </h1>
-    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+    <div style={{ display: "flex", alignItems: "center", gap: isMobile ? 8 : 10, flexShrink: 0 }}>
       {onRefresh && (
         <button
           onClick={onRefresh}
           className="btn-g"
           style={{
-            padding: "6px 10px",
+            padding: isMobile ? "6px 8px" : "6px 10px",
             height: 32,
             display: "flex",
             alignItems: "center",
@@ -171,23 +193,25 @@ const TopBar = ({ page, theme, toggleTheme, onRefresh }) => (
           title="Recarregar Dados"
         >
           <Zap size={14} />
-          <span>Atualizar</span>
+          {!isMobile && <span>Atualizar</span>}
         </button>
       )}
       <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
-      <span
-        style={{
-          fontSize: 11,
-          color: T.muted2,
-          background: T.cyanBg,
-          border: `1px solid ${T.border}`,
-          borderRadius: 6,
-          padding: "3px 10px",
-          fontFamily: "JetBrains Mono, monospace",
-        }}
-      >
-        admin@prototech.com
-      </span>
+      {!isMobile && (
+        <span
+          style={{
+            fontSize: 11,
+            color: T.muted2,
+            background: T.cyanBg,
+            border: `1px solid ${T.border}`,
+            borderRadius: 6,
+            padding: "3px 10px",
+            fontFamily: "JetBrains Mono, monospace",
+          }}
+        >
+          admin@prototech.com
+        </span>
+      )}
       <Avatar name="Admin Sistema" size={32} />
     </div>
   </div>
@@ -204,8 +228,18 @@ const AdminArea = ({
   topProducts = [],
   loadTopProducts,
 }) => {
-  const [page, setPage] = useState("dashboard");
-  const [collapsed, setCollapsed] = useState(false);
+  const { isMobile } = useWindowSize();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const page = getAdminPageFromPath(location.pathname);
+  const [collapsed, setCollapsed] = useState(() => typeof window !== "undefined" && window.innerWidth < 768);
+
+  const setPage = (nextPage) => {
+    const path = ADMIN_PAGE_PATHS[nextPage] || "/admin";
+    if (location.pathname !== path) {
+      navigate(path);
+    }
+  };
 
   const alertsCount = products.filter((p) => p.stock <= p.minStock).length;
 
@@ -221,7 +255,7 @@ const AdminArea = ({
   const Page = PAGES[page];
 
   return (
-    <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
+    <div style={{ display: "flex", height: "100dvh", overflow: "hidden" }}>
       <Sidebar
         page={page}
         setPage={setPage}
@@ -233,6 +267,7 @@ const AdminArea = ({
       <div
         style={{
           flex: 1,
+          minWidth: 0,
           display: "flex",
           flexDirection: "column",
           overflow: "hidden",
@@ -242,6 +277,7 @@ const AdminArea = ({
           page={page}
           theme={theme}
           toggleTheme={toggleTheme}
+          isMobile={isMobile}
           onRefresh={() => {
             if (loadProducts) loadProducts();
             if (loadSales) loadSales();
