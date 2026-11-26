@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   User, MapPin, CreditCard, CheckCircle,
   ChevronLeft, ChevronRight,
-  QrCode, Barcode, Lock, ArrowRight, ShoppingBag,
+  QrCode, Barcode, Lock, ArrowRight, ShoppingBag, LogIn,
 } from "lucide-react";
 import { useToast } from "./ToastSystem";
 import { T, fmt, useWindowSize, API_URL } from "../utils/helpers";
@@ -424,13 +425,22 @@ export default function Checkout({
   setPage,
   clientProfile = null,
   clientLogin = null,
+  isClientAuthenticated = false,
+  onRequireLogin,
   loadProducts,
 }) {
   const { addToast } = useToast();
   const { isMobile } = useWindowSize();
-  const [step, setStep] = useState(1);
+  const { etapa } = useParams();
+  const routerNavigate = useNavigate();
+
+  const parsedStep = (() => {
+    const m = /^etapa-(\d+)$/.exec(etapa || "");
+    const n = m ? parseInt(m[1], 10) : 1;
+    return n >= 1 && n <= 4 ? n : 1;
+  })();
+  const step = parsedStep;
   const [submitting, setSubmitting] = useState(false);
-  const pushedStepsRef = useRef(0);
   const hasPrefilledRef = useRef(false);
 
   const [personal, setPersonal] = useState({
@@ -484,29 +494,10 @@ export default function Checkout({
     };
   }, [clientProfile, clientLogin]);
 
-  // Suporta botão Voltar do celular entre etapas do Checkout
-  useEffect(() => {
-    const onPopState = (e) => {
-      if (e.state?.page === "checkout") {
-        if (typeof e.state.step === "number") {
-          pushedStepsRef.current = Math.max(0, e.state.step - 1);
-          setStep(e.state.step);
-        } else {
-          pushedStepsRef.current = 0;
-          setStep(1);
-        }
-      }
-    };
-    window.addEventListener("popstate", onPopState);
-    return () => window.removeEventListener("popstate", onPopState);
-  }, []);
-
   const goNextStep = () => {
     const next = Math.min(4, step + 1);
     if (next !== step) {
-      pushedStepsRef.current += 1;
-      window.history.pushState({ page: "checkout", step: next }, "", `#checkout/etapa-${next}`);
-      setStep(next);
+      routerNavigate(`/checkout/etapa-${next}`);
     }
   };
 
@@ -515,11 +506,8 @@ export default function Checkout({
       setPage("carrinho");
       return;
     }
-    if (pushedStepsRef.current > 0) {
-      window.history.back();
-    } else {
-      setStep((s) => Math.max(1, s - 1));
-    }
+    const prev = step - 1;
+    routerNavigate(prev <= 1 ? "/checkout" : `/checkout/etapa-${prev}`);
   };
 
   const validateStep = () => {
@@ -613,6 +601,59 @@ export default function Checkout({
   };
 
   const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+
+  if (!isClientAuthenticated) {
+    return (
+      <div style={{ padding: isMobile ? "16px 12px" : "28px 32px", overflowY: "auto", flex: 1 }}>
+        <div className="card fi" style={{ maxWidth: 520, margin: "24px auto", padding: isMobile ? "32px 20px" : "44px 32px", textAlign: "center" }}>
+          <div
+            style={{
+              width: 60,
+              height: 60,
+              borderRadius: "50%",
+              background: "rgba(140, 82, 255, 0.12)",
+              border: "1px solid rgba(140, 82, 255, 0.28)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              margin: "0 auto 16px",
+            }}
+          >
+            <Lock size={26} style={{ color: "#8c52ff" }} />
+          </div>
+          <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>Login necessário para finalizar</h3>
+          <p style={{ color: T.muted2, fontSize: 13.5, marginBottom: 22, lineHeight: 1.6 }}>
+            Entre na sua conta ProtoTech para concluir seu pedido com segurança. Os itens do seu carrinho permanecem salvos.
+          </p>
+          <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
+            <button
+              onClick={onRequireLogin}
+              style={{
+                padding: "11px 22px",
+                background: "linear-gradient(90deg, #7c3aed, #8c52ff)",
+                color: "#ffffff",
+                border: "none",
+                borderRadius: 10,
+                fontWeight: 600,
+                fontSize: 14,
+                cursor: "pointer",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                boxShadow: "0 6px 18px rgba(124, 58, 237, 0.35)",
+              }}
+            >
+              <LogIn size={16} />
+              Fazer Login
+            </button>
+            <button className="btn-g" onClick={() => setPage("carrinho")}>
+              Voltar ao Carrinho
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (cart.length === 0) {
     return (

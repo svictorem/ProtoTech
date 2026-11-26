@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
-import { Zap, ArrowRight, Cpu, ShoppingCart, LogOut, Menu, Sun, Moon } from "lucide-react";
+import { Zap, ArrowRight, Cpu, ShoppingCart, LogOut, LogIn, Menu, Sun, Moon } from "lucide-react";
 import { useWindowSize } from "../../utils/helpers";
 import MobileDrawer from "./MobileDrawer";
 
 export default function HeroBanner({
   setPage,
   cart = [],
+  isAuthenticated = false,
   onLogout,
+  onGoLogin,
   theme,
   toggleTheme,
   clientProfile = null,
@@ -168,15 +170,27 @@ export default function HeroBanner({
               {theme === "light" ? <Moon size={16} /> : <Sun size={16} />}
             </button>
 
-            {/* Logout — desktop only */}
+            {/* Auth Action — desktop only */}
             {!isMobile && (
-              <button
-                onClick={onLogout}
-                className="h-9 w-9 shrink-0 inline-flex items-center justify-center rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 transition-all cursor-pointer text-slate-500 dark:text-slate-400 hover:text-red-500 dark:hover:text-red-400"
-                title="Sair"
-              >
-                <LogOut size={16} />
-              </button>
+              isAuthenticated ? (
+                <button
+                  onClick={onLogout}
+                  className="h-9 w-9 shrink-0 inline-flex items-center justify-center rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 transition-all cursor-pointer text-slate-500 dark:text-slate-400 hover:text-red-500 dark:hover:text-red-400"
+                  title="Sair"
+                >
+                  <LogOut size={16} />
+                </button>
+              ) : (
+                <button
+                  onClick={() => onGoLogin?.()}
+                  className="h-9 px-3 shrink-0 inline-flex items-center justify-center gap-1.5 rounded-lg bg-[#8c52ff]/10 hover:bg-[#8c52ff]/20 border border-[#8c52ff]/30 transition-all cursor-pointer text-[#7c3aed] dark:text-[#c4b5fd] text-sm font-semibold whitespace-nowrap"
+                  style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" }}
+                  title="Fazer Login"
+                >
+                  <LogIn size={15} />
+                  <span>Entrar</span>
+                </button>
+              )
             )}
 
             {/* Mobile hamburger */}
@@ -208,7 +222,9 @@ export default function HeroBanner({
           cartCount={cartCount}
           theme={theme}
           toggleTheme={toggleTheme}
+          isAuthenticated={isAuthenticated}
           onLogout={onLogout}
+          onGoLogin={onGoLogin}
           clientProfile={clientProfile}
           clientLogin={clientLogin}
         />

@@ -55,7 +55,7 @@ const inputStyle = {
   fontFamily: "inherit",
 };
 
-const Cadastro = ({ onBack, onSuccess }) => {
+const Cadastro = ({ onBack, onSuccess, onBackToStore }) => {
   const [form, setForm] = useState({
     nome: "",
     cpf: "",
@@ -184,8 +184,9 @@ const Cadastro = ({ onBack, onSuccess }) => {
         <div
           className="fi"
           style={{
-            width: 400,
-            padding: "48px 36px",
+            width: "100%",
+            maxWidth: 400,
+            padding: "48px 32px",
             background: "#f8fafc",
             border: "1px solid rgba(0,0,0,0.06)",
             borderRadius: 16,
@@ -276,7 +277,7 @@ const Cadastro = ({ onBack, onSuccess }) => {
         style={{
           width: "100%",
           maxWidth: 460,
-          padding: "36px 36px 32px",
+          padding: "28px 28px 28px",
           position: "relative",
           background: "#f8fafc",
           border: "1px solid rgba(0,0,0,0.06)",
@@ -284,6 +285,36 @@ const Cadastro = ({ onBack, onSuccess }) => {
           boxShadow: "0 25px 50px -12px rgba(0,0,0,0.22), 0 0 1px 1px rgba(0,0,0,0.05)",
         }}
       >
+        {onBackToStore && (
+          <button
+            type="button"
+            onClick={onBackToStore}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+              background: "transparent",
+              border: "none",
+              padding: "4px 2px",
+              marginBottom: 12,
+              color: "#64748b",
+              fontSize: 12.5,
+              fontWeight: 500,
+              cursor: "pointer",
+              transition: "color .15s",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = "#7c3aed";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = "#64748b";
+            }}
+          >
+            <ArrowLeft size={14} />
+            Voltar para a loja
+          </button>
+        )}
+
         {/* Logo */}
         <div style={{ textAlign: "center", marginBottom: 28 }}>
           <div

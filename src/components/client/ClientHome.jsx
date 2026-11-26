@@ -178,7 +178,9 @@ const ClientHome = ({
   addToCart,
   products = [],
   cart = [],
+  isAuthenticated = false,
   onLogout,
+  onGoLogin,
   theme,
   toggleTheme,
   clientProfile = null,
@@ -466,7 +468,9 @@ Gostaria de validar a viabilidade técnica e agendar uma reunião técnica para 
       <HeroBanner 
         setPage={setPage} 
         cart={cart} 
+        isAuthenticated={isAuthenticated}
         onLogout={onLogout} 
+        onGoLogin={onGoLogin}
         theme={theme} 
         toggleTheme={toggleTheme}
         clientProfile={clientProfile}

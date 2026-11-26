@@ -4,7 +4,8 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: './', // 👈 ADICIONE ISSO AQUI (Substitua pelo nome real do repositório no GitHub)
+  base: '/',
+  appType: 'spa',
   plugins: [react(), tailwindcss()],
   build: {
     rollupOptions: {
