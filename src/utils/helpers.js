@@ -28,7 +28,23 @@ export const COLOR_RGB = {
 };
 
 // ─── API CONFIGURATION ────────────────────────────────────────────
-export const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+const resolveApiUrl = () => {
+  const envUrl = import.meta.env.VITE_API_URL?.trim();
+  const isLocalHost =
+    typeof window !== "undefined" &&
+    (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
+
+  if (import.meta.env.PROD || (typeof window !== "undefined" && !isLocalHost)) {
+    if (!envUrl || /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/i.test(envUrl)) {
+      return "/api";
+    }
+    return envUrl.replace(/\/+$/, "");
+  }
+
+  return (envUrl || "http://localhost:3000/api").replace(/\/+$/, "");
+};
+
+export const API_URL = resolveApiUrl();
 
 // ─── FORMATTING & UTILS ───────────────────────────────────────────
 export const fmt = (n) =>
